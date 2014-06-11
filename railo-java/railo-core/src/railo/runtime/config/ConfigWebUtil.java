@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -19,6 +20,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
+import railo.runtime.cache.tag.CacheHandlerFactoryCollection;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationListener;
@@ -419,5 +421,9 @@ public final class ConfigWebUtil {
 		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
 			list.add(mappings[i]);
 		}
+	}
+
+	public static CacheHandlerFactoryCollection getCacheHandlerFactories(ConfigWeb config) { 
+		return ((ConfigWebImpl)config).getCacheHandlerFactories();
 	}
 }

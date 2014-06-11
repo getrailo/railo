@@ -29,6 +29,8 @@ import railo.runtime.cache.tag.query.QueryCacheItem;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -85,7 +87,7 @@ public class SmartCacheHandler implements CacheHandler {
 	public CacheItem get(PageContext pc, String id) throws PageException {
 		if(!running) return null;
 		getLog(config).debug("smartcache", "get("+id+")");
-		CacheItem ci = (CacheItem) getCache(pc).getValue(id,null);
+		CacheItem ci = CacheHandlerFactory.toCacheItem(getCache(pc).getValue(id,null),null);
 		if(ci!=null) {
 			Rule r = rules.get(id);
 			if(r!=null)r.used++;
@@ -174,11 +176,11 @@ public class SmartCacheHandler implements CacheHandler {
 
 	public static void setRule(PageContext pc,int type, String id, TimeSpan timeSpan) throws PageException { 
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().setRule(pc,id, timeSpan);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).include.getSmartCacheHandler().setRule(pc,id, timeSpan);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().setRule(pc,id, timeSpan);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.getSmartCacheHandler().setRule(pc,id, timeSpan);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().setRule(pc,id, timeSpan);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).function.getSmartCacheHandler().setRule(pc,id, timeSpan);
 	}
 	public void setRule(PageContext pc,String id, TimeSpan timeSpan) throws PageException { 
 		getLog(config).debug("smartcache", "setRule("+id+","+timeSpan+")");
@@ -197,19 +199,7 @@ public class SmartCacheHandler implements CacheHandler {
 		rules.put(id, new Rule(timeSpan));
 		setRuleElement(id, timeSpan);
 	}
-
-	public static void clearAllRules(PageContext pc) throws PageException {
-		clearRules(pc,ConfigImpl.CACHE_DEFAULT_NONE);
-	}
 	
-	public static void clearRules(PageContext pc,int type) throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().clearRules(pc);
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().clearRules(pc);
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().clearRules(pc);
-	}
 	
 	public void clearRules(PageContext pc) throws PageException{
 		rules.clear();
@@ -222,11 +212,11 @@ public class SmartCacheHandler implements CacheHandler {
 
 	public static void removeRule(PageContext pc,int type, String id) throws PageException {
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().removeRule(pc,id);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).include.getSmartCacheHandler().removeRule(pc,id);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().removeRule(pc,id);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.getSmartCacheHandler().removeRule(pc,id);
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().removeRule(pc,id);
+			ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).function.getSmartCacheHandler().removeRule(pc,id);
 	}
 	
 	public void removeRule(PageContext pc,String id) throws PageException{
@@ -238,18 +228,18 @@ public class SmartCacheHandler implements CacheHandler {
 		catch (IOException e) {}
 	}
 	
-	public static Query getAllRules() {
-		return getRules(ConfigImpl.CACHE_DEFAULT_NONE);
+	public static Query getAllRules(ConfigWeb cw) {
+		return getRules(cw,ConfigImpl.CACHE_DEFAULT_NONE);
 	}
 
-	public static Query getRules(int type) {
+	public static Query getRules(ConfigWeb cw,int type) {
 		Query qry=new QueryImpl(new String[]{"type","entryHash","timespan","created","used"},0,"rules");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler()._getRules(qry, "include");
+			ConfigWebUtil.getCacheHandlerFactories(cw).include.getSmartCacheHandler()._getRules(qry, "include");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler()._getRules(qry, "query");
+			ConfigWebUtil.getCacheHandlerFactories(cw).query.getSmartCacheHandler()._getRules(qry, "query");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler()._getRules(qry, "function");
+			ConfigWebUtil.getCacheHandlerFactories(cw).function.getSmartCacheHandler()._getRules(qry, "function");
 		return qry;
 	}
 	
@@ -269,24 +259,12 @@ public class SmartCacheHandler implements CacheHandler {
 		}
 	}
 	
-	public static void clearAllEntries(PageContext pc) throws PageException {
-		clearRules(pc,ConfigImpl.CACHE_DEFAULT_NONE);
-	}
-	
-	public static void clearEntries(int type) {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler().clearEntries();
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler().clearEntries();
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler().clearEntries();
-	}
 	
 	public void clearEntries(){
 		entries.clear();
 	}
 	
-	public static Struct info(int type) {
+	public static Struct info(ConfigWeb cw,int type) {
 		Struct info=new StructImpl();
 		//Struct caches=new StructImpl();
 		Query caches=new QueryImpl(new String[]{"type","entryHash","timespan"},0,"caches");
@@ -296,11 +274,11 @@ public class SmartCacheHandler implements CacheHandler {
 		info.setEL("caches", caches);
 		
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			CacheHandlerFactory.include.getSmartCacheHandler()._info(caches,"include");
+			ConfigWebUtil.getCacheHandlerFactories(cw).include.getSmartCacheHandler()._info(caches,"include");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			CacheHandlerFactory.query.getSmartCacheHandler()._info(caches,"query");
+			ConfigWebUtil.getCacheHandlerFactories(cw).query.getSmartCacheHandler()._info(caches,"query");
 		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			CacheHandlerFactory.function.getSmartCacheHandler()._info(caches,"function");
+			ConfigWebUtil.getCacheHandlerFactories(cw).function.getSmartCacheHandler()._info(caches,"function");
 		return info;
 	}
 	

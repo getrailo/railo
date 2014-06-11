@@ -56,7 +56,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	Stack<PageContext> pcs=new Stack<PageContext>();
     private final Map<Integer,PageContextImpl> runningPcs=new ConcurrentHashMap<Integer, PageContextImpl>();
     int idCounter=1;
-    private QueryCache queryCache;
     private ScopeContext scopeContext=new ScopeContext(this);
     private HttpServlet servlet;
 	private URL url=null;
@@ -68,9 +67,8 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 * @param compiler CFML compiler
 	 * @param engine
 	 */
-	public CFMLFactoryImpl(CFMLEngineImpl engine,QueryCache queryCache) {
+	public CFMLFactoryImpl(CFMLEngineImpl engine) {
 		this.engine=engine; 
-		this.queryCache=queryCache;
 	}
     
     /**
@@ -135,7 +133,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		        //runningCount++;
 				PageContextImpl pc;
         		synchronized (pcs) {
-		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,queryCache,idCounter++,servlet);
+		            if(pcs.isEmpty()) pc=new PageContextImpl(scopeContext,config,idCounter++,servlet);
 		            else pc=((PageContextImpl)pcs.pop());
 		            runningPcs.put(Integer.valueOf(pc.getId()),pc);
 		            this.servlet=servlet;
@@ -219,7 +217,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		catch(Throwable t){}
         if(log!=null)LogUtil.log(log,Log.LEVEL_ERROR,"controler",
         		"stop thread ("+pc.getId()+") because run into a timeout "+getPath(pc)+"."+strLocks,pc.getThread().getStackTrace());
-        pc.getThread().stop(new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
+        SystemUtil.stop(pc.getThread(),new RequestTimeoutException(pc,"request ("+getPath(pc)+":"+pc.getId()+") has run into a timeout ("+(pc.getRequestTimeout()/1000)+" seconds) and has been stopped."+strLocks));
         
 	}
 
@@ -413,7 +411,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 						else
 							t=new RequestTimeoutException(pc,"request has been forced to stop.");
 						
-		                pc.getThread().stop(t);
+						SystemUtil.stop(pc.getThread(),t);
 		                SystemUtil.sleep(10);
 						break;
 					}
@@ -425,6 +423,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
 	@Override
 	public QueryCache getDefaultQueryCache() {
-		return queryCache;
+    	throw new RuntimeException("function PageContext.getDefaultQueryCache() no longer supported");
 	}
 }

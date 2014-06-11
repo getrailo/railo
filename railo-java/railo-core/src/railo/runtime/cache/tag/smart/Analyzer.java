@@ -12,6 +12,8 @@ import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -25,28 +27,28 @@ public class Analyzer {
 	
 	
 
-    public synchronized static Query analyze(int type) throws ApplicationException {
+    public synchronized static Query analyze(ConfigWeb config,int type) throws ApplicationException {
     	Query qry=new QueryImpl(
     			new String[]{
     					"name","entryhash","resulthash","template",
     					"line","type","meta","dependency",
     					"totalExecutionTime","executionTimes","createTimes","timeUnchanged","calls","payload"}, 0/*TODO counter.toInt()*/, "query");
     	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-    		analyze(qry, type);
+    		analyze(config,qry, type);
     	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
-    		analyze(qry, type);
+    		analyze(config,qry, type);
     	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-    		analyze(qry, type);
+    		analyze(config,qry, type);
     	else {
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_INCLUDE);
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_QUERY);
-    		analyze(qry, ConfigImpl.CACHE_DEFAULT_FUNCTION);
+    		analyze(config,qry, ConfigImpl.CACHE_DEFAULT_INCLUDE);
+    		analyze(config,qry, ConfigImpl.CACHE_DEFAULT_QUERY);
+    		analyze(config,qry, ConfigImpl.CACHE_DEFAULT_FUNCTION);
     	}
     	
     	return qry;
     }
 
-    private static void analyze(Query qry,int type) throws ApplicationException {
+    private static void analyze(ConfigWeb config,Query qry,int type) throws ApplicationException {
     	
     	
     	
@@ -54,11 +56,11 @@ public class Analyzer {
     	RefInteger counter=new RefIntegerImpl(0);
     	Map<String, SmartEntry> entries;
     	if(type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-    		entries=CacheHandlerFactory.include.getSmartCacheHandler().getEntries();
+    		entries=ConfigWebUtil.getCacheHandlerFactories(config).include.getSmartCacheHandler().getEntries();
     	else if(type==ConfigImpl.CACHE_DEFAULT_QUERY)
-    		entries=CacheHandlerFactory.query.getSmartCacheHandler().getEntries();
+    		entries=ConfigWebUtil.getCacheHandlerFactories(config).query.getSmartCacheHandler().getEntries();
     	else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-    		entries=CacheHandlerFactory.function.getSmartCacheHandler().getEntries();
+    		entries=ConfigWebUtil.getCacheHandlerFactories(config).function.getSmartCacheHandler().getEntries();
     	else
     		throw new ApplicationException("invalid type defintion");
     	

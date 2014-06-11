@@ -31,27 +31,18 @@ public class CacheHandlerFactory {
 	public static final char CACHE_DEL = ';';
 	public static final char CACHE_DEL2 = ':';
 
-	public static CacheHandlerFactory query=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_QUERY);
-	public static CacheHandlerFactory function=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_FUNCTION);
-	public static CacheHandlerFactory include=new CacheHandlerFactory(ConfigImpl.CACHE_DEFAULT_INCLUDE);
 	
-	private final RequestCacheHandler rch;
+	final RequestCacheHandler rch;
 	private final SmartCacheHandler sch;
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
-	private CacheHandlerFactory(int cacheDefaultType) {
+	protected CacheHandlerFactory(int cacheDefaultType) {
 		this.cacheDefaultType=cacheDefaultType;
 		rch=new RequestCacheHandler(cacheDefaultType);
 		sch=new SmartCacheHandler(cacheDefaultType);
 	}
 	
-	public static void release(PageContext pc){
-		query.rch.clear(pc);
-		function.rch.clear(pc);
-		include.rch.clear(pc);
-	}
-
 	/**
 	 * based on the cachedWithin Object we  choose the right Cachehandler and return it
 	 * @return 
@@ -95,16 +86,19 @@ public class CacheHandlerFactory {
 
 	public void clear(PageContext pc) throws PageException {
 		rch.clear(pc);
+		sch.clear(pc);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc);
 	}
 	
 	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		rch.clear(pc,filter);
+		sch.clear(pc,filter);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}
 	
 	public void clean(PageContext pc) throws PageException {
 		rch.clean(pc);
+		sch.clean(pc);
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}
 
@@ -184,6 +178,11 @@ public class CacheHandlerFactory {
 		case ConfigImpl.CACHE_DEFAULT_RESOURCE: 	return "resource";
 		case ConfigImpl.CACHE_DEFAULT_TEMPLATE: 	return "template";
 		}
+		return defaultValue;
+	}
+
+	public static CacheItem toCacheItem(Object value, CacheItem defaultValue) {
+		if(value instanceof CacheItem) return (CacheItem) value;
 		return defaultValue;
 	}
 }

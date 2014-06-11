@@ -4,6 +4,8 @@ import railo.loader.util.Util;
 import railo.runtime.cache.tag.smart.Analyzer;
 import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagSupport;
@@ -107,11 +109,11 @@ public final class SmartCache extends TagSupport {
 	}
 
 	private void doInfo() throws PageException {
-		pageContext.setVariable(returnVariable, SmartCacheHandler.info(type));
+		pageContext.setVariable(returnVariable, SmartCacheHandler.info(pageContext.getConfig(),type));
 	}
 
 	private void doGetRules() throws PageException {
-		pageContext.setVariable(returnVariable, SmartCacheHandler.getRules(type));
+		pageContext.setVariable(returnVariable, SmartCacheHandler.getRules(pageContext.getConfig(),type));
 	}
 
 	private void doStart() {
@@ -122,12 +124,12 @@ public final class SmartCache extends TagSupport {
 	}
 
 	private void doClearRules() throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllRules(pageContext);
-		else SmartCacheHandler.clearRules(pageContext,type);
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).clearAllRules(pageContext);
+		else ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).clearRules(pageContext,type);
 	}
-	private void doClearEntries() throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE)SmartCacheHandler.clearAllEntries(pageContext);
-		else SmartCacheHandler.clearEntries(type);
+	private void doClearEntries() {
+		if(type==ConfigImpl.CACHE_DEFAULT_NONE)ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).clearAllEntries();
+		else ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).clearEntries(type);
 	}
 
 	private void doRemoveRule() throws PageException {
@@ -150,7 +152,7 @@ public final class SmartCache extends TagSupport {
 
 	private void doAnalyze() throws PageException {
 		//typeRequired();
-		pageContext.setVariable(returnVariable, Analyzer.analyze(type));
+		pageContext.setVariable(returnVariable, Analyzer.analyze(pageContext.getConfig(),type));
 	}
 	
 

@@ -27,6 +27,7 @@ import railo.runtime.MappingImpl;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.cache.tag.CacheHandlerFactoryCollection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.debug.DebuggerPool;
@@ -70,6 +71,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
     private DebuggerPool debuggerPool;
+    private CacheHandlerFactoryCollection cacheHandlerFactoryCollection;
     
     
 
@@ -263,6 +265,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
 		
+		// FYI used by Extensions, do not remove
+		public Mapping getApplicationMapping(String virtual, String physical) {
+			return getApplicationMapping("application",virtual, physical,null,true,false);
+		}
 
 		public Mapping getApplicationMapping(String type,String virtual, String physical,String archive,boolean physicalFirst, boolean ignoreVirtual) {
 			String key=type+":"+
@@ -460,4 +466,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public String getServerApiKey() {
 			return configServer.getApiKey();
 	    }
+		
+		public CacheHandlerFactoryCollection getCacheHandlerFactories(){
+			if(cacheHandlerFactoryCollection==null)
+				cacheHandlerFactoryCollection=new CacheHandlerFactoryCollection(this);
+			return cacheHandlerFactoryCollection;
+		}
 }

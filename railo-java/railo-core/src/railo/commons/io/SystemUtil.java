@@ -37,9 +37,11 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.StopException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.ThreadTag;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -990,5 +992,13 @@ public final class SystemUtil {
 			
 		}
 		return macAddress;
+	}
+	
+	public static void stop(Thread t) {
+		stop(t,new StopException());
+	}
+	
+	public static void stop(Thread thread, Throwable t) {
+		if(thread.isAlive())thread.stop(t);
 	}
 }

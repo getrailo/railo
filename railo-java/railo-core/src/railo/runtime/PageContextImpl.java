@@ -68,6 +68,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
@@ -265,8 +266,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private ErrorPagePool errorPagePool=new ErrorPagePool();
 	private TagHandlerPool tagHandlerPool;
 	private FTPPool ftpPool=new FTPPoolImpl();
-	private final QueryCache queryCache;
-
+	
 	private Component activeComponent;
 	private UDF activeUDF;
 	private Collection.Key activeUDFCalledName;
@@ -367,7 +367,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @param id identity of the pageContext
 	 * @param servlet
 	 */
-	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, QueryCache queryCache,int id,HttpServlet servlet) {
+	public PageContextImpl(ScopeContext scopeContext, ConfigWebImpl config, int id,HttpServlet servlet) {
 		// must be first because is used after
 		tagHandlerPool=config.getTagHandlerPool();
         this.servlet=servlet;
@@ -383,12 +383,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    this.scopeContext=scopeContext;
         undefined=
         	new UndefinedImpl(this,getScopeCascadingType());
-        
-        
-		//this.compiler=compiler;
-        //tagHandlerPool=config.getTagHandlerPool();
-		this.queryCache=queryCache;
-		server=ScopeContext.getServerScope(this);
+        server=ScopeContext.getServerScope(this);
 		
 		defaultApplicationContext=new ClassicApplicationContext(config,"",true,null);
 		
@@ -512,7 +507,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	@Override
 	public void release() {
-		CacheHandlerFactory.release(this);
+		ConfigWebUtil.getCacheHandlerFactories(getConfig()).release(this);
 		
         if(config.getExecutionLogEnabled()){
         	execLog.release();
@@ -831,7 +826,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		
 		// get cached data
 		String id=CacheHandlerFactory.createId(sources);
-		CacheHandler ch = CacheHandlerFactory.include.getInstance(getConfig(), cachedWithin);
+		CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(getConfig()).include.getInstance(getConfig(), cachedWithin);
 		CacheItem ci=ch.get(this, id);
 		
 		if(ci instanceof IncludeCacheItem) {
@@ -2534,7 +2529,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
     @Override
     public QueryCache getQueryCache() {
-        return queryCache;
+    	throw new RuntimeException("funciton PageContext.getQueryCache() no longer supported");
     }
     
     @Override

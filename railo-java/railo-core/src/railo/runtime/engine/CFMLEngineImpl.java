@@ -47,12 +47,14 @@ import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerFactory;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
@@ -66,7 +68,6 @@ import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
 import railo.runtime.op.ExceptonImpl;
 import railo.runtime.op.OperationImpl;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.StructImpl;
 import railo.runtime.util.BlazeDSImpl;
 import railo.runtime.util.Cast;
@@ -197,8 +198,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     		RefBoolean isCustomSetting=new RefBooleanImpl();
             Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes,isCustomSetting);
             
-            QueryCacheSupport queryCache=QueryCacheSupport.getInstance();
-            CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
+            CFMLFactoryImpl factory=new CFMLFactoryImpl(this);
             ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,isCustomSetting.toBooleanValue(),sg);
             factory.setConfig(config);
             return factory;
@@ -446,7 +446,15 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            try{cfmlFactory.resetPageContext();}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Query Cache
-		            try{ cfmlFactory.getDefaultQueryCache().clear(null);}catch(Throwable t){t.printStackTrace();}
+		            try{ 
+		            	PageContext pc = ThreadLocalPageContext.get();
+		            	if(pc!=null) {
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.clear(pc);
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).function.clear(pc);
+		            		ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).include.clear(pc);
+		            	}
+		            	//cfmlFactory.getDefaultQueryCache().clear(null);
+		            }catch(Throwable t){t.printStackTrace();}
 		            
 		            // Gateway
 		            try{ cfmlFactory.getConfigWebImpl().getGatewayEngine().reset();}catch(Throwable t){t.printStackTrace();}

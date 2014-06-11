@@ -14,21 +14,31 @@ public class SimpleLock<L> implements Lock {
 	}
 
 	
-	public void lock(long timeout) throws LockException, LockInterruptedException {
+	@Override
+	public void lock(long timeout) throws LockException {
 		if(timeout<=0) throw new LockException("timeout must be a postive number");
-		
-		try {
-			if(!lock.tryLock(timeout, TimeUnit.MILLISECONDS)){
-				throw new LockException(timeout);
+		long initialTimeout=timeout;
+		long start=System.currentTimeMillis();
+		do{
+			try {
+				if(!lock.tryLock(timeout, TimeUnit.MILLISECONDS)){
+					throw new LockException(initialTimeout);
+				}
+				break; // exit loop
 			}
-		} 
-		catch (InterruptedException e) {
-			throw new LockInterruptedException(e);
+			catch (InterruptedException e) {
+				timeout-=System.currentTimeMillis()-start;
+			}
+			if(timeout<=0) {
+				// Railo was not able to aquire lock in time
+				throw new LockException(initialTimeout);
+			}
 		}
+		while(true);
 		
 	}
 
-
+	@Override
 	public void unlock()	{
 		lock.unlock();
 	}

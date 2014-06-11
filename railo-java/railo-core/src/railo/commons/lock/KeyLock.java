@@ -12,7 +12,7 @@ public class KeyLock<K> {
 	private Map<Token<K>,SimpleLock<Token<K>>> locks=new HashMap<Token<K>, SimpleLock<Token<K>>>();
 	
 	
-	public Lock lock(K key, long timeout) throws LockException, LockInterruptedException {
+	public Lock lock(K key, long timeout) throws LockException {
 		if(timeout<=0) throw new LockException("timeout must be a postive number");
 		
 		SimpleLock<Token<K>> lock;

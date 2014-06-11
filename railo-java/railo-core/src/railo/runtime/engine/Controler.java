@@ -16,10 +16,12 @@ import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourcePool;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.DeployHandler;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
@@ -141,16 +143,15 @@ public final class Controler extends Thread {
 				
 				if(config==null) {
 					config = cfmlFactory.getConfig();
-					ThreadLocalConfig.register(config);
 				}
-				
+				ThreadLocalConfig.register(config);
 				
 				//every Minute
 				if(doMinute) {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
-						ThreadLocalConfig.register(config);
 					}
+					ThreadLocalConfig.register(config);
 					
 					// deploy extensions, archives ...
 					try{DeployHandler.deploy(config);}catch(Throwable t){t.printStackTrace();}
@@ -161,7 +162,12 @@ public final class Controler extends Thread {
 					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 					// Memory usage
 					// clear Query Cache
-					try{cfmlFactory.getDefaultQueryCache().clearUnused(null);}catch(Throwable t){}
+					/*try{
+						ConfigWebUtil.getCacheHandlerFactories(config).query.clean(null);
+						ConfigWebUtil.getCacheHandlerFactories(config).include.clean(null);
+						ConfigWebUtil.getCacheHandlerFactories(config).function.clean(null);
+						//cfmlFactory.getDefaultQueryCache().clearUnused(null);
+					}catch(Throwable t){t.printStackTrace();}*/
 					// contract Page Pool
 					//try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
 					//try{checkPermGenSpace((ConfigWebImpl) config);}catch(Throwable t){}
@@ -177,8 +183,9 @@ public final class Controler extends Thread {
 				if(doHour) {
 					if(config==null) {
 						config = cfmlFactory.getConfig();
-						ThreadLocalConfig.register(config);
 					}
+					ThreadLocalConfig.register(config);
+					
 					// time server offset
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
 					// check file based client/session scope

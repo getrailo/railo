@@ -341,7 +341,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		
 		if(ct.isAlive()){
 			ct.terminated();
-			ct.stop();
+			SystemUtil.stop(ct);
 		}
 		
 	}

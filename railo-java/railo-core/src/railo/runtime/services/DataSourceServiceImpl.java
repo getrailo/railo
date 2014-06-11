@@ -10,6 +10,7 @@ import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -94,7 +95,7 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 		PageContext pc = pc();
 		if(pc!=null)
 			try {
-				CacheHandlerFactory.query.clean(pc);
+				ConfigWebUtil.getCacheHandlerFactories(pc.getConfig()).query.clean(pc);
 			}
 			catch (PageException e) {
 				throw ExceptionUtil.toIOException(e);

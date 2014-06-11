@@ -24,6 +24,7 @@ import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
@@ -81,7 +82,7 @@ public final class Application extends TagImpl {
 	private boolean clientCluster;
 	private Boolean compression;
 
-	private boolean ormenabled;
+	private Boolean ormenabled;
 	private Struct ormsettings;
 	private Struct tag;
 	private Struct s3;
@@ -138,7 +139,7 @@ public final class Application extends TagImpl {
         clientCluster=false;
         compression=null;
         
-        ormenabled=false;
+        ormenabled=null;
         ormsettings=null;
         tag=null;
         s3=null;
@@ -442,12 +443,12 @@ public final class Application extends TagImpl {
         if(action==ACTION_CREATE){
         	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,
         			pageContext.getCurrentPageSource().getResourceTranslated(pageContext));
-        	initORM=set(ac);
+        	initORM=set(ac,false);
         	pageContext.setApplicationContext(ac);
         }
         else {
         	ac=(ApplicationContextPro) pageContext.getApplicationContext();
-        	initORM=set(ac);
+        	initORM=set(ac,true);
         }
         
         // scope cascading
@@ -465,7 +466,7 @@ public final class Application extends TagImpl {
 		return ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource());
 	}
 
-	private boolean set(ApplicationContextPro ac) throws PageException {
+	private boolean set(ApplicationContextPro ac, boolean update) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -533,10 +534,14 @@ public final class Application extends TagImpl {
 		
 		// ORM
 		boolean initORM=false;
-		ac.setORMEnabled(ormenabled);
-		if(ormenabled) {
+		if(!update) {
+			if(ormenabled==null)ormenabled=false;
+			if(ormsettings==null)ormsettings=new StructImpl();
+		}
+		if(ormenabled!=null)ac.setORMEnabled(ormenabled);
+		if(ac.isORMEnabled()) {
 			initORM=true;
-			AppListenerUtil.setORMConfiguration(pageContext, ac, ormsettings);
+			if(ormsettings!=null)AppListenerUtil.setORMConfiguration(pageContext, ac, ormsettings);
 		}
 		
 		

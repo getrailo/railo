@@ -9,6 +9,7 @@ import railo.commons.io.cache.CacheEntry;
 import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.tag.CacheHandler;
+import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheHandlerFilter;
 import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.tag.query.QueryCacheItem;
@@ -32,7 +33,7 @@ public class TimespanCacheHandler implements CacheHandler {
 
 	@Override
 	public CacheItem get(PageContext pc, String id) {
-		return (CacheItem) getCache(pc).getValue(id,null);
+		return CacheHandlerFactory.toCacheItem(getCache(pc).getValue(id,null),null);
 	}
 	
 	@Override
