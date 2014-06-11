@@ -10,7 +10,7 @@ public class RequestTimeoutException extends Abort {
 	public RequestTimeoutException(PageContext pc,String msg) {
 		super(SCOPE_REQUEST,msg);
 		this.pc=pc;
-		this.stacktrace=pc.getThread().getStackTrace();
+		this.stacktrace=pc!=null?pc.getThread().getStackTrace():null;
 	}
 	
 	@Override
