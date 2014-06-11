@@ -86,16 +86,19 @@ public class CacheHandlerFactory {
 
 	public void clear(PageContext pc) throws PageException {
 		rch.clear(pc);
+		sch.clear(pc);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc);
 	}
 	
 	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		rch.clear(pc,filter);
+		sch.clear(pc,filter);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}
 	
 	public void clean(PageContext pc) throws PageException {
 		rch.clean(pc);
+		sch.clean(pc);
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}
 
