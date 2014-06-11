@@ -265,6 +265,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
 		
+		// FYI used by Extensions, do not remove
+		public Mapping getApplicationMapping(String virtual, String physical) {
+			return getApplicationMapping("application",virtual, physical,null,true,false);
+		}
 
 		public Mapping getApplicationMapping(String type,String virtual, String physical,String archive,boolean physicalFirst, boolean ignoreVirtual) {
 			String key=type+":"+
