@@ -14061,6 +14061,23 @@ You can find a list of all available timezones in the Railo administrator (Setti
     	</function>
 	
 	
+	<!-- queryCurrentRow -->
+	<function>
+		<name>queryCurrentRow</name>
+		<class>railo.runtime.functions.query.QueryCurrentRow</class>
+		<member-name>currentRow</member-name>
+		<keywords>query</keywords>
+		<description>return the row where the pointer of the query is pointing ATM</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+		<description></description>
+    </argument>
+		<return>
+			<type>numeric</type>
+		</return>
+	</function>
 	<!-- queryColumnList -->
 	<function>
 		<name>queryColumnList</name>
