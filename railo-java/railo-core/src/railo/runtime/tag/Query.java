@@ -637,7 +637,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		String dsn = null;
 		if (ormoptions!=null) dsn =	Caster.toString(ormoptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pageContext).getName();
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDefaultDataSource(pageContext).getName();
 		
 		// params
 		SQLItem[] _items = sql.getItems();
@@ -663,7 +663,7 @@ cachename: Name of the cache in secondary cache.
 	public static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
 		String dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDefaultDataSource(pc).getName();
 		
 		
 		if(Decision.isCastableToArray(params))
