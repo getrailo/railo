@@ -25,6 +25,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.util.Util;
 import railo.runtime.Component;
@@ -122,11 +123,19 @@ public class HibernateORMSession implements ORMSession {
 	
 	@Override
 	public void flush(PageContext pc) throws PageException {
+		flush(pc,null);
+	}
+	
+	@Override
+	public void flush(PageContext pc, String datasource) throws PageException {
+		Key dsn = KeyImpl.init(ORMUtil.getDataSource(pc,datasource).getName());
+		
 		try {
-			Iterator<Session> it = _sessions.values().iterator();
+			getSession(dsn).flush();
+			/*Iterator<Session> it = _sessions.values().iterator();
 			while(it.hasNext()){
 				it.next().flush();
-			}
+			}*/
 		}
 		catch(ConstraintViolationException cve){
 			PageException pe = ExceptionUtil.createException(this,null,cve);
@@ -234,28 +243,46 @@ public class HibernateORMSession implements ORMSession {
 	
 	@Override
 	public void clear(PageContext pc) throws PageException {
-		Iterator<Session> it = _sessions.values().iterator();
+		clear(pc, null);
+	}
+	
+
+	
+	@Override
+	public void clear(PageContext pc, String datasource) throws PageException {
+		Key dsn = KeyImpl.init(ORMUtil.getDataSource(pc,datasource).getName());
+
+		getSession(dsn).clear();
+		/*Iterator<Session> it = _sessions.values().iterator();
 		while(it.hasNext()){
 			it.next().clear();
-		}
-	}
-	public void clear(PageContext pc, Key dataSourceName) throws PageException {
-		getSession(dataSourceName).clear();
+		}*/
 	}
 	
 	@Override
 	public void evictQueries(PageContext pc) throws PageException {
-		evictQueries(pc, null);
+		evictQueries(pc, null,null);
+	}
+	
+	@Override
+	public void evictQueries(PageContext pc,String cacheName) throws PageException {
+		evictQueries(pc, cacheName, null);
 	}
 
 	@Override
-	public void evictQueries(PageContext pc,String cacheName) throws PageException {
-		Iterator<Session> it = _sessions.values().iterator();
+	public void evictQueries(PageContext pc,String cacheName, String datasource) throws PageException {
+		Key dsn = KeyImpl.init(ORMUtil.getDataSource(pc,datasource).getName());
+		SessionFactory factory = getSession(dsn).getSessionFactory();
+		
+		if(Util.isEmpty(cacheName))factory.evictQueries();
+		else factory.evictQueries(cacheName);
+		
+		/*Iterator<Session> it = _sessions.values().iterator();
 		while(it.hasNext()){
 			SessionFactory f = it.next().getSessionFactory();
 			if(Util.isEmpty(cacheName))f.evictQueries();
 			else f.evictQueries(cacheName);
-		}
+		}*/
 	}
 	
 	@Override
@@ -302,7 +329,7 @@ public class HibernateORMSession implements ORMSession {
 	
 	private Object _executeQuery(PageContext pc, String dataSourceName,String hql, Object params, boolean unique,Struct queryOptions) throws PageException {
 		Key dsn;
-		if(dataSourceName==null)dsn=KeyImpl.init(ORMUtil.getDataSource(pc).getName());
+		if(dataSourceName==null)dsn=KeyImpl.init(ORMUtil.getDefaultDataSource(pc).getName());
 		else dsn=KeyImpl.init(dataSourceName);
 		
 		Session s=getSession(dsn);
@@ -477,14 +504,39 @@ public class HibernateORMSession implements ORMSession {
 	public railo.runtime.type.Query toQuery(PageContext pc, Object obj, String name) throws PageException {
 		return HibernateCaster.toQuery(pc,this,obj,name);
 	}
-	
 	@Override
 	public void close(PageContext pc) throws PageException {
+		close(pc, null);
+	}
+	@Override
+	public void close(PageContext pc, String datasource) throws PageException {
+		DataSource ds = ORMUtil.getDataSource(pc,datasource);
+		Key dsn = KeyImpl.init(ds.getName());
+		
+		// close Session
+		getSession(dsn).close();
+		
+		// release connection
+		List<DatasourceConnection> list=new ArrayList<DatasourceConnection>();
+		for(int i=0;i<connections.length;i++){
+			if(connections[i].getDatasource().equals(ds)) {
+				CommonUtil.releaseDatasourceConnection(pc, connections[i]);
+			}
+			else list.add(connections[i]);
+		}
+		connections=list.toArray(new DatasourceConnection[list.size()]);
+	}
+	
+	@Override
+	public void closeAll(PageContext pc) throws PageException {
+		
 		Iterator<Session> it = _sessions.values().iterator();
 		while(it.hasNext()){
 			Session s = it.next();
 			s.close();
 		}
+		
+		// release all connections
 		for(int i=0;i<connections.length;i++){
 			CommonUtil.releaseDatasourceConnection(pc, connections[i]);
 		}

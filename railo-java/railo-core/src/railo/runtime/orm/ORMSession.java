@@ -13,11 +13,18 @@ import railo.runtime.type.Struct;
 public interface ORMSession {
 
 	/**
-	 * flush all elements in session
+	 * flush all elements in the default sessions
 	 * @param pc
 	 * @throws PageException
 	 */
 	public void flush(PageContext pc) throws PageException;
+
+	/**
+	 * flush all elements in a specific sessions defined by datasource name
+	 * @param pc
+	 * @throws PageException
+	 */
+	public void flush(PageContext pc,String datasource) throws PageException;
 	
 	/**
 	 * delete elememt from datasource
@@ -57,11 +64,19 @@ public interface ORMSession {
 	public Component merge(PageContext pc, Object obj) throws PageException;
 	
 	/**
-	 * clear the session
+	 * clear all elements in the default sessions
 	 * @param pc
 	 * @throws PageException
 	 */
 	public void clear(PageContext pc) throws PageException;
+	
+	/**
+	 * clear all elements in a specific sessions defined by datasource name
+	 * @param pc
+	 * @param dataSource
+	 * @throws PageException
+	 */
+	public void clear(PageContext pc, String dataSource) throws PageException;
 	
 	/**
 	 * load and return a Object that match given filter, if there is more than one Object matching the filter, only the first Object is returned
@@ -151,19 +166,34 @@ public interface ORMSession {
 	public void evictEntity(PageContext pc,String entity, String id) throws PageException;
 
 	public void evictQueries(PageContext pc) throws PageException;
-	
 	public void evictQueries(PageContext pc,String cacheName) throws PageException;
+	public void evictQueries(PageContext pc,String cacheName, String datasource) throws PageException;
 
 	public Object executeQuery(PageContext pc, String dataSourceName,String hql, Array params, boolean unique,Struct queryOptions) throws PageException;
 
 	public Object executeQuery(PageContext pc, String dataSourceName,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException;
 
 	/**
-	 * close the session
+	 * close all elements in all sessions
+	 * @param pc
+	 * @throws PageException
+	 */
+	public void closeAll(PageContext pc) throws PageException;
+	
+	/**
+	 * close all elements in the default sessions
 	 * @param pc
 	 * @throws PageException
 	 */
 	public void close(PageContext pc) throws PageException;
+	
+	/**
+	 * close all elements in a specific sessions defined by datasource name
+	 * @param pc
+	 * @param datasource
+	 * @throws PageException
+	 */
+	public void close(PageContext pc, String datasource) throws PageException;
 	
 	/**
 	 * is session valid or not

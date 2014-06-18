@@ -42,7 +42,7 @@ public class ORMExecuteQuery {
 		ORMSession session=ORMUtil.getSession(pc);
 		String dsn = null;
 		if(queryOptions!=null) dsn = Caster.toString(queryOptions.get(KeyConstants._datasource,null),null);
-		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDataSource(pc).getName();
+		if(StringUtil.isEmpty(dsn,true)) dsn=ORMUtil.getDefaultDataSource(pc).getName();
 		
 		if(params==null)
 			return session.executeQuery(pc,dsn,hql,new ArrayImpl(),unique,queryOptions);

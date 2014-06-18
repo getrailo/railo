@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
@@ -276,7 +277,7 @@ public class ORMUtil {
         return str;
     }
 	
-	public static DataSource getDataSource(PageContext pc) throws PageException{
+	public static DataSource getDefaultDataSource(PageContext pc) throws PageException{
 		pc=ThreadLocalPageContext.get(pc);
 		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
 		
@@ -285,7 +286,7 @@ public class ORMUtil {
 		return o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
 	}
 	
-	public static DataSource getDataSource(PageContext pc, DataSource defaultValue) {
+	public static DataSource getDefaultDataSource(PageContext pc, DataSource defaultValue) {
 		pc=ThreadLocalPageContext.get(pc);
 		Object o=((ApplicationContextPro)pc.getApplicationContext()).getORMDataSource();
 		if(StringUtil.isEmpty(o))
@@ -297,8 +298,25 @@ public class ORMUtil {
 			return defaultValue;
 		}
 	}
+
+	public static DataSource getDataSource(PageContext pc, String dsn, DataSource defaultValue) {
+		if(StringUtil.isEmpty(dsn,true)) return ORMUtil.getDefaultDataSource(pc,defaultValue);
+		return ((PageContextImpl)pc).getDataSource(dsn.trim(),defaultValue);
+	}
+	public static DataSource getDataSource(PageContext pc, String dsn) throws PageException {
+		if(StringUtil.isEmpty(dsn,true)) return ORMUtil.getDefaultDataSource(pc);
+		return ((PageContextImpl)pc).getDataSource(dsn.trim());
+	}
 	
 	
+	/**
+	 * if the given component has defined a datasource in the meta data, railo is returning this datasource, 
+	 * otherwise the default orm datasource is returned
+	 * @param pc
+	 * @param cfc
+	 * @return
+	 * @throws PageException
+	 */
 	public static DataSource getDataSource(PageContext pc, Component cfc, DataSource defaultValue) {
 		pc=ThreadLocalPageContext.get(pc);
 		
@@ -312,11 +330,17 @@ public class ORMUtil {
 			}
 		}
 		catch(Throwable t){}
-		
-		
-		return getDataSource(pc, defaultValue);
+		return getDefaultDataSource(pc, defaultValue);
 	}
 	
+	/**
+	 * if the given component has defined a datasource in the meta data, railo is returning this datasource, 
+	 * otherwise the default orm datasource is returned
+	 * @param pc
+	 * @param cfc
+	 * @return
+	 * @throws PageException
+	 */
 	public static DataSource getDataSource(PageContext pc, Component cfc) throws PageException {
 		pc=ThreadLocalPageContext.get(pc);
 		
@@ -327,8 +351,7 @@ public class ORMUtil {
 			return ((PageContextImpl)pc).getDataSource(datasourceName);
 		}
 		
-		
-		return getDataSource(pc);
+		return getDefaultDataSource(pc);
 	}
 	public static String getDataSourceName(PageContext pc, Component cfc) throws PageException {
 		pc=ThreadLocalPageContext.get(pc);
@@ -339,6 +362,6 @@ public class ORMUtil {
 		if(!StringUtil.isEmpty(datasourceName,true)) {
 			return datasourceName.trim();
 		}
-		return getDataSource(pc).getName();
+		return getDefaultDataSource(pc).getName();
 	}
 }

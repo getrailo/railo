@@ -1,26 +1,22 @@
 package railo.runtime.functions.orm;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.BIF;
 import railo.runtime.op.Caster;
-import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 
 public class ORMGetSession extends BIF {
+
+	private static final long serialVersionUID = 349899413869883140L;
+
 	public static Object call(PageContext pc) throws PageException {
 		return call(pc, null);
 	}
 
 	public static Object call(PageContext pc, String datasource) throws PageException {
-		ORMSession session = ORMUtil.getSession(pc);
-		String dsn;
-		if(StringUtil.isEmpty(datasource,true)) dsn=ORMUtil.getDataSource(pc).getName();
-		else dsn=((PageContextImpl)pc).getDataSource(datasource.trim()).getName();
-		return session.getRawSession(dsn);
+		String dsn = ORMUtil.getDataSource(pc, datasource).getName();
+		return ORMUtil.getSession(pc).getRawSession(dsn);
 	}
 
 	@Override

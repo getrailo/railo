@@ -13558,6 +13558,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>ORMClearSession</name>
 		<class>railo.runtime.functions.orm.ORMClearSession</class>
 		<description>Removes all the entities that are loaded or created in the session. This clears the first level cache and removes the objects that are not yet saved to the database.</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -13567,6 +13573,21 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>ORMCloseSession</name>
 		<class>railo.runtime.functions.orm.ORMCloseSession</class>
 		<description>Closes the current ORM session.</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ORMCloseAllSession -->
+	<function>
+		<name>ORMCloseAllSessions</name>
+		<class>railo.runtime.functions.orm.ORMCloseAllSessions</class>
+		<description>Closes all ORM session.</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -13637,8 +13658,14 @@ ormEvictQueries([cacheName])</description>
 			<alias>cache,region</alias>
 			<type>String</type>
 			<required>no</required>
-		<description></description>
-    </argument>
+			<description></description>
+    	</argument>
+    	<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -13648,6 +13675,12 @@ ormEvictQueries([cacheName])</description>
 		<name>ORMFlush</name>
 		<class>railo.runtime.functions.orm.ORMFlush</class>
 		<description>Flushes the current ORM session. ORMFlush flushes all the pending CRUD operations in that request. Any changes made in the objects, in the current ORM session, are saved to the database.</description>
+		<argument>
+			<name>datasource</name>
+			<type>string</type>
+			<required>no</required>
+			<description>datasource used for the session, if nor defined the datasource defined in application.cfc/cfapplication is used.</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>

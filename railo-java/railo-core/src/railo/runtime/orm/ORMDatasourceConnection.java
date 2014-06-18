@@ -25,7 +25,7 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		// this should never happen
 		if(datasource==null) {
 			try {
-				datasource=ORMUtil.getDataSource(pc);
+				datasource=ORMUtil.getDefaultDataSource(pc);
 			}
 			catch (PageException pe) {
 				throw new PageRuntimeException(pe);
