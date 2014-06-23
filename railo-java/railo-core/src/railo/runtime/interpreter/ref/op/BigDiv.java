@@ -1,5 +1,9 @@
 package railo.runtime.interpreter.ref.op;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
+import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -20,7 +24,7 @@ public final class BigDiv extends Big {
 
 	@Override
 	public Object getValue(PageContext pc) throws PageException {
-		return getLeft(pc).divide(getRight(pc)).toString();
+		return MathUtil.divide(getLeft(pc),getRight(pc)).toString();
 	}
     
 

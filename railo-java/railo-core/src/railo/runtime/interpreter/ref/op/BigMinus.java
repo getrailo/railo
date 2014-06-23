@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.op;
 
+import railo.commons.math.MathUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -20,7 +21,7 @@ public final class BigMinus extends Big {
 
 	@Override
 	public Object getValue(PageContext pc) throws PageException {
-		return getLeft(pc).subtract(getRight(pc)).toString();
+		return MathUtil.subtract(getLeft(pc),getRight(pc)).toString();
 	}
     
 
