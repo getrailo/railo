@@ -21,7 +21,7 @@ import railo.runtime.type.dt.DateTime;
 public final class DateTimeFormat extends BIF {
 
 	private static final long serialVersionUID = 134840879454373440L;
-	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:nn:ss";
+	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";// this is already a SimpleDateFormat mask!
 	private static final String[] AP = new String[]{"A","P"};
 
 	/**
