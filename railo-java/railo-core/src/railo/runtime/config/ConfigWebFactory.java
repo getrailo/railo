@@ -2729,10 +2729,13 @@ public final class ConfigWebFactory extends ConfigFactory {
 					"Dump.cfc"
 					},dir,doNew);
 			
-			Resource sub = dir.getRealResource("railo/dump/skins/");
+			/*Resource sub = dir.getRealResource("railo/dump/skins/");
+			create("/resource/library/tag/railo/dump/skins/",new String[]{
+					"classic.json","large.json","pastel.cfm"
+					},sub,doNew);
 			create("/resource/library/tag/railo/dump/skins/",new String[]{
 					"text.cfm","simple.cfm","modern.cfm","classic.cfm","pastel.cfm"
-					},sub,doNew);
+					},sub,doNew);*/
 
 			// MediaPlayer
 			Resource f = dir.getRealResource("MediaPlayer.cfc");
