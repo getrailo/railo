@@ -939,10 +939,10 @@ public final class AxisCaster {
 		String pathWithoutContext = urlPath.replaceFirst("/[^/]*", "");
 			
 		
-		return "http://rpc.xml.cfml" + pathWithoutContext.toLowerCase();
+		return "http://rpc.xml.coldfusion" + pathWithoutContext.toLowerCase();
 	}
 	public static String getRequestDefaultNameSpace() {
-		return "http://rpc.xml.cfml";
+		return "http://rpc.xml.coldfusion";
 	}
 	
 }

@@ -184,7 +184,7 @@ public class SOAPUtil {
 		
 		QName qn = StringUtil.isEmpty(tt.namespace)?new QName(tt.type):new QName(tt.namespace,tt.type);
 		DefinedType dt=new DefinedType(qn, tt.parent);
-		//DefinedType dt=new DefinedType(new QName("http://rpc.xml.cfml",tt.type), tt.parent);
+		//DefinedType dt=new DefinedType(new QName("http://rpc.xml.coldfusion",tt.type), tt.parent);
 		dt.setBaseType(false);
 		// children
 		if(tt.children!=null && tt.children.size()>0) {
