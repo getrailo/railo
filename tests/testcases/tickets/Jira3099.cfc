@@ -7,7 +7,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		http method="get" result="local.result" url="#createURL("Jira3099/index.cfm?type=udf")#" addtoken="false";
 		assertEquals("'OVERRIDE''OVERRIDE'",trim(result.filecontent));
 	}
-	public void function testClosure(){
+	private void function testClosure(){
 		http method="get" result="local.result" url="#createURL("Jira3099/index.cfm?type=closure")#" addtoken="false";
 		assertEquals("'OVERRIDE''OVERRIDE'",trim(result.filecontent));
 	}
