@@ -114,6 +114,7 @@ public class AxisUtil {
 	public static TypeEntry getContainedElement(TypeEntry type, String name, TypeEntry defaultValue) {
 		if(type==null) return defaultValue;
 		Vector v = type.getContainedElements();
+		if(v==null) return defaultValue;
 		Iterator it = v.iterator();
 		ElementDecl ed;
 		String tmp;
