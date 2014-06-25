@@ -5,7 +5,9 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 
 	public void function test(){
 		http method="get" result="local.result" url="#createURL("Jira2605/index.cfm")#" addtoken="false";
-		assertEquals(200,result.status_code)
+		//echo((result.filecontent));
+		assertEquals(200,result.status_code);
+		assertEquals("truetrue",result.filecontent);
 	}
 	
 	private string function createURL(string calledName){
