@@ -1310,7 +1310,7 @@ int pos=data.cfml.getPos();
 		    		CFMLTransformer.comment(data.cfml,true);
 		    		Expression v=attributeValue(data,true);	
 		    		param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
-		    		param.addAttribute(new Attribute(false,"default",LitString.toExprString(tmp),"string"));
+		    		param.addAttribute(new Attribute(false,"default",v,"string"));
 					hasName=true;
 					break; // if we had a value this was already name
 		    	}
