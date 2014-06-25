@@ -276,7 +276,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 				//		false, false, true);
 				if(ps!=null){
 					res=ps.getResource();
-					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+					if(validExistingResource(res,onlyDir)) return res;
 				}
 				
 			}
@@ -285,12 +285,12 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 				Resource src= ac!=null?ac.getSource():null;
 				if(src!=null) {
 					res=src.getParentResource().getRealResource(path);
-					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+					if(validExistingResource(res,onlyDir)) return res;
 				}
 				// happens when this is called from within the application.cfc (init)
 				else {
 					res=ResourceUtil.toResourceNotExisting(pc, path);
-					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+					if(validExistingResource(res,onlyDir)) return res;
 				}
 			}
 		}
@@ -299,13 +299,24 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		
 		// then in the webroot
 		res=config.getRootDirectory().getRealResource(path);
-		if(res!=null && (!onlyDir || res.isDirectory())) return res;
+		if(validExistingResource(res,onlyDir)) return res;
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
 		
-		if(res!=null && (!onlyDir || res.isDirectory())) return res;
+		if(validExistingResource(res,onlyDir)) return res;
 		return null;
+	}
+
+
+
+
+
+
+	private static boolean validExistingResource(Resource res, boolean onlyDir) {
+		if(res==null) return false;
+		if(onlyDir) return res.isDirectory();
+		return res.exists();
 	}
 
 
