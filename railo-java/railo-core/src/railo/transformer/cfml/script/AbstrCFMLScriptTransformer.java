@@ -1295,43 +1295,48 @@ int pos=data.cfml.getPos();
 		boolean hasType=false;
 		boolean hasName=false;
 		int pos = data.cfml.getPos();
-		String tmp=variableDec(data, true);
 		
-		// type or name
+		
+		// first 2 arguments can be type/name directly 
+		String tmp=variableDec(data, true);
+		do {
 		if(!StringUtil.isEmpty(tmp)) {
-		    comments(data);
-			if(!data.cfml.isCurrent('=')) {
-				int pos2 = data.cfml.getPos();
+			TagLibTagAttr attr = tlt.getAttribute(tmp.toLowerCase(),true);
+			// name is not a defined attribute 
+		    if(attr==null) {
+		    	
+		    	// it could be a name followed by default value
+		    	if(data.cfml.forwardIfCurrent('='))	{
+		    		CFMLTransformer.comment(data.cfml,true);
+		    		Expression v=attributeValue(data,true);	
+		    		param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
+		    		param.addAttribute(new Attribute(false,"default",LitString.toExprString(tmp),"string"));
+					hasName=true;
+					break; // if we had a value this was already name
+		    	}
+		    	// can be type or name
+		    	int pos2 = data.cfml.getPos();
 				
 				// first could be type, followed by name
 				String tmp2=variableDec(data, true);
 				if(!StringUtil.isEmpty(tmp2)) {
-					if(!data.cfml.isCurrent('=')) {
+					attr = tlt.getAttribute(tmp2.toLowerCase(),true);
+					if(attr==null) {
 						param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp2),"string"));
 						param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
 						hasName=true;
 						hasType=true;
-					}
-					else {
-						param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
-						data.cfml.setPos(pos2);
-						hasName=true;
+						break;
 					}
 				}
-				else {
-					param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
-					data.cfml.setPos(pos2);
-					hasName=true;
-				}
-				
-				
-				//param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
-				//hasType=true;
+				param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
+				data.cfml.setPos(pos2);
+				hasName=true;
 			}
 			else data.cfml.setPos(pos);
 		}
 		else data.cfml.setPos(pos);
-		
+		}while(false);
 		
 		
 		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
