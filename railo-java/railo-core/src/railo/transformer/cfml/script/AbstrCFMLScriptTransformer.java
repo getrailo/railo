@@ -1293,12 +1293,40 @@ int pos=data.cfml.getPos();
 		
 		// type
 		boolean hasType=false;
+		boolean hasName=false;
 		int pos = data.cfml.getPos();
 		String tmp=variableDec(data, true);
+		
+		// type or name
 		if(!StringUtil.isEmpty(tmp)) {
-			if(tmp.indexOf('.')!=-1) {
-				param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
-				hasType=true;
+		    comments(data);
+			if(!data.cfml.isCurrent('=')) {
+				int pos2 = data.cfml.getPos();
+				
+				// first could be type, followed by name
+				String tmp2=variableDec(data, true);
+				if(!StringUtil.isEmpty(tmp2)) {
+					if(!data.cfml.isCurrent('=')) {
+						param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp2),"string"));
+						param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+						hasName=true;
+						hasType=true;
+					}
+					else {
+						param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
+						data.cfml.setPos(pos2);
+						hasName=true;
+					}
+				}
+				else {
+					param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp),"string"));
+					data.cfml.setPos(pos2);
+					hasName=true;
+				}
+				
+				
+				//param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+				//hasType=true;
 			}
 			else data.cfml.setPos(pos);
 		}
@@ -1318,7 +1346,6 @@ int pos=data.cfml.getPos();
 		
 		// first fill all regular attribute -> name="value"
 		boolean hasDynamic=false;
-		boolean hasName=false;
 		for(int i=attrs.length-1;i>=0;i--){
 			attr=attrs[i];
 			if(!attr.getValue().equals(NULL)){
@@ -1383,9 +1410,9 @@ int pos=data.cfml.getPos();
 		//if(!hasType)
 		//	param.addAttribute(ANY);
 		
-		if(!hasName)
+		if(!hasName) {
 			throw new TemplateException(data.cfml,"missing name declaration for param");
-
+		}
 		param.setEnd(data.cfml.getPosition());
 		return param;
 	}
@@ -1820,8 +1847,8 @@ int pos=data.cfml.getPos();
 	
 	
 	
-	private final Attribute[] attributes(Tag tag,TagLibTag tlt, ExprData data, EndCondition endCond,Expression defaultValue,Object oAllowExpression, 
-			String ignoreAttrReqFor, boolean allowTwiceAttr, char attributeSeparator,boolean allowColonAsNameValueSeparator) throws TemplateException {
+	private final Attribute[] attributes(Tag tag,TagLibTag tlt, ExprData data, EndCondition endCond,Expression defaultValue,
+			Object oAllowExpression, String ignoreAttrReqFor, boolean allowTwiceAttr, char attributeSeparator,boolean allowColonAsNameValueSeparator) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
 		while(data.cfml.isValidIndex())	{
