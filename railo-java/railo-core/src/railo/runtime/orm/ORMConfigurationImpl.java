@@ -258,7 +258,10 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
 		path=path.trim();
-		Resource res;
+		ConfigWebImpl cwi=(ConfigWebImpl) config;
+		Resource res = cwi.getResource(path);
+		if (res.isAbsolute())
+			return res;
 		PageContext pc = ThreadLocalPageContext.get();
 		
 		// first check relative to application.cfc
@@ -267,7 +270,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 			
 			// abs path
 			if(path.startsWith("/")){
-				ConfigWebImpl cwi=(ConfigWebImpl) config;
 				PageSource ps = cwi.getPageSourceExisting(
 						pc, ac==null?null:ac.getMappings(), path, false, false, true, false);
 				//res=cwi.getPhysicalResourceExistingX(
