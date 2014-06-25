@@ -260,7 +260,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		path=path.trim();
 		ConfigWebImpl cwi=(ConfigWebImpl) config;
 		Resource res = cwi.getResource(path);
-		if (res.isAbsolute() && res.exists())
+		if (res.isAbsolute())
 			return res;
 		PageContext pc = ThreadLocalPageContext.get();
 		
