@@ -553,4 +553,19 @@ public final class ReqRspUtil {
 		cookie.setPath("/");
 		rsp.addCookie(cookie);
 	}
+
+	/**
+	 * if encodings fails the given url is returned
+	 * @param rsp
+	 * @param url
+	 * @return
+	 */
+	public static String encodeRedirectURLEL(HttpServletResponse rsp, String url) {
+		try{
+			return rsp.encodeRedirectURL(url);
+		}
+		catch(Throwable t){
+			return url;
+		}
+	}
 }

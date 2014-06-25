@@ -12,6 +12,7 @@ import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 
 
@@ -94,7 +95,7 @@ public final class Location extends TagImpl {
 				url=arr[0]+"?"+pageContext.getURLToken();
 				for(int i=1;i<arr.length;i++)url+="&"+arr[i]; 
 			}
-			url=rsp.encodeRedirectURL(url);	
+			url=ReqRspUtil.encodeRedirectURLEL(rsp,url);	
 		}
 		
 		rsp.setHeader("Connection", "close"); // IE unter IIS6, Win2K3 und Resin
