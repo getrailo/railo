@@ -1,13 +1,11 @@
 <cfscript>
 component extends="org.railo.cfml.test.RailoTestCase"	{
 
-	//public function setUp(){}
-
 	public void function test(){
 		http method="get" result="local.result" url="#createURL("Jira2605/index.cfm")#" addtoken="false";
 		//echo((result.filecontent));
 		assertEquals(200,result.status_code);
-		assertEquals("truetrue",result.filecontent);
+		assertEquals("3645",result.filecontent);
 	}
 	
 	private string function createURL(string calledName){
