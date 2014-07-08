@@ -1,5 +1,9 @@
 <cfif thistag.executionmode EQ "start"><cfsilent>
 
+<cfif (attributes.src CT "..")>
+	<cfthrow type="InvalidParam" message="[#attributes.src#] is not a valid parameter">
+</cfif>
+
 <cfset width="">
 <cfif isDefined("attributes.width")><cfset width=" width="""&attributes.width&""""></cfif>
 <cfset height="">
