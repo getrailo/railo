@@ -161,7 +161,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    } 
 			    else {
 			    	tempFile=tempDir.getRealResource(getFileName());
-			    	fileItems.put(item.getFieldName().toLowerCase(),
+			    	fileItems.put(item.getFieldName().toLowerCase()+count,
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));
 					String value=tempFile.toString();
 			    	IOUtil.copy(is, tempFile,true);
