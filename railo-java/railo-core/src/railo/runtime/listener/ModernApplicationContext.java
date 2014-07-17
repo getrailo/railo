@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import railo.print;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.res.Resource;
@@ -47,6 +48,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFCustomType;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.KeyConstants;
 
@@ -131,7 +133,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Properties s3;
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches;
-	private Map<Integer,Boolean> sameFieldAsArrays;
+	private boolean sameFormFieldAsArrays;
+	private boolean sameURLFieldAsArrays;
 	private Map<String,CustomType> customTypes;
 
 	private boolean initCustomTypes;
@@ -160,7 +163,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initMappings;
 	private boolean initDataSources;
 	private boolean initDefaultCaches;
-	private boolean initSameFieldAsArrays;
+	//private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
 	private boolean initCMappings;
 	private int localMode;
@@ -227,6 +230,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         
         // read scope cascading
         initScopeCascading();
+        initSameFieldAsArray(pc);
         
 		pc.addPageSource(component.getPageSource(), true);
 		try {
@@ -574,22 +578,29 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public boolean getSameFieldAsArray(int scope) {
-		if(!initSameFieldAsArrays) {
-			if(sameFieldAsArrays==null)sameFieldAsArrays=new HashMap<Integer, Boolean>();
-			
-			// Form
-			Object o = get(component,KeyImpl.init("sameformfieldsasarray"),null);
-			if(o!=null && Decision.isBoolean(o))
-				sameFieldAsArrays.put(Scope.SCOPE_FORM, Caster.toBooleanValue(o,false));
-			
-			// URL
-			o = get(component,KeyImpl.init("sameurlfieldsasarray"),null);
-			if(o!=null && Decision.isBoolean(o))
-				sameFieldAsArrays.put(Scope.SCOPE_URL, Caster.toBooleanValue(o,false));
-			
-			initSameFieldAsArrays=true; 
-		}
-		return Caster.toBooleanValue(sameFieldAsArrays.get(scope),false);
+		/*if(!initSameFieldAsArrays) {
+			initSameFieldAsArray();
+			initSameFieldAsArrays=true;
+		}*/
+		return Scope.SCOPE_URL==scope?sameURLFieldAsArrays:sameFormFieldAsArrays;
+	}
+	
+	public void initSameFieldAsArray(PageContext pc) {
+		boolean oldForm = pc.getApplicationContext().getSameFieldAsArray(Scope.SCOPE_FORM);
+		boolean oldURL=pc.getApplicationContext().getSameFieldAsArray(Scope.SCOPE_URL);
+		
+		// Form
+		Object o = get(component,KeyImpl.init("sameformfieldsasarray"),null);
+		if(o!=null && Decision.isBoolean(o))
+			sameFormFieldAsArrays=Caster.toBooleanValue(o,false);
+		
+		// URL
+		o = get(component,KeyImpl.init("sameurlfieldsasarray"),null);
+		if(o!=null && Decision.isBoolean(o))
+			sameURLFieldAsArrays=Caster.toBooleanValue(o,false);
+		
+		if(oldForm!=sameFormFieldAsArrays) ClassicApplicationContext.reinitScope(pc.formScope(),this) ;
+		if(oldURL!=sameURLFieldAsArrays) ClassicApplicationContext.reinitScope(pc.urlScope(),this) ;
 	}
 	
 

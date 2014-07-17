@@ -19,6 +19,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
+import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -89,6 +90,8 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
 	@Override
 	public void initialize(PageContext pc) {
+		
+		
 		if(encoding==null)encoding=((PageContextImpl)pc).getWebCharset().name();
 		
 		if(scriptProtected==ScriptProtected.UNDEFINED) {
@@ -347,6 +350,18 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			setFieldNames();
 		}
 		this.scriptProtected=_scriptProtected;
+	}
+	
+	public void reinitialize(ApplicationContext ac) {
+		if(isInitalized()) {
+			
+			if(scriptProtected==ScriptProtected.UNDEFINED) {
+				scriptProtected=((ac.getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_FORM)>0)?
+						ScriptProtected.YES:ScriptProtected.NO;
+			}	
+			fillDecodedEL(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_FORM));
+			setFieldNames();
+		}
 	}
 
 	@Override

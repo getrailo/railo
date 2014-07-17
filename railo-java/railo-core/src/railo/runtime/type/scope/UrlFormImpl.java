@@ -29,7 +29,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		this.form=form;
 		this.url=url;
 	}
-	
+
 	@Override
 	public void initialize(PageContext pc) {
 		if(isInit) return;
@@ -37,6 +37,11 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 		form.initialize(pc);
 		url.initialize(pc);
 		form.addRaw(pc.getApplicationContext(),url.getRaw());
+	}
+	
+	public void reinitialize(ApplicationContext ac) {
+		form.reinitialize(ac);
+		url.reinitialize(ac);
 	}
 	
 	@Override

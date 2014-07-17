@@ -42,6 +42,17 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
         if(isInitalized())fillDecoded(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_URL));
     }
 
+    public void reinitialize(ApplicationContext ac) {
+        if(isInitalized()){
+        	if(scriptProtected==ScriptProtected.UNDEFINED) {
+    			scriptProtected=((ac.getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_URL)>0)?
+    					ScriptProtected.YES:ScriptProtected.NO;
+    		}
+            
+        	fillDecodedEL(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_URL));
+        }
+    }
+
 	@Override
 	public void initialize(PageContext pc) {
         if(encoding==null)encoding=((PageContextImpl)pc).getWebCharset().name();

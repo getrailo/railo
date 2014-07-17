@@ -23,6 +23,8 @@ public interface URL extends Scope {
     public abstract void setEncoding(ApplicationContext ac,String encoding) throws UnsupportedEncodingException;
 
 	public abstract void setScriptProtecting(ApplicationContext ac,boolean b);
+
+	// FUTURE public abstract void reinitialize(ApplicationContext ac);
 	
 
 }

@@ -45,4 +45,6 @@ public interface Form extends Scope {
 	public FormItem[] getFileItems();
 	
 	public ServletInputStream getInputStream();
+	
+	// FUTURE public void reinitialize(ApplicationContext ac);
 }
