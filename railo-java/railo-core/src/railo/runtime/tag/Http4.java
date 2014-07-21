@@ -725,7 +725,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     		// Form
     			else if(type.equals("formfield") || type.equals("form")) {
     				hasForm=true;
-    				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
+    				if(this.method==METHOD_GET) throw new ApplicationException("httpparam with type formfield can only be used when the method attribute of the parent http tag is set to post");
     				if(post!=null){
     					if(doMultiPart)	{
     						parts.add(
@@ -1459,7 +1459,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		// Form
 			else if(type.equals("formfield") || type.equals("form")) {
 				hasForm=true;
-				if(http.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
+				if(http.method==METHOD_GET) throw new ApplicationException("httpparam with type formfield can only be used when the method attribute of the parent http tag is set to post");
 				if(post!=null){
 					if(doMultiPart){
 						parts.add(
