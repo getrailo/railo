@@ -14,9 +14,12 @@
 	<cfreturn ret />
 </cffunction>
 
-<cfset railoArchivePath = expandPath("{railo-web}/context/railo-context.ra") />
-<cfset railoArchiveZipPath = "zip://" & railoArchivePath & "!" />
-<cfset dataDir = expandPath("{railo-server}/searchdata") & server.separator.file />
+<cfset dataDir = expandPath("./searchdata") & server.separator.file />
+
+<!--- re-indexing only works when uncompiled Railo source code is used (eg. no railo-context.ra / not from within the Railo admin) --->
+<cfif structKeyExists(url, "reindex")>
+	<cfinclude template="admin.search.index.cfm" />
+</cfif>
 
 <cfset current.label = stText.admin.search.label />
 <cfoutput>
@@ -29,15 +32,19 @@
 		<input type="submit" class="button submit" value="#stText.buttons.search#" />
 	</form>
 </cfoutput>
+
 <cfif structKeyExists(url, 'q') and len(url.q)>
 	<cfset variables.indexFile = '#dataDir#searchindex.cfm' />
 
-	<!--- do initial or new indexing when a new Railo version is detected --->
-	<cfif not fileExists(variables.indexFile)
-	or structKeyExists(url, "reindex")
-	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version & server.railo['release-date']>
-		<cfinclude template="admin.search.index.cfm" />
-	</cfif>
+	<!--- do initial or new indexing when a new Railo version is detected
+		Nope. We don't have the admin cfm files at the client, so can't index it there.
+		Just use the shipped indexes.
+		<cfif not fileExists(variables.indexFile)
+		or structKeyExists(url, "reindex")
+		or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version & server.railo['release-date']>
+			<cfinclude template="admin.search.index.cfm" />
+		</cfif>
+	--->
 
 	<cfset foundpages = {} />
 	

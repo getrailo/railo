@@ -2,8 +2,13 @@
 	<cfif not directoryExists(dataDir)>
 		<cfdirectory action="create" directory="#dataDir#" mode="777" recurse="true" />
 	</cfif>
+	
+	<cfset currPath = getDirectoryFromPath(getCurrentTemplatePath()) />
+	<cfif right(currPath, 1) neq server.separator.file>
+		<cfset currPath &= server.separator.file />
+	</cfif>
 
-	<cfdirectory action="list" name="qlangs" directory="#expandPath('{railo-web}/context/admin/resources/language/')#" filter="*.xml" />
+	<cfdirectory action="list" name="qlangs" directory="#currPath#resources/language/" filter="*.xml" />
 
 	<cfset translations = {} />
 	<cfset pageContents = {} />
@@ -25,7 +30,7 @@
 		<cfelse>
 			<cfset temp = duplicate(translations.en) />
 		</cfif>
-		<cfset x = xmlParse(fileread('resources/language/#currfile#', 'utf-8')) />
+		<cfset x = xmlParse(fileread('#currPath#resources/language/#currfile#', 'utf-8')) />
 		<cfloop array="#x.language.data#" index="item">
 			<cfset temp[item.xmlattributes.key] = item.xmlText />
 		</cfloop>
@@ -34,7 +39,7 @@
 	</cfloop>
 
 	<cfset searchresults = {} />
-	<cfdirectory action="list" directory="#railoArchiveZipPath#/admin" filter="*.*.cfm" name="qFiles" sort="name" />
+	<cfdirectory action="list" directory="#currPath#" filter="*.*.cfm" name="qFiles" sort="name" />
 
 	<cfloop query="qFiles">
 		<cfset currFile = qFiles.directory & "/" & qFiles.name />
@@ -85,8 +90,9 @@
 
 	</cfloop>
 
-	<!--- remember the Railo version which is now in use --->
+	<!--- remember the Railo version which is now in use
 	<cffile action="write" file="#datadir#indexed-railo-version.cfm" output="#server.railo.version##server.railo['release-date']#" mode="644" addnewline="no" />
+	--->
 
 	<!--- store the searchresults --->
 	<cffile action="write" file="#datadir#searchindex.cfm" charset="utf-8" output="#serialize(searchresults)#" mode="644" />
