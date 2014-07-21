@@ -322,8 +322,9 @@ millisecond:"ms"
 			<cfif hasAction><td align="left" class="cfdebug" nowrap>#traces.action#</td></cfif>
 			<td align="left" class="cfdebug" nowrap><cfif len(traces.varName)>#traces.varName#<cfif structKeyExists(traces,'varValue')> = #traces.varValue#</cfif><cfelse>&nbsp;<br />
 			</cfif></td>
-			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, total)#</td>
-			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, traces.time)#</td>
+			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, total * 1000000)#</td>
+ 			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, traces.time * 1000000)#</td>
+  		
 		</tr>
 </cfloop>                
  </table>
