@@ -498,7 +498,6 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				ch.remove(pageContext, id);
 			}
 			else if(hasCached) {
-				hasCached=false;
 				String id = CacheHandlerFactory.createId(_sql,dsn,username,password);
 				CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.getInstance(pageContext.getConfig(), CacheHandlerFactory.TYPE_TIMESPAN);
 				
