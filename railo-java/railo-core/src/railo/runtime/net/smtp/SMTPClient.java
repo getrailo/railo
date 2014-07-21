@@ -437,7 +437,7 @@ public final class SMTPClient implements Serializable  {
 				setHeaders(msg,headers);
 				return new MimeMessageAndSession(msg,sat);
 			}
-			mp = new MimeMultipart();
+			mp = new MimeMultipart("related");
 			mp.addBodyPart(getHTMLText());
 		}
 		// only Plain
