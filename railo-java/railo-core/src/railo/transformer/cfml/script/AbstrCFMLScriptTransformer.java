@@ -1304,7 +1304,6 @@ int pos=data.cfml.getPos();
 			TagLibTagAttr attr = tlt.getAttribute(tmp.toLowerCase(),true);
 			// name is not a defined attribute 
 		    if(attr==null) {
-		    	
 		    	// it could be a name followed by default value
 		    	if(data.cfml.forwardIfCurrent('='))	{
 		    		CFMLTransformer.comment(data.cfml,true);
@@ -1318,12 +1317,20 @@ int pos=data.cfml.getPos();
 		    	int pos2 = data.cfml.getPos();
 				
 				// first could be type, followed by name
+		    	
+		    	
 				String tmp2=variableDec(data, true);
 				if(!StringUtil.isEmpty(tmp2)) {
 					attr = tlt.getAttribute(tmp2.toLowerCase(),true);
 					if(attr==null) {
 						param.addAttribute(new Attribute(false,"name",LitString.toExprString(tmp2),"string"));
 						param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+						
+						if(data.cfml.forwardIfCurrent('='))	{
+							Expression v=attributeValue(data,true);	
+							param.addAttribute(new Attribute(false,"default",v,"string"));
+						}
+						
 						hasName=true;
 						hasType=true;
 						break;
