@@ -149,7 +149,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
-			public void writeOut(BytecodeContext bc) throws BytecodeException {
+			public void _writeOut(BytecodeContext bc) throws BytecodeException {
 				_writeOutFinally(bc,lRef);
 			}
 		},getFlowControlFinal());

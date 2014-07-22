@@ -854,7 +854,7 @@ public final class Page extends BodyBase {
 			
 		TryCatchFinallyVisitor tcf=new TryCatchFinallyVisitor(new OnFinally() {
 			
-			public void writeOut(BytecodeContext bc) {
+			public void _writeOut(BytecodeContext bc) {
 
 				// undefined.setMode(oldMode);
 				adapter.loadArg(0);

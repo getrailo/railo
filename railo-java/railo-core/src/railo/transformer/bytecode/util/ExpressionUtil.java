@@ -116,7 +116,7 @@ public final class ExpressionUtil {
 		if(ExpressionUtil.doLog(bc)) {
     		final String id=BodyBase.id();
     		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
-    			public void writeOut(BytecodeContext bc) {
+    			public void _writeOut(BytecodeContext bc) {
     				ExpressionUtil.callEndLog(bc, s,id);
     			}
     		},null);

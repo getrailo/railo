@@ -1,5 +1,6 @@
 package railo.transformer.bytecode;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -148,6 +149,8 @@ public class BytecodeContext implements Context {
 	private int line;
 	private BytecodeContext root;
 	private boolean writeLog;
+	private Stack<OnFinally> insideFinallies=new Stack<OnFinally>();
+	
 	//private static BytecodeContext staticConstr;
 	
 	public void pushOnFinally(OnFinally onFinally) {
@@ -244,4 +247,22 @@ public class BytecodeContext implements Context {
 	public PageSource getPageSource() {
 		return source;
 	}
+
+	public void finallyPush(OnFinally onf) {
+		insideFinallies.push(onf);
+	}
+
+	public OnFinally finallyPop() {
+		return insideFinallies.pop();
+	}
+	
+	
+	public boolean insideFinally(OnFinally onf) {
+		Iterator<OnFinally> it = insideFinallies.iterator();
+		while(it.hasNext()){
+			if(it.next()==onf) return true;
+		}
+		return false;
+	}
+	
 }

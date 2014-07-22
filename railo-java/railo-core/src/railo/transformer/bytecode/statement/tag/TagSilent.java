@@ -54,7 +54,7 @@ public final class TagSilent extends TagBase {
 		
 		// call must be 
 		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
-			public void writeOut(BytecodeContext bc) {
+			public void _writeOut(BytecodeContext bc) {
 				//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
 				// if(!silentMode)pc.unsetSilent();
 				Label _if=new Label();

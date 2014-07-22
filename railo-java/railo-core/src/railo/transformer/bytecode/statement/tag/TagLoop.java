@@ -520,7 +520,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		adapter.storeLocal(count);
 		
 		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
-			public void writeOut(BytecodeContext bc) {
+			public void _writeOut(BytecodeContext bc) {
 				bc.getAdapter().loadLocal(br);
 				bc.getAdapter().invokeStatic(IO_UTIL, CLOSE_EL);
 			}

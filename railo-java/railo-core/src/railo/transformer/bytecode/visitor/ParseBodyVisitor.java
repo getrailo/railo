@@ -21,7 +21,7 @@ public final class ParseBodyVisitor {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		tfv=new TryFinallyVisitor(new OnFinally() {
-			public void writeOut(BytecodeContext bc) {
+			public void _writeOut(BytecodeContext bc) {
 				//ExpressionUtil.visitLine(bc, line);
 				bc.getAdapter().loadArg(0);
 				bc.getAdapter().invokeVirtual(Types.PAGE_CONTEXT,OUTPUT_END);

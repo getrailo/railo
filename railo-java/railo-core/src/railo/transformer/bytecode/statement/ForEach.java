@@ -73,7 +73,7 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 			TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
 				
 				@Override
-				public void writeOut(BytecodeContext bc) throws BytecodeException {
+				public void _writeOut(BytecodeContext bc) throws BytecodeException {
 					GeneratorAdapter a = bc.getAdapter();
 					//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(a,fcf.getFinalEntryLabel());
 					a.loadLocal(it);
