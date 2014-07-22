@@ -210,9 +210,9 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 			if (arguments.attrib.output == "console") {
 				// echo("***<pre>#aOutput.toString()#</pre>***")
-				systemOutput("/** dump begin - #variables.dumpID# #dateTimeFormat(now(), 'iso8601')# #variables.context# **/", true);
+				//systemOutput("/** dump begin - #variables.dumpID# #dateTimeFormat(now(), 'iso8601')# #variables.context# **/", true);
 				systemOutput(arrayToList(variables.aOutput, ""), true);
-				systemOutput("/** dump --end - #variables.dumpID# **/", true);
+				//systemOutput("/** dump --end - #variables.dumpID# **/", true);
 			} else if (arguments.attrib.output == "debug") {
 
 				admin action="addDump" dump="#arrayToList(variables.aOutput, variables.NEWLINE)#";
