@@ -487,12 +487,14 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else if(hasCached) {
 			String id = CacheHandlerFactory.createId(sql,datasource!=null?datasource.getName():null,username,password);
 			CacheHandler ch = ConfigWebUtil.getCacheHandlerFactories(pageContext.getConfig()).query.getInstance(pageContext.getConfig(), cachedWithin);
-			cacheType=ch.label();
-			CacheItem ci = ch.get(pageContext, id);
-			if(ci instanceof QueryCacheItem) {
-				QueryCacheItem ce = (QueryCacheItem) ci;
-				if(ce.isCachedAfter(cachedAfter))
-					query= ce.query;
+			if(ch!=null) {
+				cacheType=ch.label();
+				CacheItem ci = ch.get(pageContext, id);
+				if(ci instanceof QueryCacheItem) {
+					QueryCacheItem ce = (QueryCacheItem) ci;
+					if(ce.isCachedAfter(cachedAfter))
+						query= ce.query;
+				}
 			}
 		}
 		
