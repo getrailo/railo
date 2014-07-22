@@ -19,7 +19,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 
-import railo.print;
 import railo.commons.collection.MapFactory;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -164,7 +163,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			    } 
 			    else {
 			    	tempFile=tempDir.getRealResource(getFileName());
-			    	fileItems.put(item.getFieldName().toLowerCase()+count,
+			    	fileItems.put(item.getFieldName().toLowerCase(),
 			    			new Item(tempFile,item.getContentType(),item.getName(),item.getFieldName()));
 					String value=tempFile.toString();
 			    	IOUtil.copy(is, tempFile,true);
@@ -302,7 +301,6 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	public FormItem getUploadResource(String key) {
 		key=key.trim();
 		String lcKey = StringUtil.toLowerCase(key);
-		
 		// x
 		Item item = fileItems.get(lcKey);
 		if(item!=null)return item;
