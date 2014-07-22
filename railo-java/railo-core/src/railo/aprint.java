@@ -415,9 +415,14 @@ public class aprint {
     private static void _(PrintStream ps,Set set) {
     	Iterator it = set.iterator();
     	ps.println(set.getClass().getName()+" {");
+    	boolean first=true;
         while(it.hasNext()) {
-        	_(ps,it.next());
-            ps.println(",");
+        	if(!first){
+        		ps.println();
+        		ps.print(",");
+        	}
+            _(ps,it.next());
+            first=false;
         }
         _(ps,"}");
     }
