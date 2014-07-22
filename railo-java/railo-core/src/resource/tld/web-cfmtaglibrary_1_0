@@ -11603,59 +11603,6 @@ dWord: creates a value of 0 (zero)</description>
 		</attribute>
 	</tag>
 	
-	<!-- SmartCache -->
-	<tag>
-		<name>SmartCache</name>
-		<tag-class>railo.runtime.tag.SmartCache</tag-class>
-		<body-content>empty</body-content>
-		<body-rtexprvalue>false</body-rtexprvalue>
-		<handle-exception>false</handle-exception>
-		<status>hidden</status>
-		<script>
-			<type>multiple</type>
-			<rtexprvalue>true</rtexprvalue>
-		</script>
-		<description></description>
-		<attribute-type>fixed</attribute-type>
-		<attribute>
-			<type>string</type>
-			<name>action</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>type</name>
-			<values>include,query,function</values>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description>type of the data you need, if not defined all types are returned</description>
-		</attribute>
-		<attribute>
-			<type>string</type>
-			<name>returnvariable</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		<attribute>
-			<type>any</type>
-			<name>entryhash</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-		<attribute>
-			<type>any</type>
-			<name>timespan</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<description></description>
-		</attribute>
-	</tag>
-	
-	
 	<!-- Slider -->
 	<tag>
 		<name>Slider</name>
