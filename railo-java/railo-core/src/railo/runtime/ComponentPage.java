@@ -35,6 +35,7 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
@@ -563,115 +564,121 @@ public abstract class ComponentPage extends PagePlus  {
 	}
 	
 	
-	private void callWDDX(PageContext pc, Component component, Collection.Key methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
-		//Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
-		Struct url=StructUtil.merge(new Struct[]{pc.formScope(),pc.urlScope()});
-		// define args
-		url.removeEL(KeyConstants._fieldnames);
-		url.removeEL(KeyConstants._method);
-		Object args=url.get(KeyConstants._argumentCollection,null);
-		String strArgCollFormat=Caster.toString(url.get("argumentCollectionFormat",null),null);
-		
-		
-		// url.returnFormat
-		int urlReturnFormat=-1;
-		Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
-		if(oReturnFormatFromURL!=null)urlReturnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
-		
-		// request header "accept"
-		List<MimeType> accept = ReqRspUtil.getAccept(pc);
-		int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
-		
-        Object queryFormat=url.get(KeyConstants._queryFormat,null);
-        
-        
-        
-        if(args==null){
-        	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
-        }
-        if(StringUtil.isEmpty(strArgCollFormat)) {
-        	strArgCollFormat=Caster.toString(pc.getHttpServletRequest().getAttribute("argumentCollectionFormat"),null);
-        }
-        
-      //content-type
-        Charset cs = getCharset(pc);
-        Object o = component.get(pc,methodName,null);
-
-        // onMissingMethod
-        if(o==null) o=component.get(pc,KeyConstants._onmissingmethod,null);
-
-        
-        Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
-        //if(!props.output) 
-        	setFormat(pc.getHttpServletResponse(),props.format,cs);
-        	
-        
-        Object rtn=null;
-        try{
-    		if(suppressContent)pc.setSilent();
-        
+	private void callWDDX(PageContext pc, Component component, Collection.Key methodName, boolean suppressContent) throws PageException {
+		try{
+			//Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
+			Struct url=StructUtil.merge(new Struct[]{pc.formScope(),pc.urlScope()});
+			// define args
+			url.removeEL(KeyConstants._fieldnames);
+			url.removeEL(KeyConstants._method);
+			Object args=url.get(KeyConstants._argumentCollection,null);
+			String strArgCollFormat=Caster.toString(url.get("argumentCollectionFormat",null),null);
+			
+			
+			// url.returnFormat
+			int urlReturnFormat=-1;
+			Object oReturnFormatFromURL=url.get(KeyConstants._returnFormat,null);
+			if(oReturnFormatFromURL!=null)urlReturnFormat=UDFUtil.toReturnFormat(Caster.toString(oReturnFormatFromURL,null),-1);
+			
+			// request header "accept"
+			List<MimeType> accept = ReqRspUtil.getAccept(pc);
+			int headerReturnFormat = MimeType.toFormat(accept,UDF.RETURN_FORMAT_XML, -1);
+			
+	        Object queryFormat=url.get(KeyConstants._queryFormat,null);
+	        
+	        
 	        
 	        if(args==null){
-	        	url=translate(component,methodName.getString(),url);
-	        	rtn = component.callWithNamedValues(pc, methodName, url);
+	        	args=pc.getHttpServletRequest().getAttribute("argumentCollection");
 	        }
-	        else if(args instanceof String){
-	        	String str=(String)args;
-	        	int format = UDFUtil.toReturnFormat(strArgCollFormat,-1);
+	        if(StringUtil.isEmpty(strArgCollFormat)) {
+	        	strArgCollFormat=Caster.toString(pc.getHttpServletRequest().getAttribute("argumentCollectionFormat"),null);
+	        }
+	        
+	      //content-type
+	        Charset cs = getCharset(pc);
+	        Object o = component.get(pc,methodName,null);
+	
+	        // onMissingMethod
+	        if(o==null) o=component.get(pc,KeyConstants._onmissingmethod,null);
+	
+	        
+	        Props props = getProps(pc, o, urlReturnFormat,headerReturnFormat);
+	        //if(!props.output) 
+	        	setFormat(pc.getHttpServletResponse(),props.format,cs);
 	        	
-	        		// CFML
-		        	if(UDF.RETURN_FORMAT_SERIALIZE==format)	{
-		        		 // do not catch exception when format is defined
-		        		args=new CFMLExpressionInterpreter().interpret(pc, str);
-		        	}
-		        	// JSON
-		        	if(UDF.RETURN_FORMAT_JSON==format)	{
-		        		 // do not catch exception when format is defined
-		        		args=new JSONExpressionInterpreter(false).interpret(pc, str);
-		        	}
-		        	// default 
-		        	else {
-		        		 // catch exception when format is not defined, then in this case the string can also be a simple argument
-		        		try {
-		        			args=new JSONExpressionInterpreter(false).interpret(pc, str);
-		        		} 
-		        		catch (PageException pe) {
-		        			try {
-			        			args=new CFMLExpressionInterpreter().interpret(pc, str);
+	        
+	        Object rtn=null;
+	        try{
+	    		if(suppressContent)pc.setSilent();
+	        
+		        
+		        if(args==null){
+		        	url=translate(component,methodName.getString(),url);
+		        	rtn = component.callWithNamedValues(pc, methodName, url);
+		        }
+		        else if(args instanceof String){
+		        	String str=(String)args;
+		        	int format = UDFUtil.toReturnFormat(strArgCollFormat,-1);
+		        	
+		        		// CFML
+			        	if(UDF.RETURN_FORMAT_SERIALIZE==format)	{
+			        		 // do not catch exception when format is defined
+			        		args=new CFMLExpressionInterpreter().interpret(pc, str);
+			        	}
+			        	// JSON
+			        	if(UDF.RETURN_FORMAT_JSON==format)	{
+			        		 // do not catch exception when format is defined
+			        		args=new JSONExpressionInterpreter(false).interpret(pc, str);
+			        	}
+			        	// default 
+			        	else {
+			        		 // catch exception when format is not defined, then in this case the string can also be a simple argument
+			        		try {
+			        			args=new JSONExpressionInterpreter(false).interpret(pc, str);
 			        		} 
-			        		catch (PageException _pe) {}
-						}
-		        	}
-				}
-
-	        // call
-	        if(args!=null) {
-	        	if(Decision.isCastableToStruct(args)){
-		        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
-		        }
-		        else if(Decision.isCastableToArray(args)){
-		        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
-		        }
-		        else {
-		        	Object[] ac=new Object[1];
-		        	ac[0]=args;
-		        	rtn = component.call(pc, methodName, ac);
+			        		catch (PageException pe) {
+			        			try {
+				        			args=new CFMLExpressionInterpreter().interpret(pc, str);
+				        		} 
+				        		catch (PageException _pe) {}
+							}
+			        	}
+					}
+	
+		        // call
+		        if(args!=null) {
+		        	if(Decision.isCastableToStruct(args)){
+			        	rtn = component.callWithNamedValues(pc, methodName, Caster.toStruct(args,false));
+			        }
+			        else if(Decision.isCastableToArray(args)){
+			        	rtn = component.call(pc, methodName, Caster.toNativeArray(args));
+			        }
+			        else {
+			        	Object[] ac=new Object[1];
+			        	ac[0]=args;
+			        	rtn = component.call(pc, methodName, ac);
+			        }
 		        }
 	        }
+	        finally {
+	    		if(suppressContent)pc.unsetSilent();
+	    	}
+	        // convert result
+	        if(rtn!=null){
+	        	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
+	        		pc.variablesScope().setEL("AMF-Forward", rtn);
+	        	}
+	        	else {
+	        		_writeOut(pc, props, queryFormat, rtn,cs,false);
+	        	}
+	        }
+		}
+        catch(Throwable t){
+        	PageException pe = Caster.toPageException(t);
+        	if(pe instanceof PageExceptionImpl) ((PageExceptionImpl)pe).setExposeMessage(true);
+        	throw pe;
         }
-    	finally {
-    		if(suppressContent)pc.unsetSilent();
-    	}
-        // convert result
-        if(rtn!=null){
-        	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
-        		pc.variablesScope().setEL("AMF-Forward", rtn);
-        	}
-        	else {
-        		_writeOut(pc, props, queryFormat, rtn,cs,false);
-        	}
-        }
-        
     }
     
 	private static void setFormat(HttpServletResponse rsp, int format, Charset charset) {

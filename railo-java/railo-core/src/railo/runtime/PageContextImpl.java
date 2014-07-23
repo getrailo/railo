@@ -98,6 +98,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
@@ -1798,7 +1799,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	        else {
 	        	rsp.setContentType("text/html; charset=" + cs.name());
 	        }
-	        rsp.setHeader("exception-message", StringUtil.emptyIfNull(pe.getMessage()).replace('\n', ' '));
+	        if(pe instanceof PageExceptionImpl && ((PageExceptionImpl)pe).getExposeMessage())
+	        	rsp.setHeader("exception-message", StringUtil.emptyIfNull(pe.getMessage()).replace('\n', ' '));
 	        //rsp.setHeader("exception-detail", pe.getDetail());
 	        
 			int statusCode=getStatusCode(pe);

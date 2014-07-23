@@ -68,6 +68,12 @@ public abstract class PageExceptionImpl extends PageException {
 	private String varName;
 
 
+
+
+
+	private boolean exposeMessage;
+
+
 	/**
 	 * Class Constructor
 	 * @param message Exception Message
@@ -620,6 +626,12 @@ public abstract class PageExceptionImpl extends PageException {
     public StackTraceElement[] getStackTrace() {
         return super.getStackTrace();
     }
+	public void setExposeMessage(boolean exposeMessage) {
+		this.exposeMessage=exposeMessage;
+	}
+	public boolean getExposeMessage() {
+		return exposeMessage;
+	}
     
     /*public static void printStackTrace(PrintWriter s,Throwable t) {
         
