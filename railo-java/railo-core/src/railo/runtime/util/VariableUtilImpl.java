@@ -254,7 +254,7 @@ public final class VariableUtilImpl implements VariableUtil {
 			String realKey = MapAsStruct.getCaseSensitiveKey((Map)coll, key.getString());
 			String detail=null;
 			if(realKey!=null) {
-				detail="The keys for this Map are case-sensitive, use bracked notation like this \"map['"+realKey+"']\" instead of dot notation like this  \"map."+realKey+"\" to address the Map";
+				detail="The keys for this Map are case-sensitive, use bracket notation like this \"map['"+realKey+"']\" instead of dot notation like this  \"map."+realKey+"\" to address the Map";
 			}
 			
 			throw new ExpressionException("Key ["+key.getString()+"] doesn't exist in Map ("+((Map)coll).getClass().getName()+")",detail);

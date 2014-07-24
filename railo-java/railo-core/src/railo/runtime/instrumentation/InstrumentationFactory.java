@@ -36,7 +36,7 @@ public class InstrumentationFactory {
 			
 			// try to load Agent
 			if(inst==null) {
-				SystemOut.printDate("class railo.runtime.instrumentation.Agent.getInstrumentation() is not returning a Instrumentation");
+				SystemOut.printDate("class railo.runtime.instrumentation.Agent.getInstrumentation() is not returning an Instrumentation");
 				try {
 					String id=getPid();
 					String path=getResourcFromLib().getAbsolutePath();
