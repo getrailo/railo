@@ -849,7 +849,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="schedule.endtime">End time</data>
 	<data key="schedule.startdate">Start date</data>
 	<data key="schedule.password">Password</data>
-	<data key="schedule.starttimedesc">Defines the time when railo starts to executed the task within every day.</data>
+	<data key="schedule.starttimedesc">Defines the time of day task is executed.</data>
 	<data key="schedule.once">once</data>
 	<data key="schedule.resume">resume</data>
 	<data key="schedule.intervaltypedesc">Execution interval of the new task</data>
