@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
+import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.exp.CacheException;

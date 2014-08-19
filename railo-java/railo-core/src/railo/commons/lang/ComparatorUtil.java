@@ -20,7 +20,6 @@ public class ComparatorUtil {
 	
 	public static Comparator toComparator(int sortType, boolean orderAsc, Locale l,Comparator defaultValue) {
 		// check sortorder
-		print.ds(l+"");
 		// text
 		if(sortType==SORT_TYPE_TEXT) {
 			if(l!=null)return toCollator(l,Collator.IDENTICAL);
