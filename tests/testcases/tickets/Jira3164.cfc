@@ -14,7 +14,6 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 		sct.m="MMM";
 		res=structMap(sct,function(){});
 
-		dump(structKeyList(res));
 		assertEquals("Z,A,M",structKeyList(res));
 	}
 } 
