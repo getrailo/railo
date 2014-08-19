@@ -185,7 +185,7 @@ public class Filter extends BIF {
 	}
 
 	private static Struct invoke(PageContext pc, Struct sct, UDF udf, ExecutorService es, List<Future<Data<Pair<Object, Object>>>> futures) throws PageException {
-		Struct rtn=new StructImpl();
+		Struct rtn=sct instanceof StructImpl?new StructImpl(((StructImpl)sct).getType()):new StructImpl();
 		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
 		boolean async=es!=null;
