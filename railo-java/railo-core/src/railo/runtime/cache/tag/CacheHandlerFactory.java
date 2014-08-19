@@ -9,11 +9,11 @@ import railo.commons.lang.KeyGenerator;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.cache.tag.request.RequestCacheHandler;
-import railo.runtime.cache.tag.smart.SmartCacheHandler;
 import railo.runtime.cache.tag.timespan.TimespanCacheHandler;
 import railo.runtime.cache.tag.udf.UDFArgConverter;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.SQL;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.cache.Util;
@@ -26,21 +26,18 @@ public class CacheHandlerFactory {
 
 	public static final int TYPE_TIMESPAN=1;
 	public static final int TYPE_REQUEST=2;
-	public static final int TYPE_SMART=4;
-
+	
 	public static final char CACHE_DEL = ';';
 	public static final char CACHE_DEL2 = ':';
 
 	
 	final RequestCacheHandler rch;
-	private final SmartCacheHandler sch;
 	private Map<Config,TimespanCacheHandler> tschs=new HashMap<Config, TimespanCacheHandler>();
 	private int cacheDefaultType;
 	
 	protected CacheHandlerFactory(int cacheDefaultType) {
 		this.cacheDefaultType=cacheDefaultType;
 		rch=new RequestCacheHandler(cacheDefaultType);
-		sch=new SmartCacheHandler(cacheDefaultType);
 	}
 	
 	/**
@@ -53,7 +50,6 @@ public class CacheHandlerFactory {
 		}
 		String str=Caster.toString(cachedWithin,"").trim();
 		if("request".equalsIgnoreCase(str)) return rch;
-		if("smart".equalsIgnoreCase(str)) return sch;
 		
 		return null;
 	}
@@ -61,12 +57,7 @@ public class CacheHandlerFactory {
 	public CacheHandler getInstance(Config config,int type){
 		if(TYPE_TIMESPAN==type)return getTimespanCacheHandler(config);
 		if(TYPE_REQUEST==type) return rch;
-		if(TYPE_SMART==type) return sch;
 		return null;
-	}
-
-	public SmartCacheHandler getSmartCacheHandler() {
-		return sch;
 	}
 	
 	private CacheHandler getTimespanCacheHandler(Config config) {
@@ -86,19 +77,16 @@ public class CacheHandlerFactory {
 
 	public void clear(PageContext pc) throws PageException {
 		rch.clear(pc);
-		sch.clear(pc);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc);
 	}
 	
 	public void clear(PageContext pc, CacheHandlerFilter filter) throws PageException {
 		rch.clear(pc,filter);
-		sch.clear(pc,filter);
 		getTimespanCacheHandler(pc.getConfig()).clear(pc,filter);
 	}
 	
 	public void clean(PageContext pc) throws PageException {
 		rch.clean(pc);
-		sch.clean(pc);
 		getTimespanCacheHandler(pc.getConfig()).clean(pc);
 	}
 
@@ -164,7 +152,6 @@ public class CacheHandlerFactory {
 		switch(type){
 		case TYPE_REQUEST: 	return "request";
 		case TYPE_TIMESPAN:	return "timespan";
-		case TYPE_SMART: 	return "smart";
 		}
 		return defaultValue;
 	}

@@ -1019,9 +1019,6 @@ public final class ASMUtil {
 			if(str!=null && "request".equalsIgnoreCase(str.trim()))
 				return new LitString("request",null,null);
 			
-			if(str!=null && "smart".equalsIgnoreCase(str.trim()))
-				return new LitString("smart",null,null);
-			
 			throw cacheWithinException();
 		}
 		// createTimespan

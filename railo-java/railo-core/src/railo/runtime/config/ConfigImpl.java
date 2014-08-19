@@ -3384,10 +3384,6 @@ public abstract class ConfigImpl implements Config {
 		map.put(KeyImpl.init("include"), inc);
 		map.put(KeyImpl.init("query"), qry);
 
-		func.put(KeyImpl.init("cachedWithin"), "smart");
-		inc.put(KeyImpl.init("cachedWithin"), "smart");
-		qry.put(KeyImpl.init("cachedWithin"), "smart");
-		
 		return  map;*/
 	}
 	

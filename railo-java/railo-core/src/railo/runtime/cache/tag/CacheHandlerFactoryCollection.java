@@ -24,33 +24,6 @@ public class CacheHandlerFactoryCollection {
 		this.cw=cw;
 	}
 
-	public void clearAllEntries() {
-		clearEntries(ConfigImpl.CACHE_DEFAULT_NONE);
-	}
-	
-	public void clearEntries(int type) {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			include.getSmartCacheHandler().clearEntries();
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			query.getSmartCacheHandler().clearEntries();
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			function.getSmartCacheHandler().clearEntries();
-	}
-
-	public void clearAllRules(PageContext pc) throws PageException {
-		clearRules(pc,ConfigImpl.CACHE_DEFAULT_NONE);
-	}
-	
-
-	public void clearRules(PageContext pc,int type) throws PageException {
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_INCLUDE)
-			include.getSmartCacheHandler().clearRules(pc);
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_QUERY)
-			query.getSmartCacheHandler().clearRules(pc);
-		if(type==ConfigImpl.CACHE_DEFAULT_NONE || type==ConfigImpl.CACHE_DEFAULT_FUNCTION)
-			function.getSmartCacheHandler().clearRules(pc);
-	}
-
 	public void release(PageContext pc){
 		query.rch.clear(pc);
 		function.rch.clear(pc);

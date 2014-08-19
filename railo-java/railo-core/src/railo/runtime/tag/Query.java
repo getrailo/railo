@@ -282,10 +282,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				this.cachedWithin="request";
 				return;
 			}
-			if("smart".equalsIgnoreCase(str)) {
-				this.cachedWithin="smart";
-				return;
-			}
 		}
 		setCachedwithin(Caster.toTimespan(cachedwithin));
 	}
@@ -490,6 +486,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			if(ch!=null) {
 				cacheType=ch.label();
 				CacheItem ci = ch.get(pageContext, id);
+				
 				if(ci instanceof QueryCacheItem) {
 					QueryCacheItem ce = (QueryCacheItem) ci;
 					if(ce.isCachedAfter(cachedAfter))
