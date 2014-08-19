@@ -625,6 +625,13 @@ public final class CFMLString {
 		}
 		return (start<pos);
 	}
+
+	public void revertRemoveSpace() {
+		while(hasSpaceBefore()){
+			previous();
+		}
+	}
+	
 	public String removeAndGetSpace() {
 		int start=pos;
 		while(pos<lcText.length && lcText[pos]==' ') {

@@ -503,13 +503,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			data.cfml.previous();
 		}
 		
-		//if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
-		//	return null;
-		
 		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
 		
-		//data.cfml.previous();
 		statement(data,body,CTX_DO_WHILE);
 		
 		
@@ -1447,7 +1443,7 @@ int pos=data.cfml.getPos();
 		String id=identifier(data, firstCanBeNumber);
 		if(id==null) return null;
 		
-		StringBuffer rtn=new StringBuffer(id);
+		StringBuilder rtn=new StringBuilder(id);
 		data.cfml.removeSpace();
 		
 		while(data.cfml.forwardIfCurrent('.')){
@@ -1463,6 +1459,10 @@ int pos=data.cfml.getPos();
 			data.cfml.removeSpace();
 			rtn.append("[]");
 		}
+		
+		data.cfml.revertRemoveSpace();
+		
+		
 		return rtn.toString();
 	}
 	
