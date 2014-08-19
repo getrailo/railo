@@ -56,10 +56,10 @@ public final class StructSort extends BIF {
 		
 		ExceptionComparator comp=null;
 		// text
-		if(sortType.equalsIgnoreCase("text")) comp=new SortRegisterComparator(isAsc,false);
+		if(sortType.equalsIgnoreCase("text")) comp=new SortRegisterComparator(pc,isAsc,false,true);
 		
 		// text no case
-		else if(sortType.equalsIgnoreCase("textnocase")) comp=new SortRegisterComparator(isAsc,true);			
+		else if(sortType.equalsIgnoreCase("textnocase")) comp=new SortRegisterComparator(pc,isAsc,true,true);			
 		
 		// numeric
 		else if(sortType.equalsIgnoreCase("numeric")) comp=new NumberSortRegisterComparator(isAsc);

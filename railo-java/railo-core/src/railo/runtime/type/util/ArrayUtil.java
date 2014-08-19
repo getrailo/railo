@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.lang.ArrayUtilException;
+import railo.commons.lang.ComparatorUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.math.MathUtil;
@@ -806,38 +807,29 @@ public final class ArrayUtil {
 	}
 	
 
-	public static Comparator toComparator(PageContext pc,String sortType, String sortOrder, boolean localeSensitive) throws PageException {
-		// check sortorder
+	
+	public static Comparator toComparator(PageContext pc,String strSortType, String sortOrder, boolean localeSensitive) throws PageException {
+		
+		// check order
 		boolean isAsc=true;
 		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
 		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
 		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
 		
-		// text
-		if(sortType.equalsIgnoreCase("text")) {
-			if(localeSensitive)return toCollator(pc,Collator.IDENTICAL);
-			return new TextComparator(isAsc,false);
-		}
-		// text no case
-		else if(sortType.equalsIgnoreCase("textnocase")) {
-			if(localeSensitive)return toCollator(pc,Collator.TERTIARY);
-			return new TextComparator(isAsc,true);
-		}
-		// numeric
-		else if(sortType.equalsIgnoreCase("numeric")) {
-			return new NumberComparator(isAsc);
-		}
-		else {
-			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
-		}	
+		// check type
+		int sortType;
+		if(strSortType.equalsIgnoreCase("text")) sortType=ComparatorUtil.SORT_TYPE_TEXT;
+		else if(strSortType.equalsIgnoreCase("textnocase")) sortType=ComparatorUtil.SORT_TYPE_TEXT_NO_CASE;
+		else if(strSortType.equalsIgnoreCase("numeric")) sortType=ComparatorUtil.SORT_TYPE_NUMBER;
+		else 
+			throw new ExpressionException("invalid sort type ["+strSortType+"], sort types are [text, textNoCase, numeric]");
+		
+		
+		return ComparatorUtil.toComparator(sortType, isAsc, localeSensitive?ThreadLocalPageContext.getLocale(pc):null, null);
+			
 	}
-	private static Comparator toCollator(PageContext pc, int strength) {
-		Collator c=Collator.getInstance(ThreadLocalPageContext.getLocale(pc));
-		c.setStrength(strength);
-		c.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
-		return c;
-	}
-
+	
+	
 
 	public static <E> List<E> merge(E[] a1, E[] a2) {
 		List<E> list=new ArrayList<E>();
