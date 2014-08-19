@@ -60,6 +60,7 @@ public final class VariableInterpreter {
 			case Scope.SCOPE_URL:			return "url";
 			case Scope.SCOPE_VARIABLES:		return "variables";
 			case Scope.SCOPE_CLUSTER:		return "cluster";
+			case Scope.SCOPE_LOCAL:			return "local";
 		}
 		return null;
 	}
