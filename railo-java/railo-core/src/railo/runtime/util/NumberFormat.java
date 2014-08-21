@@ -136,7 +136,7 @@ public final class NumberFormat  {
 				break;
 
 			default:
-			    throw new InvalidMaskException("invalid charcter ["+maskBuffer.charAt(i)+"], valid characters are ['_', '9', '.', '0', '(', ')', '+', '-', ',', 'L', 'C', '$', '^']");
+			    throw new InvalidMaskException("invalid character ["+maskBuffer.charAt(i)+"], valid characters are ['_', '9', '.', '0', '(', ')', '+', '-', ',', 'L', 'C', '$', '^']");
 			
 			}
 			if(removeChar) {
