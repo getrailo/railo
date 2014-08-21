@@ -4,11 +4,6 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
-import railo.print;
-import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.PageException;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 
@@ -16,10 +11,9 @@ public class ComparatorUtil {
 
 	public static final int SORT_TYPE_TEXT=1;
 	public static final int SORT_TYPE_TEXT_NO_CASE=2;
-	public static final int SORT_TYPE_NUMBER=2;
+	public static final int SORT_TYPE_NUMBER=3;
 	
 	public static Comparator toComparator(int sortType, boolean orderAsc, Locale l,Comparator defaultValue) {
-		// check sortorder
 		// text
 		if(sortType==SORT_TYPE_TEXT) {
 			if(l!=null)return toCollator(l,Collator.IDENTICAL);
