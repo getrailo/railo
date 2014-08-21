@@ -103,8 +103,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
  							return key&":"&value;
  
                         },parallel);
-
-		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+		assertEquals("{'A':'A:1','B':'B:2','C':'C:3'}",serialize(res));
 		
 		// test content produced
 		savecontent variable="c" {
@@ -122,7 +121,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
  
                         },parallel);
 
-		assertEquals("{'B':'B:2','A':'A:1','C':'C:3'}",serialize(res));
+		assertEquals("{'A':'A:1','B':'B:2','C':'C:3'}",serialize(res));
 
 	}
 
