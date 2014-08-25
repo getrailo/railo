@@ -18,7 +18,6 @@ import railo.transformer.library.tag.TagLibTag;
 public final class ProcessingDirective extends EvaluatorSupport {
     
     public TagLib execute(Config config, Tag tag, TagLibTag libTag, FunctionLib[] flibs, Data data) throws TemplateException {
-
     	// dot notation
     	Boolean dotNotationUpperCase = null;
     	if(tag.containsAttribute("preservecase")) {
@@ -35,11 +34,11 @@ public final class ProcessingDirective extends EvaluatorSupport {
     	// page encoding
     	String encoding=null;
     	if(tag.containsAttribute("pageencoding")) {
-            encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
-            if(encoding==null)
+    		encoding=ASMUtil.getAttributeString(tag, "pageencoding",null);
+    		if(encoding==null)
             	throw new TemplateException(data.cfml,"attribute [pageencoding] of the tag [processingdirective] must be a constant value");
-            
-            if(encoding.equalsIgnoreCase(data.cfml.getCharset()) || "UTF-8".equalsIgnoreCase(data.cfml.getCharset())) {
+
+            if(encoding.equalsIgnoreCase(data.cfml.getCharset())) {
 	        	encoding=null;
 	        }
         }
@@ -55,7 +54,7 @@ public final class ProcessingDirective extends EvaluatorSupport {
             	exeLog=null;
         }
     	
-    	
+
     	if(encoding!=null || exeLog!=null || dotNotationUpperCase!=null){
     		if(encoding==null)	encoding=data.cfml.getCharset();
     		if(exeLog==null)exeLog=data.cfml.getWriteLog()?Boolean.TRUE:Boolean.FALSE;
