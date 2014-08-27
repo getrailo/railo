@@ -210,6 +210,10 @@ Error Output --->
 							<!---<input type="hidden" name="scriptProtect" value="#appSettings.scriptProtect#">--->
 							<b>#appSettings.scriptProtect#</b>
 						</cfif>
+<cfsavecontent variable="codeSample">
+	this.scriptprotect="#appSettings.scriptProtect#";
+</cfsavecontent>
+<cfset renderCodingTip( codeSample)>
 					</td>
 				</tr>
 <!---			</tbody>
@@ -220,7 +224,7 @@ Error Output --->
 			<tbody>--->
 				<!--- request timeout --->
 				<tr>
-					<th scope="row">#stText.application.RequestTimeout#</th>
+					<th scope="row">ww#stText.application.RequestTimeout#</th>
 					<td>
 						<cfset timeout=appSettings.requestTimeout>
 						<table class="maintbl" style="width:auto">
