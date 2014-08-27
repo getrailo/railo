@@ -28,7 +28,6 @@
 	<cfset session.alwaysNew=url.alwaysNew EQ true>
 </cfif>
 
-<cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
 <cfparam name="form.rememberMe" default="s">
 <cfset ad=request.adminType>
@@ -59,12 +58,20 @@
         <cfif loginSettings.captcha and structKeyExists(session,"cap") and form.captcha NEQ session.cap>
     		<cfset login_error="Invalid security code (captcha) definition">
         	
-        <cfelse>        
-			<cfset session["password"&request.adminType]=form["login_password"&request.adminType]>
+        <cfelse>       
+        	<cfadmin 
+			    action="hashPassword"
+			    type="#request.adminType#"
+			    pw="#form["login_password"&ad]#"
+				returnVariable="hashedPassword">
+			<cfset session["password"&request.adminType]=hashedPassword>
             <cfset session.railo_admin_lang=form.lang>
             <cfcookie expires="NEVER" name="railo_admin_lang" value="#session.railo_admin_lang#">
             <cfif form.rememberMe NEQ "s">
-                <cfcookie expires="#DateAdd(form.rememberMe,1,now())#" name="railo_admin_pw_#ad#" value="#Encrypt(form["login_password"&ad],cookieKey,"CFMX_COMPAT","hex")#">
+                <cfcookie 
+                	expires="#DateAdd(form.rememberMe,1,now())#" 
+                	name="railo_admin_pw_#ad#" 
+                	value="#hashedPassword#">
             <cfelse>
                 <cfcookie expires="Now" name="railo_admin_pw_#ad#" value="">
             </cfif>
@@ -88,7 +95,12 @@
 			action="updatePassword"
 			type="#request.adminType#"
 			newPassword="#form.new_password#">
-		<cfset session["password"&request.adminType]=form.new_password>
+		<cfadmin 
+			    action="hashPassword"
+			    type="#request.adminType#"
+			    pw="#form.new_password#"
+				returnVariable="hashedPassword">
+		<cfset session["password"&request.adminType]=hashedPassword>
 	</cfif> 
 </cfif>
 
@@ -97,7 +109,7 @@
 <cfif not StructKeyExists(session,"password"&request.adminType) and StructKeyExists(cookie,'railo_admin_pw_#ad#')>
 	<cfset fromCookie=true>
     <cftry>
-		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey,"CFMX_COMPAT","hex")>
+		<cfset session["password"&ad]=cookie['railo_admin_pw_#ad#']>
     	<cfcatch></cfcatch>
     </cftry>
 </cfif>

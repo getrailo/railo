@@ -298,10 +298,11 @@ public final class ConfigWebUtil {
     	}
 	}
 
-    public static void checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
+    public static String checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
-        if(!config.isPasswordEqual(password,true)){
+    	String pw = config.isPasswordEqual(password,true);
+        if(pw==null){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)
         			throw new SecurityException("Access is protected",
@@ -311,6 +312,7 @@ public final class ConfigWebUtil {
         	}
             throw new SecurityException("No access, password is invalid");
         }
+        return pw;
     }
     
     public static String createMD5FromResource(Resource resource) throws IOException {

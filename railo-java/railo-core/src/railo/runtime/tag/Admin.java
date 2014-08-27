@@ -159,7 +159,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private static final short ACCESS_READ=10;
     private static final short ACCESS_WRITE=11;
-    private static final short CHECK_PW=12;
 
 	//private static final String USAGE_SYNC = "synchronisation";
 	//private static final String USAGE_CLUSTER = "cluster";
@@ -310,26 +309,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         }
         
 
-        try {
-            // Password
-            password = ConfigWebFactory.hash(getString("password",""));
-            // Config
-            config=(ConfigImpl)pageContext.getConfig();
-            if(type==TYPE_SERVER)
-                config=(ConfigImpl)config.getConfigServer(password);
-            
-            adminSync = config.getAdminSync();
-        	admin = ConfigWebAdmin.newInstance(config,password);
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
-        }
-        //int version=config.getSerialNumber().getVersion();
-        /*if(type==TYPE_SERVER && version!=SerialNumber.VERSION_ENTERPRISE && version!=SerialNumber.VERSION_DEVELOP)
-            throw new SecurityException("can't access server settings with "+config.getSerialNumber().getStringVersion()+
-                    " version of Railo");
-                    
-        */
                
         try {
 			_doStartTag();
@@ -514,9 +493,38 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             return;
         }
         
+        if(check("hashpassword",ACCESS_FREE)) {
+        	pageContext.setVariable(
+    				getString("admin",action,"returnVariable"),
+    				ConfigWebFactory.hash(getString("admin",action,"pw"))
+    			);
+        	return;
+    	}
         
-    	
-    	if(check("connect",ACCESS_FREE) && check2(CHECK_PW)) {
+        
+        try {
+            config=(ConfigImpl)pageContext.getConfig();
+            // Password
+        	password = getString("password","");
+        	String tmp = config.isPasswordEqual(password, true); // hash password if necessary (for backward compatibility)
+        	if(tmp!=null)password=tmp;
+        	
+        	// Config
+            if(type==TYPE_SERVER)
+                config=(ConfigImpl)config.getConfigServer(password);
+            
+            adminSync = config.getAdminSync();
+        	admin = ConfigWebAdmin.newInstance(config,password);
+        } 
+        catch (Exception e) {
+            throw Caster.toPageException(e);
+        }
+        
+    		
+    	if(check("connect",ACCESS_FREE) ) {
+    		ConfigWebUtil.checkPassword(config,null,password);
+			ConfigWebUtil.checkGeneralReadAccess(config,password);
+			
     		try{
     			if(config instanceof ConfigServer)
     				((PageContextImpl)pageContext).setServerPassword(password);
@@ -764,10 +772,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private boolean check2(short accessRW) throws SecurityException {
     	if(accessRW==ACCESS_READ) ConfigWebUtil.checkGeneralReadAccess(config,password);
 		else if(accessRW==ACCESS_WRITE) ConfigWebUtil.checkGeneralWriteAccess(config,password);
-		else if(accessRW==CHECK_PW) {
+		/*else if(accessRW==CHECK_PW) {
 			ConfigWebUtil.checkGeneralReadAccess(config,password);
 			ConfigWebUtil.checkPassword(config,null,password);
-		}
+		}*/
     	return true;
     }
    	private boolean check(String action, short access) throws ApplicationException {
