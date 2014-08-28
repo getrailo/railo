@@ -7396,6 +7396,10 @@ Valid only for cfinput type="text".</description>
 		<tag-class>railo.runtime.tag.Insert</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Inserts records in data sources.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
@@ -13374,6 +13378,10 @@ If you terminate a thread, the thread scope includes an ERROR metadata structure
 		<tag-class>railo.runtime.tag.Update</tag-class>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
+		<script>
+			<type>multiple</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
 		<description>Updates existing records in data sources.</description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
