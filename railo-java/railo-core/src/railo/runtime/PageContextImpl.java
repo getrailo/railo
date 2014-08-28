@@ -2377,14 +2377,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         		String name,value;
         		for(int i=0;i<cookies.length;i++){
         			name=ReqRspUtil.decode(cookies[i].getName(),charset.name(),false);
+        			
         			// CFID
-        			if(name.equalsIgnoreCase("cfid")) {
+        			if("cfid".equalsIgnoreCase(name)) {
         				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
         				if(Decision.isGUIdSimple(value)) oCfid=value;
         				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
         			}
         			// CFToken
-        			else if(name.equalsIgnoreCase("cftoken")) {
+        			else if("cftoken".equalsIgnoreCase(name)) {
         				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
         				if(isValidCfToken(value)) oCftoken=value;
         				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
