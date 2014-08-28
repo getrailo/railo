@@ -4131,10 +4131,11 @@ public final class ConfigWebAdmin {
 	}
 
 
-	public void updateLoginSettings(boolean captcha, int delay) {
+	public void updateLoginSettings(boolean captcha, boolean rememberMe, int delay) {
 
         Element login=_getRootElement("login");
         login.setAttribute("captcha",Caster.toString(captcha));
+        login.setAttribute("rememberme",Caster.toString(rememberMe));
         login.setAttribute("delay",Caster.toString(delay));
 		
 	}

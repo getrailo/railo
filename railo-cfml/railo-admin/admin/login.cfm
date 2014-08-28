@@ -78,6 +78,7 @@
 				<cfelse>
 					<cfset StructDelete(session,"cap",false)>
 				</cfif>
+				<cfif loginSettings.rememberMe>
 				<tr>
 					<th scope="row" class="right" nowrap="nowrap">#stText.Login.rememberMe#</th>
 					<td>
@@ -88,6 +89,9 @@
 						</select>
 					</td>
 				</tr>
+			<cfelse>
+				<input type="hidden" name="rememberMe" value="s">
+			</cfif>
 			</tbody>
 			<tfoot>
 				<tr>

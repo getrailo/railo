@@ -362,6 +362,11 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean getLoginCaptcha() {
 			return configServer.getLoginCaptcha();
 		}
+
+		@Override
+		public boolean getRememberMe() {
+			return configServer.getRememberMe();
+		}
 		
 		@Override
 		public Resource getSecurityDirectory(){

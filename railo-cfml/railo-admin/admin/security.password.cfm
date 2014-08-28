@@ -25,6 +25,7 @@ Defaults --->
 					password="#session["password"&request.adminType]#"
                     
 					captcha="#structKeyExists(form,"captcha") and form.captcha#"
+					rememberme="#structKeyExists(form,"remembermeEnable") and form.remembermeEnable#"
 					delay="#form.delay#">
 			
 		</cfcase>
@@ -123,6 +124,13 @@ Error Output --->
 								<cfif not hasDelay><option selected="selected">#settings.delay#</option></cfif>
 							</select> #stText.Login.seconds#
 							<div class="comment">#stText.Login.delayDesc#</div>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Login.rememberMeEnable#</th>
+						<td>
+							<cfinput type="checkbox" class="checkbox" name="remembermeEnable" checked="#settings.rememberme#" value="true">
+							<div class="comment">#stText.Login.rememberMeEnableDesc#</div>
 						</td>
 					</tr>
 				</tbody>

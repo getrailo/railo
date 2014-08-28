@@ -3272,6 +3272,7 @@ public abstract class ConfigImpl implements Config {
     public abstract int getLoginDelay();
 
     public abstract boolean getLoginCaptcha();
+    public abstract boolean getRememberMe();
 
     public abstract boolean getFullNullSupport();
 

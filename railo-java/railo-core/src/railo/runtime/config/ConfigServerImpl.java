@@ -73,6 +73,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private boolean monitoringEnabled=false;
 	private int delay=1;
 	private boolean captcha=false;
+	private boolean rememberMe=true;
 	private static ConfigServerImpl instance;
 
 	private String[] authKeys;
@@ -381,7 +382,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	protected void setLoginCaptcha(boolean captcha) {
 		this.captcha=captcha;
 	}
+	protected void setRememberMe(boolean rememberMe) {
+		this.rememberMe=rememberMe;
+	}
 
+	
+	
 	@Override
 	public int getLoginDelay() {
 		return delay;
@@ -390,6 +396,11 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	@Override
 	public boolean getLoginCaptcha() {
 		return captcha;
+	}
+
+	@Override
+	public boolean getRememberMe() {
+		return rememberMe;
 	}
 
     public void reset() {
