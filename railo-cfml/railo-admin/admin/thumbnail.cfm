@@ -13,7 +13,7 @@
 	<cfparam name="url.width" default="80">
 	<cfparam name="url.height" default="40">
 	<cfset url.img=trim(url.img)>
-	<cfset id="_"&hash(url.img&"-"&url.width&"-"&url.height)>
+	<cfset id=hash(url.img&"-"&url.width&"-"&url.height&"-"&getRailoId().web.securityKey)>
 	<cfset mimetypes={png:'png',gif:'gif',jpg:'jpeg'}>
 	
 	<cfif len(url.img) ==0>
