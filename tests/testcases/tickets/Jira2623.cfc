@@ -8,7 +8,7 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 	//public function setUp(){}
 
 	public void function test(){
-		writedump(isNull(cachePut(id:"fdsfsd",value:"lkjflsdkfjlsdkjf",cacheName:"jira2623")));
+		//writedump(isNull(cachePut(id:"fdsfsd",value:"lkjflsdkfjlsdkjf",cacheName:"jira2623")));
 	}
 } 
 </cfscript>
