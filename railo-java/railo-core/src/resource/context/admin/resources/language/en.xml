@@ -531,6 +531,8 @@
 	<data key="login.seconds">seconds</data>
 	<data key="login.useCaptcha">Captcha</data>
 	<data key="login.useCaptchaDesc">Use Captcha in the login to make sure the form is submitted by a human.</data>
+	<data key="login.rememberMeEnable">"Remember&amp;nbsp;Me" functionality</data>
+	<data key="login.rememberMeEnableDesc">Allow "Remember&amp;nbsp;Me" functionality, so a new logging is not necessary when the user session was terminated.</data>
 	<data key="login.delay">Delay</data>
 	<data key="login.delayDesc">Sets the delay between login attempts. This is a global setting for all user requests.</data>
 	

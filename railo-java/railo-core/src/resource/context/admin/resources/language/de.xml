@@ -516,6 +516,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="login.seconds">Sekunden</data>
 	<data key="login.useCaptcha">Captcha</data>
 	<data key="login.useCaptchaDesc">Captcha verwenden um sicher zu stellen das die Eingabe durch einen Menschen stattfindet.</data>
+	<data key="login.rememberMeEnable">"Eingeloggt bleiben" Funktion</data>
+	<data key="login.rememberMeEnableDesc">"Eingeloggt bleiben" Funktion anbieten, so dass nicht nach Ablauf der Session neu eingeloggt werden muss.</data>
 	<data key="login.delay">Verzögerung</data>
 	<data key="login.delayDesc">Die Verzögerungszeit zwischen Loginversuchen. Diese Einstellung gilt für alle Benutzer.</data>
 	
