@@ -12,7 +12,7 @@ Path placeholders:
 
 -->
 
-<railo-configuration version="4.2">
+<cfRailoConfiguration version="4.2">
 
 	<!--
 	system:
@@ -418,4 +418,4 @@ for every argument defined railo tries to call a matching setter method
 		<logger appender="resource" appender-arguments="path:{railo-config}/logs/memory.log" layout="classic" name="memory"/>
 	</logging>
 	
-</railo-configuration>
+</cfRailoConfiguration>

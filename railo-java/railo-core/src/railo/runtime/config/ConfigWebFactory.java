@@ -35,6 +35,7 @@ import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
+import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -316,7 +317,23 @@ public final class ConfigWebFactory extends ConfigFactory {
 			TagLibException, FunctionLibException {
 		ThreadLocalConfig.register(config);
 		// fix
-		if (ConfigWebAdmin.fixS3(doc) || ConfigWebAdmin.fixPSQ(doc) || ConfigWebAdmin.fixLogging(cs,config,doc)) {
+		boolean reload=false;
+		if(ConfigWebAdmin.fixLFI(doc)) {
+			String xml = XMLCaster.toString(doc);
+			xml=StringUtil.replace(xml, "<railo-configuration", "<cfRailoConfiguration",false);
+			xml=StringUtil.replace(xml, "</railo-configuration", "</cfRailoConfiguration",false);
+			IOUtil.write(config.getConfigFile(), xml, CharsetUtil.UTF8, false);
+			try {
+				doc = ConfigWebFactory.loadDocument(config.getConfigFile());
+			}
+			catch (SAXException e) {
+			}
+		}
+		if(ConfigWebAdmin.fixS3(doc)) reload=true;
+		if(ConfigWebAdmin.fixPSQ(doc)) reload=true;
+		if(ConfigWebAdmin.fixLogging(cs,config,doc)) reload=true;
+		
+		if (reload) {
 			XMLCaster.writeTo(doc, config.getConfigFile());
 			try {
 				doc = ConfigWebFactory.loadDocument(config.getConfigFile());

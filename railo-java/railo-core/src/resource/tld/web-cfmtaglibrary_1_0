@@ -10299,6 +10299,17 @@ To use cached data, the current query must use the same SQL statement, data sour
 	also specify the list attribute.</description>
 		</attribute>
 	</tag>
+	<!-- RailoConfiguration -->
+	<tag>
+		<name>RailoConfiguration</name>
+		<tag-class>railo.runtime.tag.RailoConfiguration</tag-class>
+		<handle-exception>false</handle-exception>
+		<body-content>must</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<status>hidden</status>
+		<attribute-type>dynamic</attribute-type>
+		<description>Protects Railo-web.xml from LFI</description>
+	</tag>
 	<!-- Registry -->
 	<tag>
 		<name>registry</name>

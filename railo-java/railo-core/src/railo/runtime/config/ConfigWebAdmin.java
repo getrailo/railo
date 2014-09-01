@@ -1119,7 +1119,11 @@ public final class ConfigWebAdmin {
     	tags.getParentNode().removeChild(tags);
 	}
     
-    
+
+    public static boolean fixLFI(Document doc) {
+    	return "railo-configuration".equals(doc.getDocumentElement().getNodeName());
+    	
+    }
     public static boolean fixPSQ(Document doc) {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
