@@ -23,7 +23,6 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 						WHERE category = 1
 						ORDER BY name");
 		}
-		dump(trg);
 	}
 	public void function testUnOrderedQuery(){
 		local.src = Query(
@@ -36,7 +35,6 @@ component extends="org.railo.cfml.test.RailoTestCase"	{
 						FROM src
 						WHERE category = 1");
 		}
-		dump(trg);
 	}
 } 
 </cfscript>
