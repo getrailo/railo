@@ -1790,7 +1790,7 @@ public abstract class AbstrCFMLExprTransformer {
      * @throws TemplateException
      */
     private boolean comment(ExprData data) throws TemplateException {
-        if(singleLineComment(data.cfml) || multiLineComment(data)) return true;
+        if(singleLineComment(data.cfml) || multiLineComment(data) || CFMLTransformer.comment(data.cfml)) return true;
         return false;
     }
 

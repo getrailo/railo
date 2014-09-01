@@ -341,7 +341,7 @@ public final class CFMLTransformer {
 		
 	}
 	
-	private static boolean comment(CFMLString cfml) throws TemplateException {
+	public static boolean comment(CFMLString cfml) throws TemplateException {
 		if(!cfml.forwardIfCurrent("<!---"))
 			return false;
 		
