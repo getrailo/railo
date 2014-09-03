@@ -26,7 +26,7 @@ component  {
 		setting showdebugoutput=false;
 		var name=listLast(arguments.template,'\/');
 
-		if(find('..',arguments.template) || !structKeyExists(variables.validNames,name.lcase())) {
+		if(find('..',arguments.template) || !structKeyExists(variables.validNames,name)) {
 			header statuscode="404" statustext="#arguments.template# Not Found";
 			content type="text/html";
 			echo('<html>');
