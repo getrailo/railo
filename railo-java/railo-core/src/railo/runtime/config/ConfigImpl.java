@@ -258,7 +258,7 @@ public abstract class ConfigImpl implements Config {
 
     private Map<String,String> errorTemplates=new HashMap<String,String>();
 
-    private String password;
+    protected Password password;
 
     private Mapping[] mappings=new Mapping[0];
     private Mapping[] customTagMappings=new Mapping[0];
@@ -707,25 +707,18 @@ public abstract class ConfigImpl implements Config {
     /**
      * @return gets the password as hash
      */
-    protected String getPassword() {
+    protected Password getPassword() {
         return password;
     }
     
-    public String isPasswordEqual(String password, boolean hashIfNecessary) {
-    	if(this.password.equals(password)) return this.password;
-    	if(!hashIfNecessary) return null;
-    	try {
-    		return this.password.equals(ConfigWebFactory.hash(password))?this.password:null;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+    public Password isPasswordEqual(String password, boolean hashIfNecessary) {
+    	if(this.password==null) return null;
+    	return this.password.isEqual(this,password, hashIfNecessary);
     }
     
     @Override
     public boolean hasPassword() {
-        return !StringUtil.isEmpty(password);
+        return password!=null;
     }
     
     @Override
@@ -1056,7 +1049,7 @@ public abstract class ConfigImpl implements Config {
      * sets the password
      * @param password
      */
-    protected void setPassword(String password) {
+    protected void setPassword(Password password) {
         this.password=password;
     }
 
@@ -3236,6 +3229,9 @@ public abstract class ConfigImpl implements Config {
 	private int externalizeStringGTE=-1;
 
 
+	private String salt;
+
+
 	
 
 
@@ -3390,6 +3386,28 @@ public abstract class ConfigImpl implements Config {
 	
 	protected void setTagDefaultAttributeValues(Map<Key, Map<Key, Object>> values) {
 		this.tagDefaultAttributeValues=values;
+	}
+
+	protected void setSalt(String salt) {
+		this.salt=salt;
+	}
+
+	public String getSalt() {
+		return this.salt;
+	}
+
+	public int getPasswordType() {
+		if(password==null) return Password.HASHED_SALTED;// when there is no password, we will have a HS password
+		return password.type;
+	}
+	public String getPasswordSalt() {
+		if(password==null || password.salt==null) return this.salt;
+		return password.salt;
+	}
+	
+	public int getPasswordOrigin() {
+		if(password==null) return Password.ORIGIN_UNKNOW;
+		return password.origin;
 	}
 
 	

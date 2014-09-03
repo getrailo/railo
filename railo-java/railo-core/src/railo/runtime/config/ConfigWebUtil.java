@@ -298,10 +298,10 @@ public final class ConfigWebUtil {
     	}
 	}
 
-    public static String checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
+    public static Password checkPassword(ConfigImpl config, String type,String password) throws SecurityException {
     	if(!config.hasPassword())
             throw new SecurityException("can't access, no password is defined");
-    	String pw = config.isPasswordEqual(password,true);
+    	Password pw = config.isPasswordEqual(password,true);
         if(pw==null){
         	if(StringUtil.isEmpty(password)){
         		if(type==null)

@@ -71,6 +71,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.RHExtension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
+import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.functions.other.URLEncodedFormat;
 import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEntry;
@@ -147,19 +148,9 @@ public final class ConfigWebAdmin {
      * @throws DOMException 
      * @throws ExpressionException 
      */
-    public void setPassword(String password) throws SecurityException, DOMException, IOException {
+    public void setPassword(Password password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
-        Element root=doc.getDocumentElement();
-        
-        if(root.hasAttribute("password")) root.removeAttribute("password");
-        
-        
-        if(StringUtil.isEmpty(password)) {
-            if(root.hasAttribute("pw")) root.removeAttribute("pw");
-        }
-        else {
-            root.setAttribute("pw",password);
-        }
+    	Password.store(doc.getDocumentElement(), password, false);
     }
 
     public void setVersion(double version) {
@@ -194,15 +185,15 @@ public final class ConfigWebAdmin {
      * @throws SAXException
      * @throws PageException
      */
-    public void setPassword(String contextPath,String password) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
+    public void removePassword(String contextPath) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
     	checkWriteAccess();
     	if(contextPath==null || contextPath.length()==0 || !(config instanceof ConfigServerImpl)) {
-            setPassword(password);
+    		// config.setPassword(password); do nothing!
         }
         else { 
             ConfigServerImpl cs=(ConfigServerImpl)config;
             ConfigWebImpl cw=cs.getConfigWebImpl(contextPath);
-            if(cw!=null)cw.setPassword(false,cw.getPassword(),password,true,false);
+            if(cw!=null)cw.updatePassword(false,cw.getPassword(),null);
         }
     }
     
@@ -1124,6 +1115,21 @@ public final class ConfigWebAdmin {
     	return "railo-configuration".equals(doc.getDocumentElement().getNodeName());
     	
     }
+    
+    /**
+     * make sure every context has a salt
+     * */
+    public static boolean fixSalt(Document doc) {
+    	Element root=doc.getDocumentElement();
+    	String salt=root.getAttribute("salt");
+    	if(StringUtil.isEmpty(salt,true) || !Decision.isUUId(salt)) {
+    		//create salt
+    		root.setAttribute("salt",CreateUUID.invoke());
+    		return true;
+    	}
+    	return false;
+    }
+    
     public static boolean fixPSQ(Document doc) {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
@@ -2986,7 +2992,7 @@ public final class ConfigWebAdmin {
      * @return returns the default password
      * @throws SecurityException
      */
-    public String getDefaultPassword() throws SecurityException {
+    public Password getDefaultPassword() throws SecurityException {
     	checkReadAccess();
         if(config instanceof ConfigServerImpl) {
             return ((ConfigServerImpl)config).getDefaultPassword();
@@ -3001,18 +3007,14 @@ public final class ConfigWebAdmin {
      */
     public void updateDefaultPassword(String password) throws SecurityException, DOMException, IOException {
     	checkWriteAccess();
-        Element root=doc.getDocumentElement();
-        if(root.hasAttribute("default-password"))root.removeAttribute("default-password"); // remove old PW type
-        String hpw=ConfigWebFactory.hash(password);
-        root.setAttribute("default-pw",hpw);
-        ((ConfigServerImpl)config).setDefaultPassword(hpw);
+        ((ConfigServerImpl)config).setDefaultPassword(Password.hashAndStore(doc.getDocumentElement(),password,true));
+		
     }
 
 	public void removeDefaultPassword() throws SecurityException {
 		checkWriteAccess();
         Element root=doc.getDocumentElement();
-        if(root.hasAttribute("default-password"))root.removeAttribute("default-password");
-        if(root.hasAttribute("default-pw"))root.removeAttribute("default-pw");
+        Password.remove(root,true);
         ((ConfigServerImpl)config).setDefaultPassword(null);
 	}
     
@@ -3175,7 +3177,7 @@ public final class ConfigWebAdmin {
         CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         synchronized(factory){
 	        try {
-	            factory.update(cs.getPassword());
+	            factory.update(cs.getPassword().password);
 	        } 
 	        catch (Exception e) {
 	            throw Caster.toPageException(e);
@@ -3204,13 +3206,13 @@ public final class ConfigWebAdmin {
         	
         	if(onlyLatest){
         		try{
-        			factory.removeLatestUpdate(cs.getPassword());
+        			factory.removeLatestUpdate(cs.getPassword().password);
         		}
         		catch(Throwable t)	{
-        			removeLatestUpdateOld(factory,cs.getPassword());
+        			removeLatestUpdateOld(factory,cs.getPassword().password);
         		}
         	}
-        	else factory.removeUpdate(cs.getPassword());
+        	else factory.removeUpdate(cs.getPassword().password);
         	
         	
         } 
@@ -3271,7 +3273,7 @@ public final class ConfigWebAdmin {
         CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         synchronized(factory){
 	        try {
-	            factory.restart(cs.getPassword());
+	            factory.restart(cs.getPassword().password);
 	        } 
 	        catch (Exception e) {
 	            throw Caster.toPageException(e);

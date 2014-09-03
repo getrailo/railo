@@ -329,6 +329,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 			catch (SAXException e) {
 			}
 		}
+		if(ConfigWebAdmin.fixSalt(doc)) reload=true;
 		if(ConfigWebAdmin.fixS3(doc)) reload=true;
 		if(ConfigWebAdmin.fixPSQ(doc)) reload=true;
 		if(ConfigWebAdmin.fixLogging(cs,config,doc)) reload=true;
@@ -2226,21 +2227,6 @@ public final class ConfigWebFactory extends ConfigFactory {
 			return str;
 		return "encrypted:" + new BlowfishEasy("sdfsdfs").encryptString(str);
 	}
-	public static String hash(String str) throws IOException {
-		if (StringUtil.isEmpty(str))
-			return "";
-		
-		// decrypt encrypted password first
-		if (StringUtil.startsWithIgnoreCase(str, "encrypted:")) {
-			str=decrypt(str);
-		}
-		try {
-			return Hash.hash(str,Hash.ALGORITHM_SHA_256,5,Hash.ENCODING_HEX);
-		}
-		catch (NoSuchAlgorithmException e) {
-			throw ExceptionUtil.toIOException(e);
-		}
-	}
 
 	private static Struct toStruct(String str) {
 
@@ -2443,21 +2429,20 @@ public final class ConfigWebFactory extends ConfigFactory {
 	private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		Element railoConfiguration = doc.getDocumentElement();
 		
+		// salt (every context need to have a salt)
+		String salt=railoConfiguration.getAttribute("salt");
+		if(StringUtil.isEmpty(salt,true)) throw new RuntimeException("context is invalid, there is no salt!");
+		config.setSalt(salt=salt.trim());
+		
+		
+		
 		// password
-		String hpw=railoConfiguration.getAttribute("pw");
-		if(StringUtil.isEmpty(hpw)) {
-			// old password type
-			String pwEnc = railoConfiguration.getAttribute("password"); // encrypted password (reversable)
-			if (!StringUtil.isEmpty(pwEnc)) {
-				String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
-				hpw=hash(pwDec);
-			}
-		}
-		if(!StringUtil.isEmpty(hpw))
-			config.setPassword(hpw);
-		else if (configServer != null) {
+		Password pw=Password.getInstance(railoConfiguration,salt,false);
+		if(pw!=null) 
+			config.setPassword(pw);
+		else if (configServer != null) 
 			config.setPassword(configServer.getDefaultPassword());
-		}
+		
 		
 		if(config instanceof ConfigServerImpl) {
 			ConfigServerImpl csi=(ConfigServerImpl)config;
@@ -2483,18 +2468,9 @@ public final class ConfigWebFactory extends ConfigFactory {
 		
 		// default password
 		if (config instanceof ConfigServerImpl) {
-			hpw=railoConfiguration.getAttribute("default-pw");
-			if(StringUtil.isEmpty(hpw)) {
-				// old password type
-				String pwEnc = railoConfiguration.getAttribute("default-password"); // encrypted password (reversable)
-				if (!StringUtil.isEmpty(pwEnc)) {
-					String pwDec = new BlowfishEasy("tpwisgh").decryptString(pwEnc);
-					hpw=hash(pwDec);
-				}
-			}
-			
-			if(!StringUtil.isEmpty(hpw))
-				((ConfigServerImpl) config).setDefaultPassword(hpw);
+			pw=Password.getInstance(railoConfiguration,salt,true);
+			if(pw!=null)
+				((ConfigServerImpl) config).setDefaultPassword(pw);
 		}
 
 		// mode

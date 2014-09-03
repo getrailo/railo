@@ -60,7 +60,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     //private Map contextes;
     private SecurityManager defaultSecurityManager;
     private Map<String,SecurityManager> managers=MapFactory.<String,SecurityManager>getConcurrentMap();
-    private String defaultPassword;
+    Password defaultPassword;
     private Resource rootDir;
     private URL updateLocation;
     private String updateType="";
@@ -229,7 +229,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     /**
      * @return Returns the defaultPassword.
      */
-    protected String getDefaultPassword() {
+    protected Password getDefaultPassword() {
         return defaultPassword;
     }
     
@@ -237,7 +237,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     /**
      * @param defaultPassword The defaultPassword to set.
      */
-    protected void setDefaultPassword(String defaultPassword) {
+    protected void setDefaultPassword(Password defaultPassword) {
         this.defaultPassword = defaultPassword;
     }
 

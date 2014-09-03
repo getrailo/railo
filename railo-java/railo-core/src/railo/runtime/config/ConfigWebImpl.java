@@ -43,6 +43,7 @@ import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
+import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
@@ -411,25 +412,17 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return configServer.hasPassword();
 		}
 		
-		public void setPassword(boolean server, String passwordOld, String passwordNew, boolean oldPasswordIsHashed, boolean newPasswordIsHashed) 
-			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
-	    	ConfigImpl config=server?configServer:this;
-	    	if(!oldPasswordIsHashed)passwordOld=ConfigWebFactory.hash(passwordOld);
-	    	if(!newPasswordIsHashed)passwordNew=ConfigWebFactory.hash(passwordNew);
-	    	
-	    	if(!config.hasPassword()) { 
-		    	config.setPassword(passwordNew);
-		        
-		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
-		        admin.setPassword(passwordNew);
-		        admin.store();
-		    }
-		    else {
-		    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
-		    	ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
-		        admin.setPassword(passwordNew);
-		        admin.store();
-		    }
+		public void updatePassword(boolean server, String passwordOld, String passwordNew) throws PageException, IOException, SAXException {
+			Password.updatePassword(server?configServer:this,passwordOld,passwordNew);
+		}
+		
+		public void updatePassword(boolean server, Password passwordOld, Password passwordNew) throws PageException, IOException, SAXException {
+			Password.updatePassword(server?configServer:this,passwordOld,passwordNew);
+		}
+		
+		public Password updatePasswordIfNecessary(boolean server,String passwordRaw) {
+			ConfigImpl config=server?configServer:this;
+			return Password.updatePasswordIfNecessary(config,config.password,passwordRaw);
 		}
 
 		@Override
@@ -476,5 +469,29 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			if(cacheHandlerFactoryCollection==null)
 				cacheHandlerFactoryCollection=new CacheHandlerFactoryCollection(this);
 			return cacheHandlerFactoryCollection;
+		}
+		
+
+		public int getServerPasswordType() {
+			return configServer.getPasswordType();
+		}
+		public String getServerPasswordSalt() {
+			return configServer.getPasswordSalt();
+		}
+		public int getServerPasswordOrigin() {
+			return configServer.getPasswordOrigin();
+		}
+		
+		public String getServerSalt() {
+			return configServer.getSalt();
+		}
+
+		public Password isServerPasswordEqual(String password, boolean hashIfNecessary) {
+			return configServer.isPasswordEqual(password, hashIfNecessary);
+		}
+
+		public boolean isDefaultPassword() {
+			if(password==null) return false;
+			return password==configServer.defaultPassword;
 		}
 }
