@@ -6,6 +6,7 @@ component  {
 		,'jquery.blockUI.js.cfm':''
 		,'admin.js.cfm':''
 		,'thumbnail.cfm':''
+		,'admin.cfm':''
 	};
 
 	this.name="webadmin";
@@ -32,7 +33,7 @@ component  {
 			echo('<title>Error 404 #arguments.template# Not Found</title>');
 			echo('<head></head>');
 			echo('<body>');
-			echo('<h2>wHTTP ERROR: 404 #arguments.template# Not Found</h2>');
+			echo('<h2>HTTP ERROR: 404 #arguments.template# Not Found</h2>');
 			echo('<p>RequestURI=#arguments.template#</p>');
 		}
 		else 
