@@ -1034,15 +1034,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return the current template PageSource
      */
     public PageSource getCurrentPageSource() {
+    	if(pathList.isEmpty()) return null;
     	return pathList.getLast();
     }
     public PageSource getCurrentPageSource(PageSource defaultvalue) {
-    	try{
-    		return pathList.getLast();
-    	}
-    	catch(Throwable t){
-    		return defaultvalue;
-    	}
+    	if(pathList.isEmpty()) return defaultvalue;
+    	return pathList.getLast();
     }
     
     /**
