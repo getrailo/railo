@@ -179,5 +179,8 @@ public class EHCacheRemote extends CacheSupport {
 		} 
 	}
 
-
+	@Override
+	public int clear() throws IOException {
+		return soap.clear(name);
+	}
 }

@@ -2,6 +2,10 @@ package railo.runtime.cache;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
+import railo.commons.io.cache.CacheEntryFilter;
+import railo.commons.io.cache.CacheFilter;
+import railo.commons.io.cache.CacheKeyFilter;
+import railo.commons.lang.StringUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.TimeSpan;
@@ -63,9 +67,9 @@ public class CacheUtil {
 	}
 
 
-	
-	
-	
-	
-	
+	public static boolean allowAll(CacheFilter filter) {
+		if(filter==null)return true;
+		String p = StringUtil.trim(filter.toPattern(),"");
+		return p.equals("*") || p.equals("");
+	}
 }

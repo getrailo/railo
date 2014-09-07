@@ -147,4 +147,11 @@ public class RamCache extends CacheSupport {
 		}
 	}
 
+	@Override
+	public int clear() throws IOException {
+		int size=entries.size();
+		entries.clear();
+		return size;
+	}
+
 }

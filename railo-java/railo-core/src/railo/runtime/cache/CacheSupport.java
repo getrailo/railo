@@ -16,19 +16,23 @@ public abstract class CacheSupport implements Cache {
 
 	@Override
 	public List<String> keys(CacheKeyFilter filter) throws IOException {
+		boolean all=CacheUtil.allowAll(filter);
+		
 		List<String> keys = keys();
 		List<String> list=new ArrayList<String>();
 		Iterator<String> it = keys.iterator();
 		String key;
 		while(it.hasNext()){
 			key= it.next();
-			if(filter.accept(key))list.add(key);
+			if(all || filter.accept(key))list.add(key);
 		}
 		return list;
 	}
 	
 	@Override
 	public List<CacheEntry> keys(CacheEntryFilter filter) throws IOException {
+		boolean all=CacheUtil.allowAll(filter);
+		
 		List<String> keys = keys();
 		List<CacheEntry> list=new ArrayList<CacheEntry>();
 		Iterator<String> it = keys.iterator();
@@ -37,7 +41,7 @@ public abstract class CacheSupport implements Cache {
 		while(it.hasNext()){
 			key=it.next();
 			entry=getQuiet(key,null);
-			if(filter.accept(entry))list.add(entry);
+			if(all || filter.accept(entry))list.add(entry);
 		}
 		return list;
 	}
@@ -96,6 +100,8 @@ public abstract class CacheSupport implements Cache {
 	// there was the wrong generic type defined in the older interface, because of that we do not define a generic type at all here, just to be sure
 	@Override
 	public List values(CacheEntryFilter filter) throws IOException {
+		if(CacheUtil.allowAll(filter)) return values();
+		
 		List<String> keys = keys();
 		List<Object> list=new ArrayList<Object>();
 		Iterator<String> it = keys.iterator();
@@ -112,6 +118,8 @@ public abstract class CacheSupport implements Cache {
 	// there was the wrong generic type defined in the older interface, because of that we do not define a generic type at all here, just to be sure
 	@Override
 	public List values(CacheKeyFilter filter) throws IOException {
+		if(CacheUtil.allowAll(filter)) return values();
+		
 		List<String> keys = keys();
 		List<Object> list=new ArrayList<Object>();
 		Iterator<String> it = keys.iterator();
@@ -125,6 +133,8 @@ public abstract class CacheSupport implements Cache {
 	
 	@Override
 	public int remove(CacheEntryFilter filter) throws IOException {
+		if(CacheUtil.allowAll(filter)) return clear();
+		
 		List<String> keys = keys();
 		int count=0;
 		Iterator<String> it = keys.iterator();
@@ -144,6 +154,9 @@ public abstract class CacheSupport implements Cache {
 
 	@Override
 	public int remove(CacheKeyFilter filter) throws IOException {
+		if(CacheUtil.allowAll(filter)) return clear();
+		
+		
 		List<String> keys = keys();
 		int count=0;
 		Iterator<String> it = keys.iterator();
@@ -200,6 +213,12 @@ public abstract class CacheSupport implements Cache {
 	}
 
 	public abstract CacheEntry getQuiet(String key, CacheEntry defaultValue);
+	
+	/**
+	 * remove all entries 
+	 * @return returns the count of the removal or -1 if this information is not available
+	 */
+	public abstract int clear() throws IOException ;
 	
 
 }

@@ -645,6 +645,13 @@ public class EHCache extends EHCacheSupport {
 			return defaultValue;
 		}
 	}
+
+	@Override
+	public int clear() throws IOException {
+		int size=getCache().getSize();
+		getCache().removeAll();
+		return size;
+	}
 	
 
 }class CacheManagerAndHash {

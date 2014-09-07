@@ -169,6 +169,11 @@ public class SoapClient {
 		return _remove(cacheName, "removeQuiet", key);
 	}
 	
+	public int clear(String name) {
+		// MUST implement
+		throw new RuntimeException("not supported!");
+	}
+	
 	
 	private boolean _remove(String cacheName,String method,String key) throws ServiceException, MalformedURLException, RemoteException  {
     	Service  service = new Service();
@@ -226,6 +231,6 @@ public class SoapClient {
         
         call.invoke( new Object[] {cacheName,el } );
         //call.invokeOneWay(new Object[] {cacheName,el } );
-    }
+	}
 	
 }
