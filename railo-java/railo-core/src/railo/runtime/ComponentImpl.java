@@ -1499,7 +1499,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
         else {
         	if(loaded && !isAccessible(ThreadLocalPageContext.get(pc), dataMemberDefaultAccess))
-        		throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
+        		throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in administrator to also invoke getters and setters");
             
         	_data.put(key,new DataMember(dataMemberDefaultAccess,value));
         }
@@ -1607,7 +1607,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(triggerDataMember(pc) && !isPrivate(pc)) {
         	return callGetter(pc,key);
         }
-        throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
+        throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in administrator to also invoke getters and setters");
         //throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+name+"]");
     }
 
