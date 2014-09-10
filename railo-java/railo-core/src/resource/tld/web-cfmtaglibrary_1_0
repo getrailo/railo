@@ -8129,6 +8129,7 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>index</name>
+			<alias>key</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Index value. Railo sets it to from value and increments or decrements by step value, until it equals to value.</description>
@@ -8231,6 +8232,7 @@ Valid only for cfinput type="text".</description>
 		<attribute>
 			<type>string</type>
 			<name>item</name>
+			<alias>value</alias>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>Key for the collection</description>
