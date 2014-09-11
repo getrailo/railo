@@ -84,7 +84,7 @@ public class FDThreadImpl implements IFDThread {
 			
 			if(index>0)ps=(PageSource) stack.get(--index);
 			// inside the if is the old way, that only work when the cfm is inside the mapping, but i'm not shure woth the new way 
-			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getDisplayPath().equals(template))){
+			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getFullRealpath().equals(template))){
 				res = ResourceUtil.toResourceNotExisting(pc, template);
 				ps = pc.toPageSource(res, null);
 			}
@@ -115,7 +115,8 @@ public class FDThreadImpl implements IFDThread {
 			template=trace.getFileName();
 			if(template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
 			
-			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) && ps.getResource().getAbsolutePath().equals(template))){
+			if(ps==null || !(ps.getFullClassName().equals(trace.getClassName()) 
+					&& ps.getFullRealpath().equals(template))){
 				res = ResourceUtil.toResourceNotExisting(pc, template);
 				ps = pc.toPageSource(res, null);
 			}
