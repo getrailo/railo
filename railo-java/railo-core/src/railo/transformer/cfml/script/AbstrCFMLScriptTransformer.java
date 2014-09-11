@@ -1301,6 +1301,7 @@ int pos=data.cfml.getPos();
 			// name is not a defined attribute 
 			
 		    if(attr==null) {
+		    	comments(data);
 		    	// it could be a name followed by default value
 		    	if(data.cfml.forwardIfCurrent('='))	{
 		    		comments(data);
