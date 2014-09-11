@@ -177,7 +177,7 @@ public class ComponentListPackage implements Function {
 					
 					try {
 						Class<?> clazz = mapping.getClassLoaderForArchive().loadClass(className);
-						sourceName=ASMUtil.getSourceName(pc.getConfig(),clazz,true);
+						sourceName=ASMUtil.getSourceInfo(pc.getConfig(),clazz,true).name;
 					}
 					catch (Throwable t) {}
 					

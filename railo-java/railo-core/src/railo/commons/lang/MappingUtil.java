@@ -13,6 +13,7 @@ import railo.runtime.Mapping;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.bytecode.util.SourceNameClassVisitor.SourceInfo;
 
 public class MappingUtil {
 	//private static final ResourceFilter EXT=new ExtensionResourceFilter(".cfc");
@@ -59,9 +60,9 @@ public class MappingUtil {
 					clazz=toClass(cl,entry.getName());
 					
 					if(clazz==null) continue;
-					Pair<String, String> nameAndPath = ASMUtil.getSourceNameAndPath(mapping.getConfig(),clazz,onlyCFC);
-					if(name.equalsIgnoreCase(nameAndPath.name)) {
-						PageSource ps = mapping.getPageSource(nameAndPath.value);
+					SourceInfo srcInf = ASMUtil.getSourceInfo(mapping.getConfig(),clazz,onlyCFC);
+					if(name.equalsIgnoreCase(srcInf.name)) {
+						PageSource ps = mapping.getPageSource(srcInf.relativePath);
 						//Page page = ((PageSourceImpl)ps).loadPage(pc,(Page)null);
 						return ps;
 					}

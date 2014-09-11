@@ -70,6 +70,7 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagComponent;
 import railo.transformer.bytecode.statement.tag.TagTry;
+import railo.transformer.bytecode.util.SourceNameClassVisitor.SourceInfo;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
@@ -1080,14 +1081,8 @@ public final class ASMUtil {
 	}
 
 
-	public static Pair<String, String> getSourceNameAndPath(Config config,Class clazz, boolean onlyCFC) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC);
-	}
-	public static String getSourceName(Config config,Class clazz, boolean onlyCFC) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getName();
-	}
-	public static String getSourcePath(Config config,Class clazz, boolean onlyCFC) throws IOException {
-		return SourceNameClassVisitor.getSourceNameAndPath(config,clazz, onlyCFC).getValue();
+	public static SourceInfo getSourceInfo(Config config,Class clazz, boolean onlyCFC) throws IOException {
+		return SourceNameClassVisitor.getSourceInfo(config,clazz, onlyCFC);
 	}
 
 	public static boolean hasOnlyDataMembers(Variable var) {

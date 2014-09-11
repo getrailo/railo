@@ -432,10 +432,10 @@ public final class Page extends BodyBase {
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
-    	//cw.visitSource(this.source.getAbsolutePath(), null);
-    	cw.visitSource(this.pageSource.getFullRealpath(), null);
-
-        // static constructor
+    	cw.visitSource(this.pageSource.getFullRealpath(),"abs:"+this.pageSource.getPhyscalFile().getAbsolutePath()); // when adding more use ; as delimiter
+    	//
+    	
+    	// static constructor
         //GeneratorAdapter statConstrAdapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,cw);
 		BytecodeContext statConstr = null;//new BytecodeContext(null,null,this,externalizer,keys,cw,name,statConstrAdapter,STATIC_CONSTRUCTOR,writeLog(),suppressWSbeforeArg);
 		
