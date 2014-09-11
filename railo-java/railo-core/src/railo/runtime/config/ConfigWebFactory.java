@@ -9,12 +9,14 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -2070,32 +2072,38 @@ public final class ConfigWebFactory extends ConfigFactory {
 		// call static init once per driver
 		{
 			// group by classes
-			Map _caches = new HashMap();
-			Iterator it = caches.entrySet().iterator();
-			Map.Entry entry;
-			ArrayList list;
-			while (it.hasNext()) {
-				entry = (Entry) it.next();
-				cc = (CacheConnection) entry.getValue();
-				list = (ArrayList) _caches.get(cc.getClazz());
-				if (list == null) {
-					list = new ArrayList();
-					_caches.put(cc.getClazz(), list);
+			final Map<Class<?>,List<CacheConnection>> _caches = new HashMap<Class<?>,List<CacheConnection>>();
+			{
+				Iterator<Entry<String, CacheConnection>> it = caches.entrySet().iterator();
+				Entry<String, CacheConnection> entry;
+				List<CacheConnection> list;
+				while (it.hasNext()) {
+					entry = it.next();
+					cc = entry.getValue();
+					list = _caches.get(cc.getClazz());
+					if (list == null) {
+						list = new ArrayList<CacheConnection>();
+						_caches.put(cc.getClazz(), list);
+					}
+					list.add(cc);
 				}
-				list.add(cc);
 			}
-
 			// call
-			it = _caches.entrySet().iterator();
-			Class clazz;
+			Iterator<Entry<Class<?>, List<CacheConnection>>> it = _caches.entrySet().iterator();
+			Entry<Class<?>, List<CacheConnection>> entry;
+			Class<?> clazz;
+			List<CacheConnection> list;
 			while (it.hasNext()) {
-				entry = (Entry) it.next();
-				list = (ArrayList) entry.getValue();
-				clazz = (Class) entry.getKey();
+				entry = it.next();
+				list = entry.getValue();
+				clazz = entry.getKey();
 				try {
 					Method m = clazz.getMethod("init", new Class[] { Config.class, String[].class, Struct[].class });
-
-					m.invoke(null, new Object[] { config, _toCacheNames(list), _toArguments(list) });
+					if(Modifier.isStatic(m.getModifiers()))
+						m.invoke(null, new Object[] { config, _toCacheNames(list), _toArguments(list) });
+					else
+						SystemOut.print(config.getErrWriter(), "method [init(Config,String[],Struct[]):void] for class [" + clazz.getName() + "] is not static");
+					
 				}
 				catch (InvocationTargetException e) {
 					e.getTargetException().printStackTrace();
@@ -2189,26 +2197,22 @@ public final class ConfigWebFactory extends ConfigFactory {
 		}
 	}
 
-	private static Struct[] _toArguments(ArrayList list) {
-		Iterator it = list.iterator();
+	private static Struct[] _toArguments(List<CacheConnection> list) {
+		Iterator<CacheConnection> it = list.iterator();
 		Struct[] args = new Struct[list.size()];
-		CacheConnection cc;
 		int index = 0;
 		while (it.hasNext()) {
-			cc = (CacheConnection) it.next();
-			args[index++] = cc.getCustom();
+			args[index++] = it.next().getCustom();
 		}
 		return args;
 	}
 
-	private static String[] _toCacheNames(ArrayList list) {
-		Iterator it = list.iterator();
+	private static String[] _toCacheNames(List<CacheConnection> list) {
+		Iterator<CacheConnection> it = list.iterator();
 		String[] names = new String[list.size()];
-		CacheConnection cc;
 		int index = 0;
 		while (it.hasNext()) {
-			cc = (CacheConnection) it.next();
-			names[index++] = cc.getName();
+			names[index++] = it.next().getName();
 		}
 		return names;
 	}
