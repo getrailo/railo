@@ -2372,21 +2372,23 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         		// check if we have multiple cookies with the name "cfid" and a other one is valid
         		javax.servlet.http.Cookie[] cookies = getHttpServletRequest().getCookies();
         		String name,value;
-        		for(int i=0;i<cookies.length;i++){
-        			name=ReqRspUtil.decode(cookies[i].getName(),charset.name(),false);
-        			
-        			// CFID
-        			if("cfid".equalsIgnoreCase(name)) {
-        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
-        				if(Decision.isGUIdSimple(value)) oCfid=value;
-        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
-        			}
-        			// CFToken
-        			else if("cftoken".equalsIgnoreCase(name)) {
-        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
-        				if(isValidCfToken(value)) oCftoken=value;
-        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
-        			}
+        		if(cookies!=null){
+	        		for(int i=0;i<cookies.length;i++){
+	        			name=ReqRspUtil.decode(cookies[i].getName(),charset.name(),false);
+	        			
+	        			// CFID
+	        			if("cfid".equalsIgnoreCase(name)) {
+	        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+	        				if(Decision.isGUIdSimple(value)) oCfid=value;
+	        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+	        			}
+	        			// CFToken
+	        			else if("cftoken".equalsIgnoreCase(name)) {
+	        				value=ReqRspUtil.decode(cookies[i].getValue(),charset.name(),false);
+	        				if(isValidCfToken(value)) oCftoken=value;
+	        				ReqRspUtil.removeCookie(getHttpServletResponse(),name);
+	        			}
+	        		}
         		}
         		
         		if(oCfid!=null) {
