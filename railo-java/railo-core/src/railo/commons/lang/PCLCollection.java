@@ -108,6 +108,21 @@ public final class PCLCollection {
     	index.put(name, c);
     	return c.loadClass(name, barr);
     }
+    
+    /**
+     * load existing class
+     * @param name
+     * @return
+     * @throws ClassNotFoundException 
+     */
+    public synchronized Class<?> loadClass(String className) throws ClassNotFoundException {
+    	// if class is already loaded flush the classloader and do new classloader
+    	PCLBlock cl = index.get(className);
+    	if(cl!=null) {
+    		return cl.loadClass(className);
+    	}
+    	throw new ClassNotFoundException("class "+className+" not found");
+    }
 
     public synchronized Class<?> getClass(PageSourceImpl ps) throws ClassNotFoundException {
     	String name=ps.getClazz();

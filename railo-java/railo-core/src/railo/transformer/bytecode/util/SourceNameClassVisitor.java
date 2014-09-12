@@ -44,8 +44,7 @@ public class SourceNameClassVisitor extends ClassVisitor {
 			if(filter.accept(name)) {
 				// older than 4.2.1.008
 				if(StringUtil.isEmpty(debug)) {
-					this.source=new SourceInfo(name,source);
-
+					this.source=new SourceInfo(name,source); // source is a relative path
 				}
 				else {
 					//in that case source holds the absolute path
@@ -60,8 +59,8 @@ public class SourceNameClassVisitor extends ClassVisitor {
 						
 					}
 					String rel = map.get("rel");
-					if(StringUtil.isEmpty(rel)) rel=source;
 					String abs = map.get("abs");
+					if(StringUtil.isEmpty(abs)) abs=source;
 					
 					this.source=new SourceInfo(name,rel,abs);
 				}

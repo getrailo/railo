@@ -148,6 +148,44 @@ public final class MappingImpl implements Mapping {
     public ClassLoader getClassLoaderForArchive() {
         return archiveClassLoader;
     }
+
+
+    public Class<?> loadClass(String className) {
+    	Class<?> clazz;
+    	if(isPhysicalFirst()) {
+			clazz=loadClassPhysical(className);
+			if(clazz!=null) return clazz;
+			clazz=loadClassArchive(className);
+			if(clazz!=null) return clazz;
+		}
+    	
+    	clazz=loadClassArchive(className);
+		if(clazz!=null) return clazz;
+    	clazz=loadClassPhysical(className);
+		if(clazz!=null) return clazz;
+		
+		return null;
+	}
+
+    private Class<?> loadClassArchive(String className) {
+		if(archiveClassLoader==null) return null;
+    	try{
+			return archiveClassLoader.loadClass(className);
+		}
+		catch(Throwable t){}
+		return null;
+	}
+    
+    private Class<?> loadClassPhysical(String className) {
+    	if(pclCollection==null) return null;
+		// first we check 
+		try{
+			return pclCollection.loadClass(className);
+		}
+		catch(Throwable t){}
+		
+		return null;
+	}
     
     public PCLCollection touchPCLCollection() throws IOException {
     	
@@ -447,4 +485,5 @@ public final class MappingImpl implements Mapping {
 	public boolean getDotNotationUpperCase(){
 		return ((ConfigImpl)config).getDotNotationUpperCase();
 	}
+
 }

@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.runtime.Mapping;
+import railo.runtime.MappingImpl;
+import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebUtil;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.SourceNameClassVisitor.SourceInfo;
 
@@ -130,6 +135,45 @@ public class MappingUtil {
 			}
 		}
 		
+		return null;
+	}
+	
+	public static SourceInfo getMatch(PageContext pc, StackTraceElement trace) {
+		return getMatch(pc,null, trace);
+		
+	}
+
+	public static SourceInfo getMatch(Config config, StackTraceElement trace) {
+		return getMatch(null,config, trace);
+	}
+	
+	public static SourceInfo getMatch(PageContext pc,Config config, StackTraceElement trace) {
+		if(trace.getFileName()==null) return null;
+		
+		//PageContext pc = ThreadLocalPageContext.get();
+		Mapping[] mappings = pc!=null? ConfigWebUtil.getAllMappings(pc):ConfigWebUtil.getAllMappings(config);
+		if(pc!=null) config=pc.getConfig();
+		
+		Mapping mapping;
+		Class clazz;
+		for(int i=0;i<mappings.length;i++){
+			mapping=mappings[i];
+			//print.e("virtual:"+mapping.getVirtual()+"+"+trace.getClassName());
+			// look for the class in that mapping
+			clazz=((MappingImpl)mapping).loadClass(trace.getClassName());
+			if(clazz==null) continue;
+			print.e("class:"+clazz);
+			
+			// classname is not distinct, because of that we must check class content
+			try {
+				SourceInfo si = ASMUtil.getSourceInfo(config, clazz, false);
+				if(si!=null && trace.getFileName()!=null && trace.getFileName().equals(si.absolutePath))
+					return si;
+			}
+			catch (IOException e) {}
+			
+			
+		}
 		return null;
 	}
 }

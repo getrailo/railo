@@ -408,11 +408,12 @@ public final class ConfigWebUtil {
 		return list.toArray(new Mapping[list.size()]);
 	}
 	
-	public static Mapping[] getAllMappings(ConfigWeb cw) {
+	public static Mapping[] getAllMappings(Config c) {
+		
 		List<Mapping> list=new ArrayList<Mapping>();
-		getAllMappings(list,cw.getMappings());
-		getAllMappings(list,cw.getCustomTagMappings());
-		getAllMappings(list,cw.getComponentMappings());
+		getAllMappings(list,c.getMappings());
+		getAllMappings(list,c.getCustomTagMappings());
+		getAllMappings(list,c.getComponentMappings());
 		return list.toArray(new Mapping[list.size()]);
 	}
 

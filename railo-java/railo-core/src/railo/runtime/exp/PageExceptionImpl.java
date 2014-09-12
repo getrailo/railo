@@ -9,18 +9,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.MappingUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
+import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -38,6 +43,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.ListUtil;
 import railo.runtime.writer.CFMLWriter;
+import railo.transformer.bytecode.util.SourceNameClassVisitor.SourceInfo;
 
 /**
  * Railo Runtime Page Exception, all runtime Exception are sub classes of this class
@@ -190,7 +196,6 @@ public abstract class PageExceptionImpl extends PageException {
 	private static void _getTagContext(Config config, Array tagContext, StackTraceElement[] traces, 
 			LinkedList<PageSource> sources) {
 		//StackTraceElement[] traces = getStackTraceElements(t);
-		
 		int line=0;
 		String template="",tlast;
 		Struct item;
@@ -207,17 +212,33 @@ public abstract class PageExceptionImpl extends PageException {
 			if(!StringUtil.emptyIfNull(tlast).equals(template))index++;
 			
 			String[] content=null;
+			String dspPath=template;
 			try {
 				
-				// FUTURE only do the 3th try below 
-				Resource res = config.getResource(template);
-				if(!res.exists()) res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template,true,true);
 				
+				Resource res = config.getResource(template);
+				// template is absolute, so this is not necessary if(!res.exists()) res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), template,true,true); 
+				
+				// class was not build on the local filesystem
 				if(!res.exists()) {
-					PageSource _ps = PageSourceImpl.best(config.getPageSources(ThreadLocalPageContext.get(), null, template, false, false, true));
-					if(_ps!=null && _ps.exists()) {
-						res=_ps.getResource();
+					// try to make a match by class name
+					PageContext pc=null;
+					if(config instanceof ConfigWeb) 
+						pc = ThreadLocalPageContext.get();
+					
+					SourceInfo si=pc!=null?MappingUtil.getMatch(pc,trace):MappingUtil.getMatch(config,trace);
+					if(si!=null && si.relativePath!=null) {
+						dspPath=si.relativePath;
+						res = ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), si.relativePath,true,true); 
+						if(!res.exists()) {
+							PageSource _ps = PageSourceImpl.best(config.getPageSources(ThreadLocalPageContext.get(), null, si.relativePath, false, false, true));
+							if(_ps!=null && _ps.exists()) {
+								res=_ps.getResource();
+							}
+						}
 					}
+					
+					
 				}
 				 
 				if(res.exists()) {
@@ -228,7 +249,8 @@ public abstract class PageExceptionImpl extends PageException {
 					else
 						content=IOUtil.toStringArray(IOUtil.getReader(res,CharsetUtil.toCharset(config.getTemplateCharset())));
 					IOUtil.closeEL(is);
-				} else {
+				}
+				else {
 					if(sources.size()>index)ps = sources.get(index);
 					else ps=null;
 
@@ -240,7 +262,7 @@ public abstract class PageExceptionImpl extends PageException {
 				}	
 			} 
 			catch (Throwable th) {
-				//th.printStackTrace();
+				th.printStackTrace();
 			}
 			
 			// check last
@@ -256,7 +278,7 @@ public abstract class PageExceptionImpl extends PageException {
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
-			item.setEL(KeyConstants._template,template);
+			item.setEL(KeyConstants._template,dspPath);
 			item.setEL(KeyConstants._line,new Double(line));
 			item.setEL(KeyConstants._id,"??");
 			item.setEL(KeyConstants._Raw_Trace,trace.toString());
@@ -481,7 +503,11 @@ public abstract class PageExceptionImpl extends PageException {
 	}	
 	
 	@Override
-	public String getStackTraceAsString() {
+public String getStackTraceAsString() {
+		return getStackTraceAsString(ThreadLocalPageContext.get());
+    }
+	
+	public String getStackTraceAsString(PageContext pc) {
 		
         StringWriter sw=new StringWriter();
 	    PrintWriter pw=new PrintWriter(sw);
@@ -489,40 +515,84 @@ public abstract class PageExceptionImpl extends PageException {
         pw.flush();
         return sw.toString();
     }
-    
-    
-    
+
     @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
     
+    public void printStackTrace(PageContext pc) {
+        printStackTrace(System.err,pc);
+    }
+    
     @Override
     public void printStackTrace(PrintStream s) {
+        printStackTrace(s, ThreadLocalPageContext.get());
+    }
+    
+    public void printStackTrace(PrintStream s,PageContext pc) {
         StackTraceElement[] traces = getStackTraceElements(this);
         StackTraceElement trace;
         
         s.println(getMessage());
         for(int i=0;i<traces.length;i++){
             trace=traces[i];
-            s.println("\tat "+trace);
+            s.println("\tat "+toString(pc,trace)+":"+trace.getLineNumber());
         }
     }
     
+
     @Override
     public void printStackTrace(PrintWriter s) {
+        printStackTrace(s, ThreadLocalPageContext.get());
+    }
+    
+    public void printStackTrace(PrintWriter s,PageContext pc) {
     	StackTraceElement[] traces = getStackTraceElements(this);
         StackTraceElement trace;
         
         s.println(getMessage());
         for(int i=0;i<traces.length;i++){
             trace=traces[i];
-            s.println("\tat "+trace+":"+trace.getLineNumber());
+            s.println("\tat "+toString(pc,trace)+":"+trace.getLineNumber());
         }
     }
     
 
-    private static StackTraceElement[] getStackTraceElements(Throwable t) {
+    public static String toString(PageContext pc, StackTraceElement trace) {
+    	String path=null;
+		
+    	if(trace.getFileName()==null || trace.getFileName().endsWith(".java"))
+    		return trace.toString();
+    	
+    	Resource res = pc.getConfig().getResource(trace.getFileName());
+    	if(res.exists()) path=trace.getFileName();
+    	
+    	// get path from source
+    	if(path==null){
+			SourceInfo si=MappingUtil.getMatch(pc,trace);
+			if(si!=null) {
+				if(si.absolutePath!=null) {
+					res = pc.getConfig().getResource(si.absolutePath);
+					if(res.exists()) path=si.absolutePath;
+				}
+				if(path==null && si.relativePath!=null) path=si.relativePath;
+			}
+			if(path==null) path=trace.getFileName();
+    	}
+		
+		return trace.getClassName() + "." + trace.getMethodName() +
+        (trace.isNativeMethod() ? "(Native Method)" :
+         (path != null && trace.getLineNumber() >= 0 ?
+          "(" + path + ":" + trace.getLineNumber() + ")" :
+          (path != null ?  "("+path+")" : "(Unknown Source)")));
+    	
+    	
+    	
+	}
+    
+    
+	private static StackTraceElement[] getStackTraceElements(Throwable t) {
     	StackTraceElement[] st=getStackTraceElements(t,true);
     	if(st==null) st= getStackTraceElements(t,false);
     	return st;

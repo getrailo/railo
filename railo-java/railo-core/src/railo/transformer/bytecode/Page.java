@@ -432,7 +432,8 @@ public final class Page extends BodyBase {
     	else if(isInterface()) parent="railo/runtime/InterfacePage";
     	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
-    	cw.visitSource(this.pageSource.getFullRealpath(),"abs:"+this.pageSource.getPhyscalFile().getAbsolutePath()); // when adding more use ; as delimiter
+    	cw.visitSource(this.pageSource.getPhyscalFile().getAbsolutePath(),
+    			"rel:"+this.pageSource.getFullRealpath()); // when adding more use ; as delimiter
     	//
     	
     	// static constructor
