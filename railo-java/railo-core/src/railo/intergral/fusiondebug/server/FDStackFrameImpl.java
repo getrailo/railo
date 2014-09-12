@@ -40,9 +40,6 @@ public class FDStackFrameImpl implements IFDStackFrame {
  
 	private PageContextImpl pc;
 	private FDThreadImpl thread;
-
-	//private StackTraceElement trace;
-
 	private PageSource ps;
 
 	private int line;
