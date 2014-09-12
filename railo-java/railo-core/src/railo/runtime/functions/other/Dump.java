@@ -140,19 +140,4 @@ public final class Dump implements Function {
 		
 		return "";
 	}
-	/*public static String getContext() {
-		//Throwable cause = t.getCause();
-		StackTraceElement[] traces = Thread.currentThread().getStackTrace();
-		
-		int line=0;
-		String template;
-		StackTraceElement trace=null;
-		for(int i=0;i<traces.length;i++) {
-			trace=traces[i];
-			template=trace.getFileName();
-			if((line=trace.getLineNumber())<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
-			return template+":"+line;
-		}
-		return null;
-	}*/
 }
