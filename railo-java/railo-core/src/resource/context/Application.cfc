@@ -7,6 +7,7 @@ component  {
 		,'admin.js.cfm':''
 		,'thumbnail.cfm':''
 		,'admin.cfm':''
+		,'graph.cfm':''
 	};
 
 	this.name="webadmin";
