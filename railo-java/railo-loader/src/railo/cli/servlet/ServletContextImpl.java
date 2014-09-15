@@ -84,42 +84,40 @@ public class ServletContextImpl implements ServletContext {
 		//return ResourceUtil.getMimeType(config.getResource(file),null);
 	}
 
-	/**
-	 * @see javax.servlet.ServletContext#getRealPath(java.lang.String)
-	 */
-	public String getRealPath(String realpath) {
-		return getRealFile(realpath).getAbsolutePath();
+	@Override
+	public String getRealPath(String relpath) {
+		return getRealFile(relpath).getAbsolutePath();
 	}
 
 	/**
 	 * @see javax.servlet.ServletContext#getResource(java.lang.String)
 	 */
-	public URL getResource(String realpath) throws MalformedURLException {
-		File file = getRealFile(realpath);
+	public URL getResource(String relpath) throws MalformedURLException {
+		File file = getRealFile(relpath);
 		return file.toURL();
 	}
 
 	/**
 	 * @see javax.servlet.ServletContext#getResourceAsStream(java.lang.String)
 	 */
-	public InputStream getResourceAsStream(String realpath) {
+	public InputStream getResourceAsStream(String relpath) {
 		try {
-			return new FileInputStream(getRealFile(realpath));
+			return new FileInputStream(getRealFile(relpath));
 		} catch (IOException e) {
 			return null;
 		}
 	}
 
-	public File getRealFile(String realpath) {
-		return new File(root,realpath);
+	public File getRealFile(String relpath) {
+		return new File(root,relpath);
 	}
 
 	public File getRoot() {
 		return root;
 	}
 
-	public Set getResourcePaths(String realpath) {
-		throw notSupported("getResourcePaths(String realpath)");
+	public Set getResourcePaths(String relpath) {
+		throw notSupported("getResourcePaths(String relpath)");
 	}
 
 	public RequestDispatcher getRequestDispatcher(String path) {

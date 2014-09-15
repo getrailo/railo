@@ -30,14 +30,14 @@ public final class ContractPath implements Function {
 		PageSource ps = pc.toPageSource(res,null);
 		if(ps==null) return absPath;
 		
-		String realPath = ps.getRealpath();
-		realPath=realPath.replace('\\', '/');
-		if(StringUtil.endsWith(realPath,'/'))realPath=realPath.substring(0,realPath.length()-1);
+		String relPath = ps.getRelPath();
+		relPath=relPath.replace('\\', '/');
+		if(StringUtil.endsWith(relPath,'/'))relPath=relPath.substring(0,relPath.length()-1);
 		
 		String mapping=ps.getMapping().getVirtual();
 		mapping=mapping.replace('\\', '/');
 		if(StringUtil.endsWith(mapping,'/'))mapping=mapping.substring(0,mapping.length()-1);
 		
-		return mapping+realPath;
+		return mapping+relPath;
 	}
 }

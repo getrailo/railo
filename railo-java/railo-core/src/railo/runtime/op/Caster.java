@@ -4167,16 +4167,16 @@ public final class Caster {
     }
 	
 	public static Resource toResource(PageContext pc,Object src, boolean existing) throws ExpressionException {
-		return toResource(pc,src,existing,pc.getConfig().allowRealPath());
+		return toResource(pc,src,existing,pc.getConfig().allowRelPath());
 	}
 	
-	public static Resource toResource(PageContext pc,Object src, boolean existing,boolean allowRealpath) throws ExpressionException {
+	public static Resource toResource(PageContext pc,Object src, boolean existing,boolean allowRelpath) throws ExpressionException {
 		if(src instanceof Resource) return (Resource) src;
 		if(src instanceof File) src=src.toString();
 		if(src instanceof String) {
 			if(existing)
-				return ResourceUtil.toResourceExisting(pc, (String)src,allowRealpath);
-			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRealpath,false);
+				return ResourceUtil.toResourceExisting(pc, (String)src,allowRelpath);
+			return ResourceUtil.toResourceNotExisting(pc, (String)src,allowRelpath,false);
 		}
 		if(src instanceof FileStreamWrapper) return ((FileStreamWrapper)src).getResource();
         throw new CasterException(src,"Resource");

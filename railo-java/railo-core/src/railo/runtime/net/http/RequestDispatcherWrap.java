@@ -13,11 +13,11 @@ import railo.runtime.engine.ThreadLocalPageContext;
 
 public class RequestDispatcherWrap implements RequestDispatcher {
 
-	private String realPath;
+	private String relPath;
 	private HTTPServletRequestWrap req;
 
-	public RequestDispatcherWrap(HTTPServletRequestWrap req, String realPath) {
-		this.realPath=realPath;
+	public RequestDispatcherWrap(HTTPServletRequestWrap req, String relPath) {
+		this.relPath=relPath;
 		this.req=req;
 	}
 
@@ -25,15 +25,15 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 		PageContext pc = ThreadLocalPageContext.get();
 		req=HTTPUtil.removeWrap(req);
 		if(pc==null){
-			this.req.getOriginalRequestDispatcher(realPath).forward(req, rsp);
+			this.req.getOriginalRequestDispatcher(relPath).forward(req, rsp);
 			return;
 		}
 		
 		
-		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		relPath=HTTPUtil.optimizeRelPath(pc,relPath);
 		
 		try{
-			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(realPath);
+			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(relPath);
 			disp.forward(req,rsp);
 		}
 		finally{
@@ -44,12 +44,12 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 	/*public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc==null){
-			this.req.getOriginalRequestDispatcher(realPath).include(req, rsp);
+			this.req.getOriginalRequestDispatcher(relPath).include(req, rsp);
 			return;
 		}
 		try{
-			realPath=HTTPUtil.optimizeRealPath(pc,realPath);
-			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(realPath);
+			relPath=HTTPUtil.optimizeRelPath(pc,relPath);
+			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(relPath);
 	        disp.include(req,rsp);
 		}
 		finally{
@@ -62,22 +62,22 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 	public void include(ServletRequest req, ServletResponse rsp)throws ServletException, IOException {
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc==null){
-			this.req.getOriginalRequestDispatcher(realPath).include(req, rsp);
+			this.req.getOriginalRequestDispatcher(relPath).include(req, rsp);
 			return;
 		}
 		//rsp.getWriter().flush();
 		//print.out("abc:"+rsp);
-		HTTPUtil.include(pc,req, rsp,realPath);
+		HTTPUtil.include(pc,req, rsp,relPath);
 		
 		/*
-		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		relPath=HTTPUtil.optimizeRelPath(pc,relPath);
 		ByteArrayOutputStream baos=new ByteArrayOutputStream();
 			
 		try{
 			HttpServletResponse drsp=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
-			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
+			RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(relPath);
 			if(disp==null)
-        		throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+        		throw new PageServletException(new ApplicationException("Page "+relPath+" not found"));
         	disp.include(req,drsp);
         	if(!drsp.isCommitted())drsp.flushBuffer();
 	        pc.write(IOUtil.toString(baos.toByteArray(), drsp.getCharacterEncoding()));

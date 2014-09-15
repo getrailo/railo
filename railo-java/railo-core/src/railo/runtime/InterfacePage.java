@@ -70,7 +70,7 @@ public abstract class InterfacePage extends PagePlus  {
     public abstract void initInterface(InterfaceImpl i) 
     	throws PageException;
 
-	public abstract InterfaceImpl newInstance(String callPath,boolean isRealPath,Map interfaceUDFs)
+	public abstract InterfaceImpl newInstance(String callPath,boolean isRelPath,Map interfaceUDFs)
 		throws railo.runtime.exp.PageException;
 
 }

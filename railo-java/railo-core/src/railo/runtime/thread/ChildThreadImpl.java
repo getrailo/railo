@@ -107,7 +107,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			}
 		}
 		else {
-			this.template=page.getPageSource().getFullRealpath();
+			this.template=page.getPageSource().getFullRelPath();
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
 			queryString=ReqRspUtil.getQueryString(req);

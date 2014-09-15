@@ -523,29 +523,29 @@ public final class HTTPUtil {
 		}
 	}*/
 
-	public static String optimizeRealPath(PageContext pc,String realPath) {
+	public static String optimizeRelPath(PageContext pc,String relPath) {
 		int index;
-		String requestURI=realPath,queryString=null;
-		if((index=realPath.indexOf('?'))!=-1){
-			requestURI=realPath.substring(0,index);
-			queryString=realPath.substring(index+1);
+		String requestURI=relPath,queryString=null;
+		if((index=relPath.indexOf('?'))!=-1){
+			requestURI=relPath.substring(0,index);
+			queryString=relPath.substring(index+1);
 		}
 		PageSource ps = PageSourceImpl.best(((PageContextImpl)pc).getRelativePageSources(requestURI));
-		requestURI=ps.getFullRealpath();
+		requestURI=ps.getFullRelPath();
 		if(queryString!=null) return requestURI+"?"+queryString;
 		return requestURI;
 	}
 
-	public static void forward(PageContext pc,String realPath) throws ServletException, IOException {
+	public static void forward(PageContext pc,String relPath) throws ServletException, IOException {
 		ServletContext context = pc.getServletContext();
-		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		relPath=HTTPUtil.optimizeRelPath(pc,relPath);
 		
 		try{
-			pc.getHttpServletRequest().setAttribute("railo.forward.request_uri", realPath);
+			pc.getHttpServletRequest().setAttribute("railo.forward.request_uri", relPath);
 			
-        	RequestDispatcher disp = context.getRequestDispatcher(realPath);
+        	RequestDispatcher disp = context.getRequestDispatcher(relPath);
         	if(disp==null)
-    			throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+    			throw new PageServletException(new ApplicationException("Page "+relPath+" not found"));
             
         	//populateRequestAttributes();
         	disp.forward(removeWrap(pc.getHttpServletRequest()),pc.getHttpServletResponse());
@@ -562,18 +562,18 @@ public final class HTTPUtil {
 	}
 	
 
-	public static void include(PageContext pc,String realPath) throws ServletException,IOException  {
-		include(pc, pc.getHttpServletRequest(),pc.getHttpServletResponse(),realPath);
+	public static void include(PageContext pc,String relPath) throws ServletException,IOException  {
+		include(pc, pc.getHttpServletRequest(),pc.getHttpServletResponse(),relPath);
 	}
 
-	public static void include(PageContext pc,ServletRequest req, ServletResponse rsp, String realPath) throws ServletException,IOException  {
-		realPath=optimizeRealPath(pc,realPath);
+	public static void include(PageContext pc,ServletRequest req, ServletResponse rsp, String relPath) throws ServletException,IOException  {
+		relPath=optimizeRelPath(pc,relPath);
 		boolean inline=HttpServletResponseWrap.get();
 		//print.out(rsp+":"+pc.getResponse());
-		RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+		RequestDispatcher disp = getRequestDispatcher(pc,relPath);
 		
 		if(inline)	{
-			//RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+			//RequestDispatcher disp = getRequestDispatcher(pc,relPath);
 			disp.include(req,rsp);
 			return;
 		}
@@ -583,7 +583,7 @@ public final class HTTPUtil {
 			HttpServletResponseWrap hsrw=new HttpServletResponseWrap(pc.getHttpServletResponse(),baos);
 			HttpServletResponseWrap.set(true);
 			
-			//RequestDispatcher disp = getRequestDispatcher(pc,realPath);
+			//RequestDispatcher disp = getRequestDispatcher(pc,relPath);
 			
         	disp.include(req,hsrw);
 	        if(!hsrw.isCommitted())hsrw.flushBuffer();
@@ -595,23 +595,23 @@ public final class HTTPUtil {
         }
 	}
 
-	private static RequestDispatcher getRequestDispatcher(PageContext pc,String realPath) throws PageServletException {
-		RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(realPath);
-    	if(disp==null) throw new PageServletException(new ApplicationException("Page "+realPath+" not found"));
+	private static RequestDispatcher getRequestDispatcher(PageContext pc,String relPath) throws PageServletException {
+		RequestDispatcher disp = pc.getServletContext().getRequestDispatcher(relPath);
+    	if(disp==null) throw new PageServletException(new ApplicationException("Page "+relPath+" not found"));
     	return disp;
 	}
 	
 	
 	// MUST create a copy from toURL and rename toURI and rewrite for URI, pherhaps it is possible to merge them somehow
-	public static String encode(String realpath) {
+	public static String encode(String relpath) {
     	
         
-		int qIndex=realpath.indexOf('?');
+		int qIndex=relpath.indexOf('?');
 		
-		if(qIndex==-1) return realpath;
+		if(qIndex==-1) return relpath;
 		
-		String file=realpath.substring(0,qIndex);
-		String query=realpath.substring(qIndex+1);
+		String file=relpath.substring(0,qIndex);
+		String query=relpath.substring(qIndex+1);
 		int sIndex=query.indexOf('#');
 		
 		String anker=null;

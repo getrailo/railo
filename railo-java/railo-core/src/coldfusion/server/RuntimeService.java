@@ -45,7 +45,7 @@ public interface RuntimeService extends Service {
 
 	public abstract File resolveTemplatePath(String arg0);
 
-	public abstract String getRealPath(ServletContext arg0, String arg1);
+	public abstract String getRelPath(ServletContext arg0, String arg1);
 
 	public abstract Scope getServerScope();
 

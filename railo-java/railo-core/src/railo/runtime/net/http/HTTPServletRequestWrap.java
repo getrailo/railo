@@ -162,13 +162,13 @@ public final class HTTPServletRequestWrap implements HttpServletRequest,Serializ
 	}
 	
 	@Override
-	public RequestDispatcher getRequestDispatcher(String realpath) {
-		return new RequestDispatcherWrap(this,realpath);
+	public RequestDispatcher getRequestDispatcher(String relpath) {
+		return new RequestDispatcherWrap(this,relpath);
 	}
 	
-	public RequestDispatcher getOriginalRequestDispatcher(String realpath) {
+	public RequestDispatcher getOriginalRequestDispatcher(String relpath) {
 		if(disconnected) return null;
-		return req.getRequestDispatcher(realpath);
+		return req.getRequestDispatcher(relpath);
 	}
 
 	@Override

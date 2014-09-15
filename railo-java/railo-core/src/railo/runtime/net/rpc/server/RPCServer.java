@@ -569,10 +569,10 @@ public final class RPCServer{
         msgContext.setProperty(Constants.MC_SERVLET_ENDPOINT_CONTEXT, sec);
         /* Save the real path */
         /**********************/
-        String realpath = context.getRealPath(requestPath);
+        String relpath = context.getRealPath(requestPath);
 
-        if (realpath != null) {
-            msgContext.setProperty(Constants.MC_REALPATH, realpath);
+        if (relpath != null) {
+            msgContext.setProperty(Constants.MC_REALPATH, relpath);
         }
 
         msgContext.setProperty(Constants.MC_CONFIGPATH, webInfPath);

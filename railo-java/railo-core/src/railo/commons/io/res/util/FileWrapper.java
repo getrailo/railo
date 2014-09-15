@@ -314,13 +314,13 @@ public final class FileWrapper extends File implements Resource {
 	}
 
 	@Override
-	public String getReal(String realpath) {
-		return res.getReal(realpath);
+	public String getReal(String relpath) {
+		return res.getReal(relpath);
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		return res.getRealResource(realpath);
+	public Resource getRealResource(String relpath) {
+		return res.getRealResource(relpath);
 	}
 
 	@Override

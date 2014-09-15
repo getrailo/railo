@@ -51,11 +51,11 @@ public interface Mapping  extends Dumpable{
     public abstract Resource getClassRootDirectory();
 
     /**
-     * pagesoucre matching given realpath
-     * @param realPath
+     * pagesoucre matching given relpath
+     * @param relPath
      * @return matching pagesource
      */
-    public abstract PageSource getPageSource(String realPath);
+    public abstract PageSource getPageSource(String relPath);
     
     
     /**

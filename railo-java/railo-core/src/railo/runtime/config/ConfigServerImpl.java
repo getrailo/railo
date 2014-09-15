@@ -131,20 +131,20 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     }
     
     @Override
-    public ConfigWeb getConfigWeb(String realpath) {
-        return getConfigWebImpl(realpath);
+    public ConfigWeb getConfigWeb(String relpath) {
+        return getConfigWebImpl(relpath);
     }
     
     /**
      * returns CongigWeb Implementtion
-     * @param realpath
+     * @param relpath
      * @return ConfigWebImpl
      */
-    protected ConfigWebImpl getConfigWebImpl(String realpath) {
+    protected ConfigWebImpl getConfigWebImpl(String relpath) {
     	Iterator<String> it = initContextes.keySet().iterator();
         while(it.hasNext()) {
             ConfigWebImpl cw=((CFMLFactoryImpl)initContextes.get(it.next())).getConfigWebImpl();
-            if(ReqRspUtil.getRootPath(cw.getServletContext()).equals(realpath))
+            if(ReqRspUtil.getRootPath(cw.getServletContext()).equals(relpath))
                 return cw;
         }
         return null;

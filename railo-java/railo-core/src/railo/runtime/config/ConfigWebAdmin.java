@@ -4271,25 +4271,25 @@ public final class ConfigWebAdmin {
     }*/
 
 	
-	static Resource[] updateContext(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+	static Resource[] updateContext(ConfigImpl config,InputStream is,String relpath, boolean closeStream) throws PageException, IOException, SAXException {
     	//ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	List<Resource> filesDeployed=new ArrayList<Resource>();
-    	ConfigWebAdmin._updateContext(config, is, realpath, closeStream, filesDeployed);
+    	ConfigWebAdmin._updateContext(config, is, relpath, closeStream, filesDeployed);
     	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
     }
 
-	private static void _updateContext(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+	private static void _updateContext(Config config,InputStream is,String relpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
     	if(config instanceof ConfigServer) {
     		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
     		if(webs.length==0) return;
     		if(webs.length==1) {
-    			_updateContext(webs[0], is,realpath,closeStream,filesDeployed);
+    			_updateContext(webs[0], is,relpath,closeStream,filesDeployed);
     			return;
     		}
         	try{
 	    		byte[] barr = IOUtil.toBytes(is);
 	    		for(int i=0;i<webs.length;i++){
-	    			_updateContext(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    			_updateContext(webs[i], new ByteArrayInputStream(barr),relpath,true,filesDeployed);
 	    		}
         	}
         	finally {
@@ -4299,7 +4299,7 @@ public final class ConfigWebAdmin {
     	}
 		
     	// ConfigWeb
-    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(realpath);
+    	Resource trg = config.getConfigDir().getRealResource("context").getRealResource(relpath);
         if(trg.exists()) trg.remove(true);
         Resource p = trg.getParentResource();
         if(!p.isDirectory()) p.createDirectory(true); 
@@ -4307,24 +4307,24 @@ public final class ConfigWebAdmin {
         filesDeployed.add(trg);
         _store((ConfigImpl)config);
     }
-	public boolean removeContext(Config config, boolean store,String... realpathes) throws PageException, IOException, SAXException {
-		if(ArrayUtil.isEmpty(realpathes)) return false;
+	public boolean removeContext(Config config, boolean store,String... relpathes) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(relpathes)) return false;
 		boolean force=false;
-		for(int i=0;i<realpathes.length;i++){
-			if(_removeContext(config, realpathes[i],store))
+		for(int i=0;i<relpathes.length;i++){
+			if(_removeContext(config, relpathes[i],store))
 				force=true;
 		}
 		return force;
 	}
 	
-	private boolean _removeContext(Config config,String realpath, boolean _store) throws PageException, IOException, SAXException {
+	private boolean _removeContext(Config config,String relpath, boolean _store) throws PageException, IOException, SAXException {
     	
 		if(config instanceof ConfigServer) {
 			ConfigServer cs = ((ConfigServer)config);
     		
 			// remove files from deploy folder
 			Resource deploy = cs.getConfigDir().getRealResource("web-context-deployment");
-    		Resource trg = deploy.getRealResource(realpath);
+    		Resource trg = deploy.getRealResource(relpath);
     		
     		if(trg.exists()) {
     			trg.remove(true);
@@ -4335,7 +4335,7 @@ public final class ConfigWebAdmin {
 			boolean store=false;
 			ConfigWeb[] webs = cs.getConfigWebs();
     		for(int i=0;i<webs.length;i++){
-	    		if(_removeContext(webs[i], realpath,_store)) {
+	    		if(_removeContext(webs[i], relpath,_store)) {
 	    			store=true;
 	    		}
 	    	}
@@ -4344,7 +4344,7 @@ public final class ConfigWebAdmin {
 		
     	// ConfigWeb
 		Resource context = config.getConfigDir().getRealResource("context");
-    	Resource trg = context.getRealResource(realpath);
+    	Resource trg = context.getRealResource(relpath);
     	if(trg.exists()) {
         	trg.remove(true);
         	if(_store) ConfigWebAdmin._store((ConfigImpl) config);
@@ -4354,25 +4354,25 @@ public final class ConfigWebAdmin {
         return false;
     }
 
-	static Resource[] updateApplication(ConfigImpl config,InputStream is,String realpath, boolean closeStream) throws PageException, IOException, SAXException {
+	static Resource[] updateApplication(ConfigImpl config,InputStream is,String relpath, boolean closeStream) throws PageException, IOException, SAXException {
     	ConfigWebAdmin admin = new ConfigWebAdmin(config, null);
     	List<Resource> filesDeployed=new ArrayList<Resource>();
-    	admin._updateApplication(config, is, realpath, closeStream, filesDeployed);
+    	admin._updateApplication(config, is, relpath, closeStream, filesDeployed);
     	return filesDeployed.toArray(new Resource[filesDeployed.size()]);
     }
 
-	private void _updateApplication(Config config,InputStream is,String realpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
+	private void _updateApplication(Config config,InputStream is,String relpath, boolean closeStream,List<Resource> filesDeployed) throws PageException, IOException, SAXException {
     	if(config instanceof ConfigServer) {
     		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
     		if(webs.length==0) return;
     		if(webs.length==1) {
-    			_updateApplication(webs[0], is,realpath,closeStream,filesDeployed);
+    			_updateApplication(webs[0], is,relpath,closeStream,filesDeployed);
     			return;
     		}
         	try{
 	    		byte[] barr = IOUtil.toBytes(is);
 	    		for(int i=0;i<webs.length;i++){
-	    			_updateApplication(webs[i], new ByteArrayInputStream(barr),realpath,true,filesDeployed);
+	    			_updateApplication(webs[i], new ByteArrayInputStream(barr),relpath,true,filesDeployed);
 	    		}
         	}
         	finally {
@@ -4384,7 +4384,7 @@ public final class ConfigWebAdmin {
     	// ConfigWeb
     	
     	
-    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	Resource trg = config.getRootDirectory().getRealResource(relpath);
     	if(trg.exists()) trg.remove(true);
         Resource p = trg.getParentResource();
         if(!p.isDirectory()) p.createDirectory(true); 
@@ -4393,25 +4393,25 @@ public final class ConfigWebAdmin {
         //_store((ConfigImpl)config);
     }
 
-	private void removeApplications(Config config,String[] realpathes) throws PageException, IOException, SAXException {
-		if(ArrayUtil.isEmpty(realpathes)) return;
-		for(int i=0;i<realpathes.length;i++){
-			removeApplication(config, realpathes[i]);
+	private void removeApplications(Config config,String[] relpathes) throws PageException, IOException, SAXException {
+		if(ArrayUtil.isEmpty(relpathes)) return;
+		for(int i=0;i<relpathes.length;i++){
+			removeApplication(config, relpathes[i]);
 		}
 	}
 	
-	private void removeApplication(Config config,String realpath) throws PageException, IOException, SAXException {
+	private void removeApplication(Config config,String relpath) throws PageException, IOException, SAXException {
     	if(config instanceof ConfigServer) {
     		ConfigWeb[] webs = ((ConfigServer)config).getConfigWebs();
 			for(int i=0;i<webs.length;i++){
-				removeApplication(webs[i], realpath);
+				removeApplication(webs[i], relpath);
     		}
         	
     		return ;
     	}
 		
     	// ConfigWeb
-    	Resource trg = config.getRootDirectory().getRealResource(realpath);
+    	Resource trg = config.getRootDirectory().getRealResource(relpath);
     	if(trg.exists()) trg.remove(true);
     }
 	

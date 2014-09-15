@@ -170,11 +170,11 @@ public final class DatasourceResource extends ResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(getInnerPath(), realpath);
-		if(realpath.startsWith("../"))return null;
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(getInnerPath(), relpath);
+		if(relpath.startsWith("../"))return null;
 
-		return new DatasourceResource(provider,data,realpath);
+		return new DatasourceResource(provider,data,relpath);
 	}
 
 	@Override

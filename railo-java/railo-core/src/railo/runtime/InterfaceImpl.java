@@ -45,7 +45,7 @@ public class InterfaceImpl implements Interface {
 	private String hint;
 	private String dspName;
 	private String callPath;
-	private boolean realPath;
+	private boolean relPath;
 	private Map meta;
 	
 	private InterfaceImpl[] superInterfaces;
@@ -60,22 +60,22 @@ public class InterfaceImpl implements Interface {
      * @param hint 
      * @param dspName 
      */
-	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,null);
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean relPath,Map interfacesUDFs) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, relPath,interfacesUDFs,null);
 	}
-	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
-    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,meta);
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean relPath,Map interfacesUDFs, Map meta) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, relPath,interfacesUDFs,meta);
 	}
-	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-    	this(pageSource, extend, hint, dspName, callPath, realPath, interfacesUDFs, null);
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean relPath,Map interfacesUDFs) {
+    	this(pageSource, extend, hint, dspName, callPath, relPath, interfacesUDFs, null);
 	}
-	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean relPath,Map interfacesUDFs, Map meta) {
     	this.pageSource=pageSource;
     	this.extend=extend;
     	this.hint=hint;
     	this.dspName=dspName;
     	this.callPath=callPath;
-    	this.realPath=realPath;
+    	this.relPath=relPath;
     	this.interfacesUDFs=interfacesUDFs;
     	this.meta=meta;
 }
@@ -129,7 +129,7 @@ public class InterfaceImpl implements Interface {
     	return b;
     }*/
     public boolean instanceOf(String type) {
-		if(realPath) {
+		if(relPath) {
         	if(type.equalsIgnoreCase(callPath)) return true;
             if(type.equalsIgnoreCase(pageSource.getComponentName())) return true;
             if(type.equalsIgnoreCase(_getName())) return true;       

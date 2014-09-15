@@ -77,7 +77,7 @@ public class ComponentListPackage implements Function {
 			PageSource ps= pci.getRelativePageSourceExisting(path);
 			if(ps!=null){
 				Mapping mapping = ps.getMapping();
-				String _path=ps.getRealpath();
+				String _path=ps.getRelPath();
 				_path=ListUtil.trim(_path,"\\/");
 				String[] list = _listMapping(pc,mapping,_path);
 				if(!ArrayUtil.isEmpty(list)) rtn=add(rtn,list);

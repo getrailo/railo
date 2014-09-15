@@ -163,11 +163,11 @@ public final class HTTPEngine3Impl {
     /**
      * merge to pathes to one
      * @param current
-     * @param realPath
+     * @param relPath
      * @return
      * @throws MalformedURLException
      */
-    private static String mergePath(String current, String realPath) throws MalformedURLException {
+    private static String mergePath(String current, String relPath) throws MalformedURLException {
         
         // get current directory
         String currDir;
@@ -177,18 +177,18 @@ public final class HTTPEngine3Impl {
         
         // merge together
         String path;
-        if(realPath.startsWith("./"))path=currDir+realPath.substring(2);
-        else if(realPath.startsWith("/"))path=realPath;
-        else if(!realPath.startsWith("../"))path=currDir+realPath;
+        if(relPath.startsWith("./"))path=currDir+relPath.substring(2);
+        else if(relPath.startsWith("/"))path=relPath;
+        else if(!relPath.startsWith("../"))path=currDir+relPath;
         else {
-            while(realPath.startsWith("../") || currDir.length()==0) {
-                realPath=realPath.substring(3);
+            while(relPath.startsWith("../") || currDir.length()==0) {
+                relPath=relPath.substring(3);
                 currDir=currDir.substring(0,currDir.length()-1);
                 int index = currDir.lastIndexOf('/');
-                if(index==-1)throw new MalformedURLException("invalid realpath definition for URL");
+                if(index==-1)throw new MalformedURLException("invalid relpath definition for URL");
                 currDir=currDir.substring(0,index+1);
             }
-            path=currDir+realPath;
+            path=currDir+relPath;
         }
         
         return path;

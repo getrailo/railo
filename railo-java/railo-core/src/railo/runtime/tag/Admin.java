@@ -1261,7 +1261,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doUpdateContext() throws PageException, IOException {
     	String strSrc = getString("admin",action,"source");
-    	String strRealpath = getString("admin",action,"destination");
+    	String strRelPath = getString("admin",action,"destination");
         Resource src = ResourceUtil.toResourceExisting(pageContext, strSrc);
         
         ConfigServerImpl server = (ConfigServerImpl) config.getConfigServer(password);
@@ -1270,7 +1270,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         deploy.mkdirs();
         
         // deploy it
-        trg=deploy.getRealResource(strRealpath);
+        trg=deploy.getRealResource(strRelPath);
     	if(trg.exists()) trg.remove(true);
     	p = trg.getParentResource();
         if(!p.isDirectory())p.createDirectory(true);
@@ -1286,11 +1286,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     
     private void doRemoveContext() throws PageException, IOException {
-    	String strRealpath = getString("admin",action,"destination");
+    	String strRelPath = getString("admin",action,"destination");
     	ConfigServerImpl server = (ConfigServerImpl) config;
         
     	try {
-    		admin.removeContext(server, true,strRealpath);
+    		admin.removeContext(server, true,strRelPath);
 		}
 		catch (SAXException e) {
 			throw Caster.toPageException(e);

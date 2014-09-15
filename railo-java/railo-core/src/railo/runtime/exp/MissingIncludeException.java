@@ -41,22 +41,22 @@ public final class MissingIncludeException extends PageExceptionImpl {
 
 	private static String createMessage(PageSource pageSource) {
 		String dsp=pageSource.getDisplayPath();
-		if(dsp==null) return "Page "+pageSource.getRealpath()+" not found";
-		return "Page "+pageSource.getRealpath()+" ["+dsp+"] not found";
+		if(dsp==null) return "Page "+pageSource.getRelPath()+" not found";
+		return "Page "+pageSource.getRelPath()+" ["+dsp+"] not found";
 	}
 
 	@Override
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock sct=super.getCatchBlock(config);
 		String mapping="";
-		if(StringUtil.startsWith(pageSource.getRealpath(),'/')){
+		if(StringUtil.startsWith(pageSource.getRelPath(),'/')){
 			mapping = pageSource.getMapping().getVirtual();
 			if(StringUtil.endsWith(mapping, '/'))
 				mapping=mapping.substring(0,mapping.length()-1);
 		}
-		sct.setEL(MISSING_FILE_NAME,mapping+pageSource.getRealpath());
+		sct.setEL(MISSING_FILE_NAME,mapping+pageSource.getRelPath());
 		
-		sct.setEL(MISSING_FILE_NAME_REL,mapping+pageSource.getRealpath());
+		sct.setEL(MISSING_FILE_NAME_REL,mapping+pageSource.getRelPath());
 		sct.setEL(MISSING_FILE_NAME_ABS,pageSource.getDisplayPath());
 		return sct;
 	}

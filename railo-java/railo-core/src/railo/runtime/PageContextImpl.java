@@ -719,29 +719,29 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	IOUtil.closeEL(getOut());
 	}
 	
-    public PageSource getRelativePageSource(String realPath) {
+    public PageSource getRelativePageSource(String relPath) {
     	SystemOut.print(config.getOutWriter(),"method getRelativePageSource is deprecated");
-    	if(StringUtil.startsWith(realPath,'/')) return PageSourceImpl.best(getPageSources(realPath));
+    	if(StringUtil.startsWith(relPath,'/')) return PageSourceImpl.best(getPageSources(relPath));
     	if(pathList.size()==0) return null;
-		return pathList.getLast().getRealPage(realPath);
+		return pathList.getLast().getRealPage(relPath);
 	}
     
-   public PageSource getRelativePageSourceExisting(String realPath) {
-    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+   public PageSource getRelativePageSourceExisting(String relPath) {
+    	if(StringUtil.startsWith(relPath,'/')) return getPageSourceExisting(relPath);
     	if(pathList.size()==0) return null;
-		PageSource ps = pathList.getLast().getRealPage(realPath);
+		PageSource ps = pathList.getLast().getRealPage(relPath);
 		if(PageSourceImpl.pageExist(ps)) return ps;
 		return null;
 	}
     
      /**
      * 
-     * @param realPath
+     * @param relPath
      * @param previous relative not to the caller, relative to the callers caller
      * @return
      */
-    public PageSource getRelativePageSourceExisting(String realPath, boolean previous ) {
-    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+    public PageSource getRelativePageSourceExisting(String relPath, boolean previous ) {
+    	if(StringUtil.startsWith(relPath,'/')) return getPageSourceExisting(relPath);
     	if(pathList.size()==0) return null;
     	
     	PageSource ps=null,tmp=null;
@@ -760,28 +760,28 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else ps=pathList.getLast();
     	
-    	ps = ps.getRealPage(realPath);
+    	ps = ps.getRealPage(relPath);
 		if(PageSourceImpl.pageExist(ps)) return ps;
 		return null;
 	}
     
-    public PageSource[] getRelativePageSources(String realPath) {
-    	if(StringUtil.startsWith(realPath,'/')) return getPageSources(realPath);
+    public PageSource[] getRelativePageSources(String relPath) {
+    	if(StringUtil.startsWith(relPath,'/')) return getPageSources(relPath);
     	if(pathList.size()==0) return null;
-		return new PageSource[]{ pathList.getLast().getRealPage(realPath)};
+		return new PageSource[]{ pathList.getLast().getRealPage(relPath)};
 	}
     
-    public PageSource getPageSource(String realPath) {
+    public PageSource getPageSource(String relPath) {
     	SystemOut.print(config.getOutWriter(),"method getPageSource is deprecated");
-    	return PageSourceImpl.best(config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true));
+    	return PageSourceImpl.best(config.getPageSources(this,applicationContext.getMappings(),relPath,false,useSpecialMappings,true));
 	}
     
-    public PageSource[] getPageSources(String realPath) {
-    	return config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
+    public PageSource[] getPageSources(String relPath) {
+    	return config.getPageSources(this,applicationContext.getMappings(),relPath,false,useSpecialMappings,true);
 	}
     
-    public PageSource getPageSourceExisting(String realPath) {
-    	return config.getPageSourceExisting(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true,false);
+    public PageSource getPageSourceExisting(String relPath) {
+    	return config.getPageSourceExisting(this,applicationContext.getMappings(),relPath,false,useSpecialMappings,true,false);
 	}
 
     public boolean useSpecialMappings(boolean useTagMappings) {
@@ -794,8 +794,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
 
-    public Resource getPhysical(String realPath, boolean alsoDefaultMapping){
-    	return config.getPhysical(applicationContext.getMappings(),realPath, alsoDefaultMapping);
+    public Resource getPhysical(String relPath, boolean alsoDefaultMapping){
+    	return config.getPhysical(applicationContext.getMappings(),relPath, alsoDefaultMapping);
     }
     
 
@@ -804,22 +804,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	@Override
-	public void doInclude(String realPath) throws PageException {
-		doInclude(getRelativePageSources(realPath),false);
+	public void doInclude(String relPath) throws PageException {
+		doInclude(getRelativePageSources(relPath),false);
 	}
 	
 	@Override
-	public void doInclude(String realPath, boolean runOnce) throws PageException {
-		doInclude(getRelativePageSources(realPath),runOnce);
+	public void doInclude(String relPath, boolean runOnce) throws PageException {
+		doInclude(getRelativePageSources(relPath),runOnce);
 	}
 	
-	public void doInclude(String realPath, boolean runOnce, Object cachedWithin) throws PageException {
+	public void doInclude(String relPath, boolean runOnce, Object cachedWithin) throws PageException {
 		if(cachedWithin==null) {
-			doInclude(realPath, runOnce);
+			doInclude(relPath, runOnce);
 		}
 		
 		// ignore call when runonce an it is not first call 
-		PageSource[] sources = getRelativePageSources(realPath);
+		PageSource[] sources = getRelativePageSources(relPath);
 		if(runOnce) {
 			Page currentPage = PageSourceImpl.loadPage(this, sources);
 			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
@@ -1989,7 +1989,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     
     @Override
-    public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
+    public void executeRest(String relPath, boolean throwExcpetion) throws PageException  {
     	ApplicationListener listener=null;//config.get ApplicationListener();
 	    try{
     	String pathInfo = req.getPathInfo();
@@ -2134,7 +2134,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	
     	
-    	//base = PageSourceImpl.best(config.getPageSources(this,null,realPath,true,false,true));
+    	//base = PageSourceImpl.best(config.getPageSources(this,null,relPath,true,false,true));
     	
     	
     	if(mapping==null || mapping.getPhysical()==null){
@@ -2175,36 +2175,36 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 
 	@Override
-    public void execute(String realPath, boolean throwExcpetion) throws PageException  {
-    	execute(realPath, throwExcpetion, true);
+    public void execute(String relPath, boolean throwExcpetion) throws PageException  {
+    	execute(relPath, throwExcpetion, true);
     }
-    public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
-    	//SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
-	    if(realPath.startsWith("/mapping-")){
+    public void execute(String relPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
+    	//SystemOut.printDate(config.getOutWriter(),"Call:"+relPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
+	    if(relPath.startsWith("/mapping-")){
 	    	base=null;
-	    	int index = realPath.indexOf('/',9);
+	    	int index = relPath.indexOf('/',9);
 	    	if(index>-1){
-	    		String type = realPath.substring(9,index);
+	    		String type = relPath.substring(9,index);
 	    		if(type.equalsIgnoreCase("tag")){
 	    			base=getPageSource(
 	    					new Mapping[]{config.getTagMapping(),config.getServerTagMapping()},
-	    					realPath.substring(index)
+	    					relPath.substring(index)
 	    					);
 	    		}
 	    		else if(type.equalsIgnoreCase("customtag")){
 	    			base=getPageSource(
 	    					config.getCustomTagMappings(),
-	    					realPath.substring(index)
+	    					relPath.substring(index)
 	    					);
 	    		}
 	    		/*else if(type.equalsIgnoreCase("gateway")){
-	    			base=config.getGatewayEngine().getMapping().getPageSource(realPath.substring(index));
-	    			if(!base.exists())base=getPageSource(realPath.substring(index));
+	    			base=config.getGatewayEngine().getMapping().getPageSource(relPath.substring(index));
+	    			if(!base.exists())base=getPageSource(relPath.substring(index));
 	    		}*/
 	    	}
-	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
+	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,relPath,onlyTopLevel,false,true));
 	    }
-	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
+	    else base=PageSourceImpl.best(config.getPageSources(this,null,relPath,onlyTopLevel,false,true));
 	    ApplicationListener listener=gatewayContext?config.getApplicationListener():((MappingImpl)base.getMapping()).getApplicationListener();
 	    
 	    
@@ -2258,11 +2258,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		}
 	}
 
-	private PageSource getPageSource(Mapping[] mappings, String realPath) {
+	private PageSource getPageSource(Mapping[] mappings, String relPath) {
 		PageSource ps;
 		//print.err(mappings.length);
         for(int i=0;i<mappings.length;i++) {
-            ps = mappings[i].getPageSource(realPath);
+            ps = mappings[i].getPageSource(relPath);
             //print.err(ps.getDisplayPath());
             if(ps.exists()) return ps;
             
@@ -2273,14 +2273,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 
 	@Override
-	public void include(String realPath) throws ServletException,IOException  {
-		HTTPUtil.include(this, realPath);
+	public void include(String relPath) throws ServletException,IOException  {
+		HTTPUtil.include(this, relPath);
 	}
 	
 
 	@Override
-	public void forward(String realPath) throws ServletException, IOException {
-		HTTPUtil.forward(this, realPath);
+	public void forward(String relPath) throws ServletException, IOException {
+		HTTPUtil.forward(this, relPath);
 	}
 
 	public void include(PageSource ps) throws ServletException  {
@@ -2876,9 +2876,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
 
     @Override
-    public void compile(String realPath) throws PageException {
+    public void compile(String relPath) throws PageException {
     	SystemOut.printDate("method PageContext.compile(String) should no longer be used!");
-    	compile(PageSourceImpl.best(getRelativePageSources(realPath)));
+    	compile(PageSourceImpl.best(getRelativePageSources(relPath)));
     }
     
     public HttpServlet getServlet() {

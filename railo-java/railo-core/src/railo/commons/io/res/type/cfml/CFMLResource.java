@@ -68,8 +68,8 @@ public class CFMLResource extends ResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		return provider.callResourceRTE(null, cfc, "getRealResource", new Object[]{realpath},true);
+	public Resource getRealResource(String relpath) {
+		return provider.callResourceRTE(null, cfc, "getRealResource", new Object[]{relpath},true);
 	}
 
 	@Override

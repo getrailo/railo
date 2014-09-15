@@ -59,7 +59,7 @@ public class ComponentLoader {
     	rawPath=rawPath.trim().replace('\\','/');
     	String path=(rawPath.indexOf("./")==-1)?rawPath.replace('.','/'):rawPath;
     	String pathWithCFC=path.concat(".cfc");
-    	boolean isRealPath=!StringUtil.startsWith(pathWithCFC,'/');
+    	boolean isRelPath=!StringUtil.startsWith(pathWithCFC,'/');
     	PageSource currPS = pc.getCurrentPageSource();
     	Page currP=((PageSourceImpl)currPS).loadPage(pc,(Page)null);
     	PageSource ps=null;
@@ -74,7 +74,7 @@ public class ComponentLoader {
         		ps=m.getPageSource(pathWithCFC);
         		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
 	    		if(page!=null)	{
-	    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 	        	}
         	}
     	}
@@ -94,17 +94,17 @@ public class ComponentLoader {
     // CACHE
     	// check local in cache
 	    String localCacheName=null;
-	    if(searchLocal && isRealPath){
+	    if(searchLocal && isRelPath){
 		    localCacheName=currPS.getDisplayPath().replace('\\', '/');
 	    	localCacheName=localCacheName.substring(0,localCacheName.lastIndexOf('/')+1).concat(pathWithCFC);
 	    	if(doCache){
 	    		page=config.getCachedPage(pc, localCacheName);
-	    		if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    		if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 	    	}
 	    }
 	    
     	// check import cache
-    	if(doCache && isRealPath){
+    	if(doCache && isRelPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
 	    	ImportDefintion[] impDefs=currP==null?new ImportDefintion[0]:currP.getImportDefintions();
 	    	int i=-1;
@@ -112,7 +112,7 @@ public class ComponentLoader {
 	    		
 	    		if(impDef.isWildcard() || impDef.getName().equalsIgnoreCase(path)){
 	    			page=config.getCachedPage(pc, "import:"+impDef.getPackageAsPath()+pathWithCFC);
-	    			if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    			if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 	    			
 	    			//app-page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
 	    			//app-if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
@@ -125,7 +125,7 @@ public class ComponentLoader {
     	if(doCache) {
 	    	// check global in cache
 	    	page=config.getCachedPage(pc, pathWithCFC);
-	    	if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    	if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 	    	
 	    	// get pages from application mappings
 	    	//app-page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
@@ -134,20 +134,20 @@ public class ComponentLoader {
     	
     // SEARCH
     	// search from local
-    	if(searchLocal && isRealPath)	{
-    		// check realpath
+    	if(searchLocal && isRelPath)	{
+    		// check relpath
     		PageSource[] arr = ((PageContextImpl)pc).getRelativePageSources(pathWithCFC);
     		page=PageSourceImpl.loadPage(pc, arr,null);
 			if(page!=null){
 				if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
-				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 			}
     	}
     	
     	// search with imports
     	Mapping[] cMappings = config.getComponentMappings();
     	
-    	if(isRealPath){
+    	if(isRelPath){
 
     		ImportDefintion impDef = config.getComponentDefaultImport();
 	    	ImportDefintion[] impDefs=currP==null?new ImportDefintion[0]:currP.getImportDefintions();
@@ -164,7 +164,7 @@ public class ComponentLoader {
 	    				page=PageSourceImpl.loadPage(pc, arr,null);
 	    				if(page!=null)	{
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 			        	}
 	    			}
 	    			
@@ -189,7 +189,7 @@ public class ComponentLoader {
 	    	    		String key=impDef.getPackageAsPath()+pathWithCFC;
 	    	    		if(doCache && !((MappingImpl)page.getPageSource().getMapping()).isAppMapping())
 	    	    			config.putCachedPageSource("import:"+key, page.getPageSource());
-	    				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 	    	    	}
 		    		
 	    			// search component mappings
@@ -200,7 +200,7 @@ public class ComponentLoader {
 		        		page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
 			    		if(page!=null)	{    
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 			        	}
 		        	}
 		    	}
@@ -211,7 +211,7 @@ public class ComponentLoader {
     	}
     				
 		String p;
-    	if(isRealPath)	p='/'+pathWithCFC;
+    	if(isRelPath)	p='/'+pathWithCFC;
     	else p=pathWithCFC;
     	
 
@@ -237,7 +237,7 @@ public class ComponentLoader {
     		String key=pathWithCFC;
     		if(doCache && !((MappingImpl)page.getPageSource().getMapping()).isAppMapping())
     			config.putCachedPageSource(key, page.getPageSource());
-			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
     	}
 		
     	// search component mappings
@@ -258,13 +258,13 @@ public class ComponentLoader {
     		
     		if(page!=null){
     			if(doCache)config.putCachedPageSource(pathWithCFC, page.getPageSource());
-    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
         	}
     	}
     	
 
     	// search relative to active cfc (this get not cached because the cache get ambigous if we do)
-    	if(searchLocal && isRealPath)	{
+    	if(searchLocal && isRelPath)	{
     		if(child==null) {
     			Component cfc = pc.getActiveComponent();
     			if(cfc!=null) child = cfc.getPageSource();
@@ -277,7 +277,7 @@ public class ComponentLoader {
 					page=((PageSourceImpl)ps).loadPage(pc,(Page)null);
 	
 					if(page!=null){
-						return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+						return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRelPath,interfaceUDFs);
 					}
 				}
     		}

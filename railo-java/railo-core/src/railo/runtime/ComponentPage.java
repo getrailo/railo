@@ -81,7 +81,7 @@ public abstract class ComponentPage extends PagePlus  {
 	private long lastCheck=-1;
 	
 	
-	public abstract ComponentImpl newInstance(PageContext pc,String callPath,boolean isRealPath)
+	public abstract ComponentImpl newInstance(PageContext pc,String callPath,boolean isRelPath)
 		throws railo.runtime.exp.PageException; 
 	
 	@Override

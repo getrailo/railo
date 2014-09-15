@@ -186,10 +186,10 @@ public final class FTPResource extends ResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(getInnerPath(), realpath);
-		if(realpath.startsWith("../"))return null;
-		return new FTPResource(provider,data,realpath);
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(getInnerPath(), relpath);
+		if(relpath.startsWith("../"))return null;
+		return new FTPResource(provider,data,relpath);
 	}
 
 	@Override

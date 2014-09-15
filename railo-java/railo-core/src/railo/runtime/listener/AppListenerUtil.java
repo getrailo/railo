@@ -84,7 +84,7 @@ public final class AppListenerUtil {
 	    if(ps.exists()) { 
 			return ps;
 		}
-	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRelPath(),"/");
 	    //Config config = pc.getConfig();
 		for(int i=arr.size()-1;i>0;i--) {
 			StringBuilder sb=new StringBuilder("/");
@@ -143,7 +143,7 @@ public final class AppListenerUtil {
 	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 	    
-	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
+	    Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(requestedPage.getFullRelPath(),"/");
 		//Config config = pc.getConfig();
 		String path;
 		for(int i=arr.size()-1;i>0;i--) {

@@ -205,7 +205,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 
 	@Override
 	public String getFrameInformation() {
-		return ps.getFullRealpath();
+		return ps.getFullRelPath();
 	}
 	
 	public String toString(){

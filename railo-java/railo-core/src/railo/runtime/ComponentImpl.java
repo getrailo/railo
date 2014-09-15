@@ -162,30 +162,30 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param hint
      * @param dspName
      * @param callPath
-     * @param realPath
+     * @param relPath
      * @param style
      * @param meta
      * @throws ApplicationException
      */
 
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
-    		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
+    		String extend, String implement, String hint, String dspName,String callPath, boolean relPath, 
     		String style,StructImpl meta) throws ApplicationException {
     	this(componentPage,output,_synchronized, 
-        		extend, implement, hint, dspName,callPath, realPath, style,false, false,meta);
+        		extend, implement, hint, dspName,callPath, relPath, style,false, false,meta);
     }
     
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
-    		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
+    		String extend, String implement, String hint, String dspName,String callPath, boolean relPath, 
     		String style,boolean persistent,StructImpl meta) throws ApplicationException {
     	this(componentPage,output,_synchronized, 
-        		extend, implement, hint, dspName,callPath, realPath, style,persistent, false,meta);
+        		extend, implement, hint, dspName,callPath, relPath, style,persistent, false,meta);
     }
 	 
     public ComponentImpl(ComponentPage componentPage,Boolean output,boolean _synchronized, 
-    		String extend, String implement, String hint, String dspName,String callPath, boolean realPath, 
+    		String extend, String implement, String hint, String dspName,String callPath, boolean relPath, 
     		String style,boolean persistent,boolean accessors,StructImpl meta) throws ApplicationException {
-    	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,realPath,_synchronized,null,persistent,accessors,meta);
+    	this.properties=new ComponentProperties(dspName,extend.trim(),implement,hint,output,callPath,relPath,_synchronized,null,persistent,accessors,meta);
     	//this.componentPage=componentPage instanceof ComponentPageProxy?componentPage:PageProxy.toProxy(componentPage);
     	this.pageSource=componentPage.getPageSource();
     	

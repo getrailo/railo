@@ -42,7 +42,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     //private byte load=LOAD_NONE;
 
 	private final MappingImpl mapping;
-    private final String realPath;
+    private final String relPath;
     
     private boolean isOutSide;
     
@@ -62,32 +62,32 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     
     private PageSourceImpl() {
     	mapping=null;
-        realPath=null;
+        relPath=null;
     }
     
     
     /**
 	 * constructor of the class
      * @param mapping
-     * @param realPath
+     * @param relPath
 	 */
-	PageSourceImpl(MappingImpl mapping,String realPath) {
+	PageSourceImpl(MappingImpl mapping,String relPath) {
 		this.mapping=mapping;
         //recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
         //recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
-        realPath=realPath.replace('\\','/');
-		if(realPath.indexOf('/')!=0) {
-		    if(realPath.startsWith("../")) {
+        relPath=relPath.replace('\\','/');
+		if(relPath.indexOf('/')!=0) {
+		    if(relPath.startsWith("../")) {
 				isOutSide=true;
 			}
-			else if(realPath.startsWith("./")) {
-				realPath=realPath.substring(1);
+			else if(relPath.startsWith("./")) {
+				relPath=relPath.substring(1);
 			}
 			else {
-				realPath="/"+realPath;
+				relPath="/"+relPath;
 			}
 		}
-		this.realPath=realPath;
+		this.relPath=relPath;
 	    
 	}
 	
@@ -96,15 +96,15 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	/**
 	 * private constructor of the class
 	 * @param mapping
-	 * @param realPath
+	 * @param relPath
 	 * @param isOutSide
 	 */
-    PageSourceImpl(MappingImpl mapping, String realPath, boolean isOutSide) {
+    PageSourceImpl(MappingImpl mapping, String relPath, boolean isOutSide) {
     	//recompileAlways=mapping.getConfig().getCompileType()==Config.RECOMPILE_ALWAYS;
         //recompileAfterStartUp=mapping.getConfig().getCompileType()==Config.RECOMPILE_AFTER_STARTUP || recompileAlways;
         this.mapping=mapping;
 	    this.isOutSide=isOutSide;
-		this.realPath=realPath;
+		this.relPath=relPath;
 		
 	}
 	
@@ -120,10 +120,10 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	}
 	
 	public PageSource getParent(){
-		if(realPath.equals("/")) return null;
-		if(StringUtil.endsWith(realPath, '/'))
-			return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath.substring(0, realPath.length()-1)));
-		return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(realPath));
+		if(relPath.equals("/")) return null;
+		if(StringUtil.endsWith(relPath, '/'))
+			return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(relPath.substring(0, relPath.length()-1)));
+		return new PageSourceImpl(mapping, GetDirectoryFromPath.invoke(relPath));
 	}
 
 	
@@ -368,19 +368,19 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     }
     
     public boolean isComponent() {
-        return ResourceUtil.getExtension(getRealpath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
+        return ResourceUtil.getExtension(getRelPath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
     }
     
     /**
-	 * return file object, based on physical path and realpath
+	 * return file object, based on physical path and relpath
 	 * @return file Object
 	 */
 	private String getArchiveSourcePath() {
-	    return "zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath; 
+	    return "zip://"+mapping.getArchive().getAbsolutePath()+"!"+relPath; 
 	}
 
     /**
-	 * return file object, based on physical path and realpath
+	 * return file object, based on physical path and relpath
 	 * @return file Object
 	 */
     public Resource getPhyscalFile() {
@@ -388,7 +388,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
             if(!mapping.hasPhysical()) {
             	return null;
             }
-			physcalSource=ResourceUtil.toExactResource(mapping.getPhysical().getRealResource(realPath));
+			physcalSource=ResourceUtil.toExactResource(mapping.getPhysical().getRealResource(relPath));
         }
         return physcalSource;
 	}
@@ -396,7 +396,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     public Resource getArchiveFile() {
     	if(archiveSource==null) {
 	    	if(!mapping.hasArchive()) return null;
-	    	String path="zip://"+mapping.getArchive().getAbsolutePath()+"!"+realPath;
+	    	String path="zip://"+mapping.getArchive().getAbsolutePath()+"!"+relPath;
 	    	archiveSource = ThreadLocalPageContext.getConfig().getResource(path);
     	}
         return archiveSource;
@@ -404,22 +404,22 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     
 
     /**
-	 * merge to realpath to one
+	 * merge to relpath to one
 	 * @param mapping 
-	 * @param parentRealPath 
-	 * @param newRealPath
+	 * @param parentRelPath 
+	 * @param newRelPath
 	 * @param isOutSide 
-	 * @return merged realpath
+	 * @return merged relpath
 	 */
-	private static String mergeRealPathes(Mapping mapping,String parentRealPath, String newRealPath, RefBoolean isOutSide) {
-		parentRealPath=pathRemoveLast(parentRealPath,isOutSide);
-		while(newRealPath.startsWith("../")) {
-			parentRealPath=pathRemoveLast(parentRealPath,isOutSide);
-			newRealPath=newRealPath.substring(3);
+	private static String mergeRelPathes(Mapping mapping,String parentRelPath, String newRelPath, RefBoolean isOutSide) {
+		parentRelPath=pathRemoveLast(parentRelPath,isOutSide);
+		while(newRelPath.startsWith("../")) {
+			parentRelPath=pathRemoveLast(parentRelPath,isOutSide);
+			newRelPath=newRelPath.substring(3);
 		}
 		
 		// check if come back
-		String path=parentRealPath.concat("/").concat(newRealPath);
+		String path=parentRelPath.concat("/").concat(newRelPath);
 		
 		if(path.startsWith("../")) {
 			int count=0;
@@ -451,7 +451,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 				}
 			}
 		}
-		return parentRealPath.concat("/").concat(newRealPath);
+		return parentRelPath.concat("/").concat(newRelPath);
 	}
 
 	/**
@@ -491,21 +491,21 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	}
 	
 	@Override
-	public String getRealpath() {
-		return realPath;
+	public String getRelPath() {
+		return relPath;
 	}	
 	@Override
-	public String getFullRealpath() {
+	public String getFullRelPath() {
 		if(mapping.getVirtual().length()==1 || mapping.ignoreVirtual())
-			return realPath;
-		return mapping.getVirtual()+realPath;
+			return relPath;
+		return mapping.getVirtual()+relPath;
 	}
 	
 	/**
-	 * @return returns a variable string based on realpath and return it
+	 * @return returns a variable string based on relpath and return it
 	 */
-	public String getRealPathAsVariableString() {
-		return StringUtil.toIdentityVariableName(realPath);
+	public String getRelPathAsVariableString() {
+		return StringUtil.toIdentityVariableName(relPath);
 	}
 	
 	@Override
@@ -550,7 +550,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	
 	
 	private synchronized void createClassAndPackage() {
-		String str=realPath;
+		String str=relPath;
 		StringBuffer packageName=new StringBuffer();
 		StringBuffer javaName=new StringBuffer();
 		
@@ -595,12 +595,12 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 		if(res!=null) {
 			
 			str=res.getAbsolutePath();
-			str=str.substring(str.length()-realPath.length());
-			if(!str.equalsIgnoreCase(realPath)) {
-				str=realPath;
+			str=str.substring(str.length()-relPath.length());
+			if(!str.equalsIgnoreCase(relPath)) {
+				str=relPath;
 			}
 		}
-		else str=realPath;
+		else str=relPath;
 	    
 		StringBuffer compName=new StringBuffer();
 		String[] arr;
@@ -710,22 +710,22 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     }
 
 	@Override
-	public PageSource getRealPage(String realPath) {
-	    if(realPath.equals(".") || realPath.equals(".."))realPath+='/';
-	    else realPath=realPath.replace('\\','/');
+	public PageSource getRealPage(String relPath) {
+	    if(relPath.equals(".") || relPath.equals(".."))relPath+='/';
+	    else relPath=relPath.replace('\\','/');
 	    RefBoolean _isOutSide=new RefBooleanImpl(isOutSide);
 	    
 	    
-		if(realPath.indexOf('/')==0) {
+		if(relPath.indexOf('/')==0) {
 		    _isOutSide.setValue(false);
 		}
-		else if(realPath.startsWith("./")) {
-			realPath=mergeRealPathes(mapping,this.realPath, realPath.substring(2),_isOutSide);
+		else if(relPath.startsWith("./")) {
+			relPath=mergeRelPathes(mapping,this.relPath, relPath.substring(2),_isOutSide);
 		}
 		else {
-			realPath=mergeRealPathes(mapping,this.realPath, realPath,_isOutSide);
+			relPath=mergeRelPathes(mapping,this.relPath, relPath,_isOutSide);
 		}
-		return mapping.getPageSource(realPath,_isOutSide.toBooleanValue());
+		return mapping.getPageSource(relPath,_isOutSide.toBooleanValue());
 	}
 	
 	@Override

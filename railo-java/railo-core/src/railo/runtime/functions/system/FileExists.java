@@ -14,8 +14,8 @@ public final class FileExists implements Function {
 		return railo.runtime.functions.file.FileExists.call(pc, string);
 	}
 	
-	public static boolean call(PageContext pc , String string,boolean allowRealPath) throws PageException {
-		return railo.runtime.functions.file.FileExists.call(pc, string,allowRealPath);
+	public static boolean call(PageContext pc , String string,boolean allowRelPath) throws PageException {
+		return railo.runtime.functions.file.FileExists.call(pc, string,allowRelPath);
 	}
 	
 }

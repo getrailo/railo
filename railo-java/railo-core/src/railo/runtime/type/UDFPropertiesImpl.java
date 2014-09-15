@@ -341,7 +341,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 
 	public void writeExternal(ObjectOutput out) throws IOException {
 
-		out.writeObject(pageSource.getFullRealpath());
+		out.writeObject(pageSource.getFullRelPath());
 		out.writeObject(arguments);
 		out.writeInt(access);
 		out.writeInt(index);

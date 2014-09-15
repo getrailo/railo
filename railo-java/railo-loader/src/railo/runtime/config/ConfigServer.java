@@ -19,10 +19,10 @@ public interface ConfigServer extends Config {
     public abstract ConfigWeb[] getConfigWebs();
 
     /**
-     * @param realpath
-     * @return returns config web matching given realpath
+     * @param relpath
+     * @return returns config web matching given relpath
      */
-    public abstract ConfigWeb getConfigWeb(String realpath);
+    public abstract ConfigWeb getConfigWeb(String relpath);
 
     /**
      * @return Returns the contextes.

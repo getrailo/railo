@@ -140,10 +140,10 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(path.concat(name), realpath);
-		if(realpath.startsWith("../"))return null;
-		return new HTTPResource(provider,new HTTPConnectionData(data.username,data.password,data.host,data.port,realpath,data.proxyData,data.userAgent));
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(path.concat(name), relpath);
+		if(relpath.startsWith("../"))return null;
+		return new HTTPResource(provider,new HTTPConnectionData(data.username,data.password,data.host,data.port,relpath,data.proxyData,data.userAgent));
 	}
 
 	@Override

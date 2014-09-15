@@ -25,18 +25,18 @@ public final class CFImportTag extends CFTag {
 		String[] filenames=CustomTagUtil.getFileNames(config, getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
 		
-		String strRealPathes=attributesScope.remove("__custom_tag_path").toString();
-		String[] realPathes=ListUtil.listToStringArray(strRealPathes, File.pathSeparatorChar);
-	    for(int i=0;i<realPathes.length;i++){
-	    	if(!StringUtil.endsWith(realPathes[i],'/'))realPathes[i]=realPathes[i]+"/";
+		String strRelPathes=attributesScope.remove("__custom_tag_path").toString();
+		String[] relPathes=ListUtil.listToStringArray(strRelPathes, File.pathSeparatorChar);
+	    for(int i=0;i<relPathes.length;i++){
+	    	if(!StringUtil.endsWith(relPathes[i],'/'))relPathes[i]=relPathes[i]+"/";
 	    }
 	    
 	    // MUSTMUST use cache like regular ct
 		// page source
 	    PageSource ps;
-	    for(int rp=0;rp<realPathes.length;rp++){
+	    for(int rp=0;rp<relPathes.length;rp++){
 		    for(int fn=0;fn<filenames.length;fn++){
-	            ps=((PageContextImpl)pageContext).getRelativePageSourceExisting(realPathes[rp]+filenames[fn]);
+	            ps=((PageContextImpl)pageContext).getRelativePageSourceExisting(relPathes[rp]+filenames[fn]);
 	            if(ps!=null){
 	            	source=new InitFile(ps,filenames[fn],filenames[fn].endsWith('.'+config.getCFCExtension()));
 	            	return;
@@ -50,7 +50,7 @@ public final class CFImportTag extends CFTag {
         StringBuffer msg=new StringBuffer("could not find template [");
         msg.append(CustomTagUtil.getDisplayName(config, getAppendix()));
         msg.append("] in the following directories [");
-        msg.append(strRealPathes.replace(File.pathSeparatorChar, ','));
+        msg.append(strRelPathes.replace(File.pathSeparatorChar, ','));
         msg.append(']');
         
 	    

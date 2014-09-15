@@ -72,21 +72,21 @@ public final class FileUtil {
     }
     
     /* *
-     * create a file object from a file object (parent) and realpath, in difference to the same constructor
+     * create a file object from a file object (parent) and relpath, in difference to the same constructor
      * of the File Object this method ignore the diffrent path seperators on the different plattforms
      * @param parent
-     * @param realpath
+     * @param relpath
      * @return new FIle Object matching on arguments
      * /
-    public static File toFile2(File parent, String realpath) {
-        realpath=realpath.replace(FILE_ANTI_SEPERATOR,FILE_SEPERATOR);
-        while(realpath.startsWith("../")) {
+    public static File toFile2(File parent, String relpath) {
+        relpath=relpath.replace(FILE_ANTI_SEPERATOR,FILE_SEPERATOR);
+        while(relpath.startsWith("../")) {
             parent=parent.getParentFile();
-            realpath=realpath.substring(3);
+            relpath=relpath.substring(3);
         }
-        if(realpath.startsWith("./")) realpath=realpath.substring(2);
+        if(relpath.startsWith("./")) relpath=relpath.substring(2);
             
-        return FileUtil.toFile(parent,realpath);
+        return FileUtil.toFile(parent,relpath);
     }*/
 
     

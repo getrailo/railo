@@ -163,14 +163,14 @@ public final class ResourceUtil {
      * @throws ExpressionException
      */
     public static Resource toResourceExisting(PageContext pc ,String path) throws ExpressionException {
-    	return toResourceExisting(pc, path,pc.getConfig().allowRealPath());
+    	return toResourceExisting(pc, path,pc.getConfig().allowRelPath());
     }
-    public static Resource toResourceExisting(PageContext pc ,String path,boolean allowRealpath) throws ExpressionException {
+    public static Resource toResourceExisting(PageContext pc ,String path,boolean allowRelpath) throws ExpressionException {
     	path=path.replace('\\','/');
     	Resource res = pc.getConfig().getResource(path);
         
-        // not allow realpath
-        if(!allowRealpath){
+        // not allow relpath
+        if(!allowRelpath){
         	if(res.exists()) return res;
         	throw new ExpressionException("file or directory "+path+" not exist");  
         }
@@ -179,7 +179,7 @@ public final class ResourceUtil {
             return res;
         }
     	
-        //if(allowRealpath){
+        //if(allowRelpath){
 	        if(StringUtil.startsWith(path,'/')) {
 	        	PageContextImpl pci=(PageContextImpl) pc;
 	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
@@ -229,22 +229,22 @@ public final class ResourceUtil {
      */
 
     public static Resource toResourceExistingParent(PageContext pc ,String destination) throws ExpressionException {
-    	return toResourceExistingParent(pc, destination, pc.getConfig().allowRealPath());
+    	return toResourceExistingParent(pc, destination, pc.getConfig().allowRelPath());
     }
     
-    public static Resource toResourceExistingParent(PageContext pc ,String destination, boolean allowRealpath) throws ExpressionException {
+    public static Resource toResourceExistingParent(PageContext pc ,String destination, boolean allowRelpath) throws ExpressionException {
     	destination=destination.replace('\\','/');
         Resource res=pc.getConfig().getResource(destination);
         
-        // not allow realpath
-        if(!allowRealpath){
+        // not allow relpath
+        if(!allowRelpath){
         	if(res.exists() || parentExists(res))
         		return res;
         	throw new ExpressionException("parent directory "+res.getParent()+"  for file "+destination+" doesn't exist");
             
         }
         
-        // allow realpath
+        // allow relpath
         if(res.isAbsolute() && (res.exists() || parentExists(res))) {
         	return res;
         }
@@ -281,14 +281,14 @@ public final class ResourceUtil {
      */
 
     public static Resource toResourceNotExisting(PageContext pc ,String destination) {
-    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRealPath(),false);
+    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRelPath(),false);
     }
     
-    public static Resource toResourceNotExisting(PageContext pc ,String destination,boolean allowRealpath, boolean checkComponentMappings) {
+    public static Resource toResourceNotExisting(PageContext pc ,String destination,boolean allowRelpath, boolean checkComponentMappings) {
     	Resource res;
         destination=destination.replace('\\','/');  
     	
-    	if(!allowRealpath){
+    	if(!allowRelpath){
     		res=pc.getConfig().getResource(destination);
     		return res;
     	}

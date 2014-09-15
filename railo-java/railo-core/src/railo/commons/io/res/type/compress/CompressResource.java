@@ -100,10 +100,10 @@ public final class CompressResource extends ResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(path, realpath);
-		if(realpath.startsWith("../"))return null;
-		return new CompressResource(provider,zip,realpath,caseSensitive);
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(path, relpath);
+		if(relpath.startsWith("../"))return null;
+		return new CompressResource(provider,zip,relpath,caseSensitive);
 	}
 
 	@Override

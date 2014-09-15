@@ -83,31 +83,31 @@ public class ServletContextDummy implements ServletContext {
 	}
 
 	@Override
-	public String getRealPath(String realpath) {
-		return root.getRealResource(realpath).getAbsolutePath();
+	public String getRealPath(String relpath) {
+		return root.getRealResource(relpath).getAbsolutePath();
 	}
 
 	@Override
-	public URL getResource(String realpath) throws MalformedURLException {
-		Resource res = getRealResource(realpath);
+	public URL getResource(String relpath) throws MalformedURLException {
+		Resource res = getRealResource(relpath);
 		if(res instanceof File)return ((File)res).toURL();
 		return new URL(res.getAbsolutePath());
 	}
 
 	@Override
-	public InputStream getResourceAsStream(String realpath) {
+	public InputStream getResourceAsStream(String relpath) {
 		try {
-			return getRealResource(realpath).getInputStream();
+			return getRealResource(relpath).getInputStream();
 		} catch (IOException e) {
 			return null;
 		}
 	}
 
-	public Resource getRealResource(String realpath) {
-		return root.getRealResource(realpath);
+	public Resource getRealResource(String relpath) {
+		return root.getRealResource(relpath);
 	}
 
-	public Set getResourcePaths(String realpath) {
+	public Set getResourcePaths(String relpath) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -307,21 +307,21 @@ public final class MappingImpl implements Mapping {
 	
 
 	@Override
-    public PageSource getPageSource(String realPath) {
+    public PageSource getPageSource(String relPath) {
     	boolean isOutSide = false;
-		realPath=realPath.replace('\\','/');
-		if(realPath.indexOf('/')!=0) {
-		    if(realPath.startsWith("../")) {
+		relPath=relPath.replace('\\','/');
+		if(relPath.indexOf('/')!=0) {
+		    if(relPath.startsWith("../")) {
 				isOutSide=true;
 			}
-			else if(realPath.startsWith("./")) {
-				realPath=realPath.substring(1);
+			else if(relPath.startsWith("./")) {
+				relPath=relPath.substring(1);
 			}
 			else {
-				realPath="/"+realPath;
+				relPath="/"+relPath;
 			}
 		}
-		return getPageSource(realPath,isOutSide);
+		return getPageSource(relPath,isOutSide);
     }
     
     @Override

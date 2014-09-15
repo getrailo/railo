@@ -784,13 +784,13 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     
     /**
      * execute a request n the pageConext
-     * @param realPath
+     * @param relPath
      * @throws PageException 
      * @throws IOException
      */
-    public abstract void execute(String realPath, boolean throwException) throws PageException;
+    public abstract void execute(String relPath, boolean throwException) throws PageException;
     
-    public abstract void executeRest(String realPath, boolean throwException) throws PageException;
+    public abstract void executeRest(String relPath, boolean throwException) throws PageException;
     
     /**
      * Flush Content of buffer to the response stream of the Socket.

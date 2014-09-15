@@ -283,22 +283,22 @@ public class DeployHandler {
 	        	}
 	        	
 	        	// context
-	        	String realpath;
+	        	String relpath;
 	        	if(!entry.isDirectory() && startsWith(path,type,"context") && !StringUtil.startsWith(fileName(entry), '.')) {
-	        		realpath=path.substring(8);
-	        		//log.info("extension","deploy context "+realpath);
-	        		logger.log(Log.LEVEL_INFO,"extension","deploy context "+realpath);
-	        		ConfigWebAdmin.updateContext(ci, zis, realpath,false);
-	        		contexts.add(realpath);
+	        		relpath=path.substring(8);
+	        		//log.info("extension","deploy context "+relpath);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy context "+relpath);
+	        		ConfigWebAdmin.updateContext(ci, zis, relpath,false);
+	        		contexts.add(relpath);
 	        	}
 	        	
 	        	// applications
 	        	if(!entry.isDirectory() && startsWith(path,type,"applications") && !StringUtil.startsWith(fileName(entry), '.')) {
-	        		realpath=path.substring(13);
-	        		//log.info("extension","deploy context "+realpath);
-	        		logger.log(Log.LEVEL_INFO,"extension","deploy application "+realpath);
-	        		ConfigWebAdmin.updateApplication(ci, zis, realpath,false);
-	        		applications.add(realpath);
+	        		relpath=path.substring(13);
+	        		//log.info("extension","deploy context "+relpath);
+	        		logger.log(Log.LEVEL_INFO,"extension","deploy application "+relpath);
+	        		ConfigWebAdmin.updateApplication(ci, zis, relpath,false);
+	        		applications.add(relpath);
 	        	}
 	        	
 	        	

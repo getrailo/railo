@@ -242,23 +242,23 @@ public final class FileResource extends File implements Resource {
 	}
 
 	@Override
-	public String getReal(String realpath) {
-		if(realpath.length()<=2) {
-			if(realpath.length()==0) return getPath();
-			if(realpath.equals(".")) return getPath();
-			if(realpath.equals("..")) return getParent();
+	public String getReal(String relpath) {
+		if(relpath.length()<=2) {
+			if(relpath.length()==0) return getPath();
+			if(relpath.equals(".")) return getPath();
+			if(relpath.equals("..")) return getParent();
 		}
-		return new FileResource(provider,this,realpath).getPath();
+		return new FileResource(provider,this,relpath).getPath();
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		if(realpath.length()<=2) {
-			if(realpath.length()==0) return this;
-			if(realpath.equals(".")) return this;
-			if(realpath.equals("..")) return getParentResource();
+	public Resource getRealResource(String relpath) {
+		if(relpath.length()<=2) {
+			if(relpath.length()==0) return this;
+			if(relpath.equals(".")) return this;
+			if(relpath.equals("..")) return getParentResource();
 		}
-		return new FileResource(provider,this,realpath);
+		return new FileResource(provider,this,relpath);
 	}
 
 	public ContentType getContentType() {

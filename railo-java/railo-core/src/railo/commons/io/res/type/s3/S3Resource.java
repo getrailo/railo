@@ -269,10 +269,10 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 	@Override
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(getInnerPath(), realpath);
-		if(realpath.startsWith("../"))return null;
-		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath,newPattern);
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(getInnerPath(), relpath);
+		if(relpath.startsWith("../"))return null;
+		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,relpath,newPattern);
 	}
 
 	@Override

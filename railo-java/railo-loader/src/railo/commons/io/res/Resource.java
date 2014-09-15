@@ -206,17 +206,17 @@ public interface Resource extends Serializable {
 
 	/**
 	 * returns a resource  path that is relative to the current resource
-	 * @param realpath
+	 * @param relpath
 	 * @return relative resource path to the current
 	 */
-	public String getReal(String realpath);
+	public String getReal(String relpath);
 	
 	/**
 	 * returns a resource that is relative to the current resource
-	 * @param realpath
+	 * @param relpath
 	 * @return relative resource to the current
 	 */
-	public Resource getRealResource(String realpath);
+	public Resource getRealResource(String relpath);
 
 	/**
      * Converts this abstract pathname into a pathname string.  

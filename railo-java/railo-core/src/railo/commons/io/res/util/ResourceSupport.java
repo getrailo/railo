@@ -109,8 +109,8 @@ public abstract class ResourceSupport implements Resource {
 	}
 
 	@Override
-	public String getReal(String realpath) {
-		return getRealResource(realpath).getPath();
+	public String getReal(String relpath) {
+		return getRealResource(relpath).getPath();
 	}
 	
 

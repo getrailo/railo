@@ -240,7 +240,7 @@ public final class Page extends BodyBase {
 						Types.STRING, // hind
 						Types.STRING, // display
 						Types.STRING, // callpath
-						Types.BOOLEAN_VALUE, // realpath
+						Types.BOOLEAN_VALUE, // relpath
 						Types.MAP, //interfaceudfs
 						Types.MAP // meta
 					}
@@ -433,7 +433,7 @@ public final class Page extends BodyBase {
     	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	cw.visitSource(this.pageSource.getPhyscalFile().getAbsolutePath(),
-    			"rel:"+this.pageSource.getFullRealpath()); // when adding more use ; as delimiter
+    			"rel:"+this.pageSource.getFullRelPath()); // when adding more use ; as delimiter
     	//
     	
     	// static constructor
@@ -1089,7 +1089,7 @@ public final class Page extends BodyBase {
 				
 		// callpath
 		adapter.visitVarInsn(Opcodes.ALOAD, 2);
-		// realpath
+		// relpath
 		adapter.visitVarInsn(Opcodes.ILOAD, 3);
 		
 
@@ -1188,7 +1188,7 @@ public final class Page extends BodyBase {
 		
 		// callpath
 		adapter.visitVarInsn(Opcodes.ALOAD, 1);
-		// realpath
+		// relpath
 		adapter.visitVarInsn(Opcodes.ILOAD, 2);
 		
 		// interface udfs

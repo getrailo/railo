@@ -611,7 +611,7 @@ public interface Config {
 	
 	public PageSource getBaseComponentPageSource();
 	
-	public boolean allowRealPath();
+	public boolean allowRelPath();
 	
 	public Struct getConstants();
 	
@@ -639,64 +639,64 @@ public interface Config {
 	/**
 	 * get PageSource of the first Mapping that match the given criteria
 	 * @param mappings per application mappings
-	 * @param realPath path to get PageSource for
+	 * @param relPath path to get PageSource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @deprecated use instead getPageSources or getPageSourceExisting
 	 */
-	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
+	public PageSource getPageSource(Mapping[] mappings, String relPath,boolean onlyTopLevel);
 	
 	/**
 	 * return existing PageSource that match the given criteria, if there is no PageSource null is returned.
 	 * @param pc current PageContext
 	 * @param mappings per application mappings
-	 * @param realPath path to get PageSource for
+	 * @param relPath path to get PageSource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
 	 * @param useDefaultMapping also invoke the always existing default mapping "/"
 	 */
-	public PageSource getPageSourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean onlyPhysicalExisting);
+	public PageSource getPageSourceExisting(PageContext pc,Mapping[] mappings, String relPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean onlyPhysicalExisting);
 	
 	/**
 	 * get all PageSources that match the given criteria
 	 * @param pc current PageContext
 	 * @param mappings per application mappings
-	 * @param realPath path to get PageSource for
+	 * @param relPath path to get PageSource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
 	 * @param useDefaultMapping also invoke the always existing default mapping "/"
 	 */
-	public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping); // FUTURE add boolean useComponentMappings
+	public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String relPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping); // FUTURE add boolean useComponentMappings
 	
 	/**
 	 * get Resource of the first Mapping that match the given criteria
 	 * @param mappings per application mappings
-	 * @param realPath path to get PageSource for
+	 * @param relPath path to get PageSource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @deprecated use instead getPhysicalResources or getPhysicalResourceExisting
 	 */
-	public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping);
+	public Resource getPhysical(Mapping[] mappings, String relPath, boolean alsoDefaultMapping);
     
 	/**
 	 * get all Resources that match the given criteria
 	 * @param pc current PageContext
 	 * @param mappings per application mappings
-	 * @param realPath path to get PageSource for
+	 * @param relPath path to get PageSource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
 	 * @param useDefaultMapping also invoke the always existing default mapping "/"
 	 */
-	public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String relPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
 	
 	/**
 	 * return existing Resource that match the given criteria, if there is no Resource null is returned.
 	 * @param pc current PageContext
 	 * @param mappings per application mappings
-	 * @param realPath path to get Resource for
+	 * @param relPath path to get Resource for
 	 * @param onlyTopLevel checks only toplevel mappings
 	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
 	 * @param useDefaultMapping also invoke the always existing default mapping "/"
 	 */
-	public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String relPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
 	    
     
     public Resource getRemoteClientDirectory();

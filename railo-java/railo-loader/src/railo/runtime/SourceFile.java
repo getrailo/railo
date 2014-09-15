@@ -11,7 +11,7 @@ import railo.commons.io.res.Resource;
 public interface SourceFile extends Serializable {
 
     /**
-	 * return file object, based on physical path and realpath
+	 * return file object, based on physical path and relpath
 	 * @return file Object
 	 */
 	public Resource getPhyscalFile();
@@ -37,9 +37,9 @@ public interface SourceFile extends Serializable {
 	public String getPackageName();
 
 	/**
-	 * @return returns a variable string based on realpath and return it
+	 * @return returns a variable string based on relpath and return it
 	 */
-	public String getRealPathAsVariableString();
+	public String getRelPathAsVariableString();
 
 	/**
 	 * if the mapping physical path and archive is invalid or not defined, it is possible this method returns null

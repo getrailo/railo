@@ -138,11 +138,11 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return new CacheResource(provider,parent);
 	}
 
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(getInnerPath(), realpath);
-		if(realpath.startsWith("../"))return null;
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(getInnerPath(), relpath);
+		if(relpath.startsWith("../"))return null;
 
-		return new CacheResource(provider,realpath);
+		return new CacheResource(provider,relpath);
 	}
 
 	@Override

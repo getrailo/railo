@@ -51,7 +51,7 @@ public final class Module extends CFTag {
 	    }
 	    else if(objName!=null) {
 			attributesScope.removeEL(KeyConstants._name);
-	        String[] filenames = toRealPath(config,objName.toString());
+	        String[] filenames = toRelPath(config,objName.toString());
 	        boolean exist=false;
 	        
 	        // appcontext mappings
@@ -101,12 +101,12 @@ public final class Module extends CFTag {
 	}
 
 	/**
-	 * translate a dot-notation path to a realpath
+	 * translate a dot-notation path to a relpath
      * @param dotPath
-     * @return realpath
+     * @return relpath
 	 * @throws ExpressionException 
      */
-    private static String[] toRealPath(Config config ,String dotPath) throws ExpressionException {
+    private static String[] toRelPath(Config config ,String dotPath) throws ExpressionException {
         dotPath=dotPath.trim();
         
         while(dotPath.indexOf('.')==0) {

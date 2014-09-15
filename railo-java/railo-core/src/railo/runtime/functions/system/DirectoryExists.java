@@ -12,14 +12,14 @@ import railo.runtime.op.Caster;
 
 public final class DirectoryExists implements Function {
 	public static boolean call(PageContext pc , String path) throws PageException {
-		return call(pc, path,pc.getConfig().allowRealPath());
+		return call(pc, path,pc.getConfig().allowRelPath());
 	}
-	public static boolean call(PageContext pc , String path,Object oAllowRealPath) throws PageException {
+	public static boolean call(PageContext pc , String path,Object oAllowRelPath) throws PageException {
 		Resource file;
-		if(oAllowRealPath==null) return call(pc, path);
-		boolean allowRealPath = Caster.toBooleanValue(oAllowRealPath);
-		if(allowRealPath) {
-			file=ResourceUtil.toResourceNotExisting(pc, path,allowRealPath,false);
+		if(oAllowRelPath==null) return call(pc, path);
+		boolean allowRelPath = Caster.toBooleanValue(oAllowRelPath);
+		if(allowRelPath) {
+			file=ResourceUtil.toResourceNotExisting(pc, path,allowRelPath,false);
 			// TODO das else braucht es eigentlich nicht mehr
 		}
 		else {

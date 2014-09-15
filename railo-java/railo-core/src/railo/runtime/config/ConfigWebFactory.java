@@ -2618,7 +2618,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (fileSystem == null)
 			fileSystem = getChildByName(doc.getDocumentElement(), "filesystem");
 
-		String strAllowRealPath = null;
+		String strAllowRelPath = null;
 		String strDeployDirectory = null;
 		// String strTempDirectory=null;
 		String strTLDDirectory = null;
@@ -2627,7 +2627,7 @@ public final class ConfigWebFactory extends ConfigFactory {
 		String strFunctionDirectory = null;
 
 		if (fileSystem != null) {
-			strAllowRealPath = ConfigWebUtil.translateOldPath(fileSystem.getAttribute("allow-realpath"));
+			strAllowRelPath = ConfigWebUtil.translateOldPath(fileSystem.getAttribute("allow-relpath"));
 			strDeployDirectory = ConfigWebUtil.translateOldPath(fileSystem.getAttribute("deploy-directory"));
 			// strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
 			strTLDDirectory = ConfigWebUtil.translateOldPath(fileSystem.getAttribute("tld-directory"));
@@ -2683,12 +2683,12 @@ public final class ConfigWebFactory extends ConfigFactory {
 			}
 		}
 
-		// allow realpath
+		// allow relpath
 		if (hasCS) {
-			config.setAllowRealPath(configServer.allowRealPath());
+			config.setAllowRelPath(configServer.allowRelPath());
 		}
-		if (!StringUtil.isEmpty(strAllowRealPath, true)) {
-			config.setAllowRealPath(Caster.toBooleanValue(strAllowRealPath, true));
+		if (!StringUtil.isEmpty(strAllowRelPath, true)) {
+			config.setAllowRelPath(Caster.toBooleanValue(strAllowRelPath, true));
 		}
 
 		// FLD Dir

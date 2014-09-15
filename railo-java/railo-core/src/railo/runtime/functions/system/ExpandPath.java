@@ -78,7 +78,7 @@ public final class ExpandPath implements Function {
         	}
         	
         	
-        	//Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),realPath,false,pci.useSpecialMappings(),true);
+        	//Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),relPath,false,pci.useSpecialMappings(),true);
         	
         }
         relPath=ConfigWebUtil.replacePlaceholder(relPath, config);
@@ -92,7 +92,7 @@ public final class ExpandPath implements Function {
         
 	}
 
-    private static String toReturnValue(String realPath,Resource res) {
+    private static String toReturnValue(String relPath,Resource res) {
         String path;
         char pathChar='/';
         try {
@@ -102,7 +102,7 @@ public final class ExpandPath implements Function {
             path= res.getAbsolutePath();
         }
         boolean pathEndsWithSep=StringUtil.endsWith(path,pathChar);
-        boolean realEndsWithSep=StringUtil.endsWith(realPath,'/');
+        boolean realEndsWithSep=StringUtil.endsWith(relPath,'/');
         
         if(realEndsWithSep) {
             if(!pathEndsWithSep)path=path+pathChar;

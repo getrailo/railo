@@ -139,11 +139,11 @@ public final class RamResource extends ResourceSupport {
 		return new RamResource(provider,parent);
 	}
 
-	public Resource getRealResource(String realpath) {
-		realpath=ResourceUtil.merge(getInnerPath(), realpath);
-		if(realpath.startsWith("../"))return null;
+	public Resource getRealResource(String relpath) {
+		relpath=ResourceUtil.merge(getInnerPath(), relpath);
+		if(relpath.startsWith("../"))return null;
 
-		return new RamResource(provider,realpath);
+		return new RamResource(provider,relpath);
 	}
 
 	@Override

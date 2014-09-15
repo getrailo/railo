@@ -18,7 +18,7 @@ public class ComponentProperties implements Serializable {
 	final String hint;
 	final Boolean output;
 	final String callPath;
-	final boolean realPath;
+	final boolean relPath;
 	final boolean _synchronized;
 	Class javaAccessClass;
 	Map<String,Property> properties;
@@ -28,14 +28,14 @@ public class ComponentProperties implements Serializable {
 	boolean accessors;
 
 	public ComponentProperties(String dspName,String extend,String implement,String hint, Boolean output, String callPath, 
-			boolean realPath,boolean _synchronized,Class javaAccessClass,boolean persistent,boolean accessors,Struct meta) {
+			boolean relPath,boolean _synchronized,Class javaAccessClass,boolean persistent,boolean accessors,Struct meta) {
 		this.dspName=dspName;
 		this.extend=extend;
 		this.implement=implement;
 		this.hint=hint;
 		this.output=output;
 		this.callPath=callPath;
-		this.realPath=realPath;
+		this.relPath=relPath;
 		this._synchronized=_synchronized;
 		this.javaAccessClass=javaAccessClass;
 		this.meta=meta;
@@ -44,7 +44,7 @@ public class ComponentProperties implements Serializable {
 	}
 
 	public ComponentProperties duplicate() {
-		ComponentProperties cp= new ComponentProperties(dspName,extend,implement,hint,output,callPath,realPath,_synchronized,javaAccessClass,persistent,accessors,meta);
+		ComponentProperties cp= new ComponentProperties(dspName,extend,implement,hint,output,callPath,relPath,_synchronized,javaAccessClass,persistent,accessors,meta);
 		cp.properties=properties;
 		return cp;
 	}
