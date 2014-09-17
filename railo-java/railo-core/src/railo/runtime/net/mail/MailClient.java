@@ -213,9 +213,6 @@ public abstract class MailClient {
 		}
 		if(!StringUtil.isEmpty(username))_fldelse.connect(server,username,password);
 		else _fldelse.connect();
-		//pop.gmail.com
-		//MCversion11
-		//mcdocimport@gmail.com
 	}
 
     protected abstract String getTypeAsString();
