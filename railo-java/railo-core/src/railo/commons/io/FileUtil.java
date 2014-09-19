@@ -70,30 +70,7 @@ public final class FileUtil {
         		parent.replace(FILE_ANTI_SEPERATOR,FILE_SEPERATOR),
         		path.replace(FILE_ANTI_SEPERATOR,FILE_SEPERATOR));
     }
-    
-    /* *
-     * create a file object from a file object (parent) and relpath, in difference to the same constructor
-     * of the File Object this method ignore the diffrent path seperators on the different plattforms
-     * @param parent
-     * @param relpath
-     * @return new FIle Object matching on arguments
-     * /
-    public static File toFile2(File parent, String relpath) {
-        relpath=relpath.replace(FILE_ANTI_SEPERATOR,FILE_SEPERATOR);
-        while(relpath.startsWith("../")) {
-            parent=parent.getParentFile();
-            relpath=relpath.substring(3);
-        }
-        if(relpath.startsWith("./")) relpath=relpath.substring(2);
-            
-        return FileUtil.toFile(parent,relpath);
-    }*/
 
-    
-    
-
-    
-    
 	/**
 	 * translate a URL to a File Object
 	 * @param url
