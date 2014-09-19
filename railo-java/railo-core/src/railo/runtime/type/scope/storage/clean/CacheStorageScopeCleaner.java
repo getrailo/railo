@@ -94,7 +94,6 @@ public class CacheStorageScopeCleaner extends StorageScopeCleanerSupport {
 		}
 		
 		public String toPattern() {
-			// TODO Auto-generated method stub
 			return startsWith+"*";
 		}
 

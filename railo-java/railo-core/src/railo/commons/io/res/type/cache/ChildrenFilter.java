@@ -15,8 +15,9 @@ public class ChildrenFilter implements CacheKeyFilter {
 		return key.startsWith(path);
 	}
 
+	@Override
 	public String toPattern() {
-		return null;
+		return path+"*";
 	}
 
 }
