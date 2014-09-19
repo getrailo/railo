@@ -9,7 +9,6 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;

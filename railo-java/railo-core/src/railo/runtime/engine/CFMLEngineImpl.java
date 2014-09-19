@@ -47,7 +47,6 @@ import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
-import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerFactory;
 import railo.runtime.config.ConfigServerImpl;

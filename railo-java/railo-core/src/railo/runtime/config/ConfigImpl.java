@@ -116,7 +116,6 @@ import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLib;

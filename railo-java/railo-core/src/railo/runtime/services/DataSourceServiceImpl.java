@@ -8,7 +8,6 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
-import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.db.DataSourceManager;

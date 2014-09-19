@@ -35,7 +35,6 @@ import org.xml.sax.SAXException;
 import railo.aprint;
 import railo.commons.collection.MapFactory;
 import railo.commons.date.TimeZoneUtil;
-import railo.commons.digest.Hash;
 import railo.commons.digest.MD5;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.DevNullOutputStream;

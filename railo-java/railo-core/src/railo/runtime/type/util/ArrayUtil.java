@@ -1,7 +1,6 @@
 package railo.runtime.type.util;
 
 import java.sql.Types;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -25,9 +24,7 @@ import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Array;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.SortRegister;
-import railo.runtime.type.comparator.TextComparator;
 
 /**
  * Util for diffrent methods to manipulate arrays

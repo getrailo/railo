@@ -20,7 +20,6 @@ import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.config.Config;

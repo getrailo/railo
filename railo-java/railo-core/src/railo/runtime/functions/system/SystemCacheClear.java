@@ -6,7 +6,6 @@ package railo.runtime.functions.system;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.FunctionException;

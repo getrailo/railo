@@ -8,7 +8,6 @@ import org.xml.sax.SAXException;
 
 import railo.commons.digest.Hash;
 import railo.commons.lang.StringUtil;
-import railo.runtime.config.Config;
 import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.exp.PageException;
 

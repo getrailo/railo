@@ -18,7 +18,6 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
-import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lock.KeyLock;
 import railo.runtime.CFMLFactoryImpl;
@@ -43,7 +42,6 @@ import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
@@ -52,8 +50,6 @@ import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.CFMLWriterImpl;
 import railo.runtime.writer.CFMLWriterWS;
 import railo.runtime.writer.CFMLWriterWSPref;
-import railo.transformer.library.function.FunctionLibException;
-import railo.transformer.library.tag.TagLibException;
 
 /**
  * Web Context

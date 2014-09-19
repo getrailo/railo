@@ -18,8 +18,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
-import railo.runtime.cache.tag.CacheHandlerFactory;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;

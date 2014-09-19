@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.SystemUtils;
-
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ParserString;
 import railo.commons.lang.StringUtil;

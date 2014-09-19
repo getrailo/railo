@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,8 +29,8 @@ import railo.runtime.listener.NoneAppListener;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ArrayUtil;
 
 
 /**

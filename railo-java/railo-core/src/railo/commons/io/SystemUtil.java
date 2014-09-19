@@ -41,7 +41,6 @@ import railo.runtime.exp.StopException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.tag.ThreadTag;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;

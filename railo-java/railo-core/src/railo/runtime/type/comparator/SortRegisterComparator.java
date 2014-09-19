@@ -1,6 +1,5 @@
 package railo.runtime.type.comparator;
 
-import java.text.Collator;
 import java.util.Comparator;
 
 import railo.commons.lang.ComparatorUtil;
@@ -8,7 +7,6 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.util.ArrayUtil;
 
 
 /**

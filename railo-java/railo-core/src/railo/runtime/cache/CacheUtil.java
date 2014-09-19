@@ -2,9 +2,7 @@ package railo.runtime.cache;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
-import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.CacheFilter;
-import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
