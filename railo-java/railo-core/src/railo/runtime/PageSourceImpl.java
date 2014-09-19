@@ -368,7 +368,7 @@ public final class PageSourceImpl implements PageSource, Sizeable {
     }
     
     public boolean isComponent() {
-        return ResourceUtil.getExtension(getRelPath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
+        return ResourceUtil.getExtension(getRealpath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
     }
     
     /**
@@ -491,20 +491,18 @@ public final class PageSourceImpl implements PageSource, Sizeable {
 	}
 	
 	@Override
-	public String getRelPath() {
+	public String getRealpath() {
 		return relPath;
 	}	
 	@Override
-	public String getFullRelPath() {
+	public String getFullRealpath() {
 		if(mapping.getVirtual().length()==1 || mapping.ignoreVirtual())
 			return relPath;
 		return mapping.getVirtual()+relPath;
 	}
 	
-	/**
-	 * @return returns a variable string based on relpath and return it
-	 */
-	public String getRelPathAsVariableString() {
+	@Override
+	public String getRealPathAsVariableString() {
 		return StringUtil.toIdentityVariableName(relPath);
 	}
 	

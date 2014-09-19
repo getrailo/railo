@@ -2592,11 +2592,12 @@ public abstract class ConfigImpl implements Config {
 		return extensionEnabled;
 	}
 
-	public boolean allowRelPath() {
+	@Override
+	public boolean allowRealPath() {
 		return allowRelPath;
 	}
 
-	protected void setAllowRelPath(boolean allowRelPath) {
+	protected void setAllowRealPath(boolean allowRelPath) {
 		this.allowRelPath=allowRelPath;
 	}
 

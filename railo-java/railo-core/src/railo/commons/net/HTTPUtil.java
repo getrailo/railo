@@ -531,7 +531,7 @@ public final class HTTPUtil {
 			queryString=relPath.substring(index+1);
 		}
 		PageSource ps = PageSourceImpl.best(((PageContextImpl)pc).getRelativePageSources(requestURI));
-		requestURI=ps.getFullRelPath();
+		requestURI=ps.getFullRealpath();
 		if(queryString!=null) return requestURI+"?"+queryString;
 		return requestURI;
 	}

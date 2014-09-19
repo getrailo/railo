@@ -8,7 +8,7 @@ import railo.runtime.op.Caster;
 public class FileExists {
 
 	public static boolean call(PageContext pc , Object obj) throws PageException {
-		return call(pc, obj, pc.getConfig().allowRelPath());
+		return call(pc, obj, pc.getConfig().allowRealPath());
 	}
 	
 	public static boolean call(PageContext pc , Object obj, Object oAllowRelPath) throws PageException {

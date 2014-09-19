@@ -2685,10 +2685,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 
 		// allow relpath
 		if (hasCS) {
-			config.setAllowRelPath(configServer.allowRelPath());
+			config.setAllowRealPath(configServer.allowRealPath());
 		}
 		if (!StringUtil.isEmpty(strAllowRelPath, true)) {
-			config.setAllowRelPath(Caster.toBooleanValue(strAllowRelPath, true));
+			config.setAllowRealPath(Caster.toBooleanValue(strAllowRelPath, true));
 		}
 
 		// FLD Dir

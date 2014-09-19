@@ -37,9 +37,9 @@ public interface SourceFile extends Serializable {
 	public String getPackageName();
 
 	/**
-	 * @return returns a variable string based on relpath and return it
+	 * @return returns a variable string based on realpath and return it
 	 */
-	public String getRelPathAsVariableString();
+	public String getRealPathAsVariableString();
 
 	/**
 	 * if the mapping physical path and archive is invalid or not defined, it is possible this method returns null

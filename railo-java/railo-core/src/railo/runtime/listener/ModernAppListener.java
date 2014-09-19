@@ -105,7 +105,7 @@ public class ModernAppListener extends AppListenerSupport {
 				if(requestedPage==null) return;
 			}
 			
-			String targetPage=requestedPage.getFullRelPath();
+			String targetPage=requestedPage.getFullRealpath();
 			RefBoolean goon=new RefBooleanImpl(true);
 			
 			// onRequestStart
@@ -314,7 +314,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	private PageContextImpl createPageContext(CFMLFactory factory, ComponentPro app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
 		Resource root = factory.getConfig().getRootDirectory();
-		String path = app.getPageSource().getFullRelPath();
+		String path = app.getPageSource().getFullRealpath();
 		
 		// Request
 		HttpServletRequestDummy req = new HttpServletRequestDummy(root,"localhost",path,"",null,null,null,null,null);

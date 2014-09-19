@@ -45,7 +45,7 @@ public final class ClassicAppListener extends AppListenerSupport {
 				ClassicApplicationContext cfc=(ClassicApplicationContext) ac;
 				UDF udf = cfc.getOnMissingTemplate();
 				if(udf!=null) {
-					String targetPage=requestedPage.getFullRelPath();
+					String targetPage=requestedPage.getFullRealpath();
 					rethrow=(!Caster.toBooleanValue(udf.call(pc, new Object[]{targetPage}, true),true));
 				}
 			}

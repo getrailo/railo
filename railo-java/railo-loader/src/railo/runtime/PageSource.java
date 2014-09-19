@@ -35,13 +35,13 @@ public interface PageSource extends SourceFile {
      * returns the ralpath without the mapping
      * @return Returns the relpath.
      */
-    public abstract String getRelPath();
+    public abstract String getRealpath();
 
     /**
      * Returns the full name (mapping/relpath).
      * @return mapping/relpath
      */
-    public abstract String getFullRelPath();
+    public abstract String getFullRealpath();
 
     /**
      * @return returns the full class name (Example: railo.web.test_cfm)

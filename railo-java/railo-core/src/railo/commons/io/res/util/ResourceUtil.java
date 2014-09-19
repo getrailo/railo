@@ -163,7 +163,7 @@ public final class ResourceUtil {
      * @throws ExpressionException
      */
     public static Resource toResourceExisting(PageContext pc ,String path) throws ExpressionException {
-    	return toResourceExisting(pc, path,pc.getConfig().allowRelPath());
+    	return toResourceExisting(pc, path,pc.getConfig().allowRealPath());
     }
     public static Resource toResourceExisting(PageContext pc ,String path,boolean allowRelpath) throws ExpressionException {
     	path=path.replace('\\','/');
@@ -229,7 +229,7 @@ public final class ResourceUtil {
      */
 
     public static Resource toResourceExistingParent(PageContext pc ,String destination) throws ExpressionException {
-    	return toResourceExistingParent(pc, destination, pc.getConfig().allowRelPath());
+    	return toResourceExistingParent(pc, destination, pc.getConfig().allowRealPath());
     }
     
     public static Resource toResourceExistingParent(PageContext pc ,String destination, boolean allowRelpath) throws ExpressionException {
@@ -281,7 +281,7 @@ public final class ResourceUtil {
      */
 
     public static Resource toResourceNotExisting(PageContext pc ,String destination) {
-    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRelPath(),false);
+    	return toResourceNotExisting(pc ,destination,pc.getConfig().allowRealPath(),false);
     }
     
     public static Resource toResourceNotExisting(PageContext pc ,String destination,boolean allowRelpath, boolean checkComponentMappings) {

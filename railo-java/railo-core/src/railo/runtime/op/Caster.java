@@ -4167,7 +4167,7 @@ public final class Caster {
     }
 	
 	public static Resource toResource(PageContext pc,Object src, boolean existing) throws ExpressionException {
-		return toResource(pc,src,existing,pc.getConfig().allowRelPath());
+		return toResource(pc,src,existing,pc.getConfig().allowRealPath());
 	}
 	
 	public static Resource toResource(PageContext pc,Object src, boolean existing,boolean allowRelpath) throws ExpressionException {

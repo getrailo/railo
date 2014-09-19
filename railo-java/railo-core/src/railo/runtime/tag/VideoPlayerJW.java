@@ -500,7 +500,7 @@ public class VideoPlayerJW extends BodyTagSupport {
 			PageSource ps = pageContext.toPageSource(res,null);
 			if(ps==null) return res.getAbsolutePath();
 			
-			String relPath = ps.getRelPath();
+			String relPath = ps.getRealpath();
 			relPath=relPath.replace('\\', '/');
 			if(relPath.endsWith("/"))relPath=relPath.substring(0,relPath.length()-1);
 			

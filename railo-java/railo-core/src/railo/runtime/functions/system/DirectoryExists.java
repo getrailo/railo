@@ -12,7 +12,7 @@ import railo.runtime.op.Caster;
 
 public final class DirectoryExists implements Function {
 	public static boolean call(PageContext pc , String path) throws PageException {
-		return call(pc, path,pc.getConfig().allowRelPath());
+		return call(pc, path,pc.getConfig().allowRealPath());
 	}
 	public static boolean call(PageContext pc , String path,Object oAllowRelPath) throws PageException {
 		Resource file;

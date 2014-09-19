@@ -611,7 +611,7 @@ public interface Config {
 	
 	public PageSource getBaseComponentPageSource();
 	
-	public boolean allowRelPath();
+	public boolean allowRealPath();
 	
 	public Struct getConstants();
 	

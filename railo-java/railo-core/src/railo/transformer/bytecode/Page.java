@@ -433,7 +433,7 @@ public final class Page extends BodyBase {
     	
     	cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL, name, null, parent, null);
     	cw.visitSource(this.pageSource.getPhyscalFile().getAbsolutePath(),
-    			"rel:"+this.pageSource.getFullRelPath()); // when adding more use ; as delimiter
+    			"rel:"+this.pageSource.getFullRealpath()); // when adding more use ; as delimiter
     	//
     	
     	// static constructor

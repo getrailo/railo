@@ -30,7 +30,7 @@ public final class ContractPath implements Function {
 		PageSource ps = pc.toPageSource(res,null);
 		if(ps==null) return absPath;
 		
-		String relPath = ps.getRelPath();
+		String relPath = ps.getRealpath();
 		relPath=relPath.replace('\\', '/');
 		if(StringUtil.endsWith(relPath,'/'))relPath=relPath.substring(0,relPath.length()-1);
 		
