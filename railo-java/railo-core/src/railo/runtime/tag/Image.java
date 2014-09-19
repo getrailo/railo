@@ -390,7 +390,7 @@ public final class Image extends TagImpl {
 		if(destination==null) {
 			String name=CreateUUID.call(pageContext)+"."+format;
 			Resource folder = pageContext.getConfig().getTempDirectory().getRealResource("graph");
-			if(!folder.exists())folder.createDirectory(true);
+			if(!folder.exists())folder.mkdirs();
 			destination = folder.getRealResource(name);
 			cleanOld(folder);
 			
