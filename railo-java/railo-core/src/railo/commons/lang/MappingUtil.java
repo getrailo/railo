@@ -148,6 +148,8 @@ public class MappingUtil {
 	}
 	
 	public static SourceInfo getMatch(PageContext pc,Config config, StackTraceElement trace) {
+		if(pc==null && config==null)
+			config=ThreadLocalPageContext.getConfig();
 		if(trace.getFileName()==null) return null;
 		
 		//PageContext pc = ThreadLocalPageContext.get();
@@ -162,7 +164,6 @@ public class MappingUtil {
 			// look for the class in that mapping
 			clazz=((MappingImpl)mapping).loadClass(trace.getClassName());
 			if(clazz==null) continue;
-			print.e("class:"+clazz);
 			
 			// classname is not distinct, because of that we must check class content
 			try {

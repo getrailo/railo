@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -1217,15 +1218,11 @@ int pos=data.cfml.getPos();
 			if(attr.getValue().equals(NULL)){
 				// type
 				if(first==null && (!hasName || !hasType)){
-					first=attr.getName();
-					//type=new Attribute(false,"type",LitString.toExprString(attr.getName()),"string");
-					//property.addAttribute(type);
+					first=attr.getNameOC();
 				}
 				// name
 				else if(second==null && !hasName && !hasType){
-					second=attr.getName();
-					//name=new Attribute(false,"name",LitString.toExprString(attr.getName()),"string");
-					//property.addAttribute(name);
+					second=attr.getNameOC();
 				}
 				// attr with no value
 				else {
@@ -1928,6 +1925,7 @@ int pos=data.cfml.getPos();
     	
 		// Name
     	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr,!allowColonSeparator);
+    	String nameLC=name==null?null:name.toLowerCase();
     	boolean allowExpression=false;
     	if(oAllowExpression instanceof Boolean)allowExpression=((Boolean)oAllowExpression).booleanValue();
     	else if(oAllowExpression instanceof String)allowExpression=((String)oAllowExpression).equalsIgnoreCase(name);
@@ -1951,76 +1949,42 @@ int pos=data.cfml.getPos();
     	// Type
     	TagLibTagAttr tlta=null;
 		if(tlt!=null){
-			tlta = tlt.getAttribute(name,true);
-			if(tlta!=null && tlta.getName()!=null)name=tlta.getName();
+			tlta = tlt.getAttribute(nameLC,true);
+			if(tlta!=null && tlta.getName()!=null)nameLC=tlta.getName();
 		}
 		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?CastOther.toExpression(value, tlta.getType()):value,sbType.toString());
     }
 	
-	/*private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType) throws TemplateException {
-		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true));
-        if(args.contains(id)) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
-		args.add(id);
-		
-		
-		
-		int typeDef=tag.getAttributeType();
-		if("attributecollection".equals(id)){
-			dynamic.setValue(tag.getAttribute(id)==null);
-			sbType.append("struct");
-		}
-		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED || typeDef==TagLibTag.ATTRIBUTE_TYPE_MIXED) {
-			TagLibTagAttr attr=tag.getAttribute(id);
-			if(attr==null) {
-				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
-					String names=tag.getAttributeNames();
-					if(StringUtil.isEmpty(names))
-						throw new TemplateException(cfml,"Attribute "+id+" is not allowed for tag "+tag.getFullName());
-					
-						throw new TemplateException(cfml,
-							"Attribute "+id+" is not allowed for statement "+tag.getName(),
-							"valid attribute names are ["+names+"]");
-				}
-			}
-			else {
-				sbType.append(attr.getType());
-				//parseExpression[0]=attr.getRtexpr();
-			}
-		}
-		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC){
-			dynamic.setValue(true);
-		}
-		return id;
-	}*/
-	
 	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr, boolean allowColon) throws TemplateException {
-		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true,allowColon));
+		String id=CFMLTransformer.identifier(cfml,true,allowColon);
 		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
 	
 	
-	private final String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
-		if(args.contains(id) && !allowTwiceAttr) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
-		args.add(id);
+	private final String validateAttributeName(String idOC,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
+		String idLC=idOC.toLowerCase();
+		
+		if(args.contains(idLC) && !allowTwiceAttr) throw new TemplateException(cfml,"you can't use the same attribute ["+idOC+"] twice");
+		args.add(idLC);
 		
 		
-		if(tag==null) return id;
+		if(tag==null) return idOC;
 		int typeDef=tag.getAttributeType();
-		if("attributecollection".equals(id)){
-			dynamic.setValue(tag.getAttribute(id,true)==null);
+		if("attributecollection".equals(idLC)){
+			dynamic.setValue(tag.getAttribute(idLC,true)==null);
 			sbType.append("struct");
 		}
 		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED || typeDef==TagLibTag.ATTRIBUTE_TYPE_MIXED) {
-			TagLibTagAttr attr=tag.getAttribute(id,true);
+			TagLibTagAttr attr=tag.getAttribute(idLC,true);
 			if(attr==null) {
 				if(typeDef==TagLibTag.ATTRIBUTE_TYPE_FIXED) {
 					String names=tag.getAttributeNames();
 					if(StringUtil.isEmpty(names))
-						throw new TemplateException(cfml,"Attribute "+id+" is not allowed for tag "+tag.getFullName());
+						throw new TemplateException(cfml,"Attribute "+idOC+" is not allowed for tag "+tag.getFullName());
 					
 					throw new TemplateException(cfml,
-						"Attribute "+id+" is not allowed for statement "+tag.getName(),
+						"Attribute "+idOC+" is not allowed for statement "+tag.getName(),
 						"valid attribute names are ["+names+"]");
 				}
 				dynamic.setValue(true);
@@ -2034,7 +1998,7 @@ int pos=data.cfml.getPos();
 		else if(typeDef==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC){
 			dynamic.setValue(true);
 		}
-		return id;
+		return idOC;
 	}
 	
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
@@ -110,9 +111,9 @@ public final class CacheResourceProvider implements ResourceProviderPro {
 	}
 
 	String[] getChildNames(String path) throws IOException {
-		List list = getCache().values(new ChildrenFilter(path));
+		List<Object> list = getCache().values(new ChildrenFilter(path));
 		String[] arr = new String[list.size()];
-		Iterator it = list.iterator();
+		Iterator<Object> it = list.iterator();
 		int index=0;
 		while(it.hasNext()){
 			arr[index++]=((CacheResourceCore) it.next()).getName();
