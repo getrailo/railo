@@ -560,20 +560,22 @@ public String getStackTraceAsString() {
     
 
     public static String toString(PageContext pc, StackTraceElement trace) {
+    	Config config = ThreadLocalPageContext.getConfig(pc);
     	String path=null;
 		
     	if(trace.getFileName()==null || trace.getFileName().endsWith(".java"))
     		return trace.toString();
     	
-    	Resource res = pc.getConfig().getResource(trace.getFileName());
+    	Resource res = config.getResource(
+    			trace.getFileName());
     	if(res.exists()) path=trace.getFileName();
     	
     	// get path from source
     	if(path==null){
-			SourceInfo si=MappingUtil.getMatch(pc,trace);
+			SourceInfo si=MappingUtil.getMatch(pc,config,trace);
 			if(si!=null) {
 				if(si.absolutePath!=null) {
-					res = pc.getConfig().getResource(si.absolutePath);
+					res = config.getResource(si.absolutePath);
 					if(res.exists()) path=si.absolutePath;
 				}
 				if(path==null && si.relativePath!=null) path=si.relativePath;
