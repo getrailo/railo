@@ -38,6 +38,7 @@ public class CFMLEngineFactory {
 	 // set to false to disable patch loading, for example in major alpha releases
     private static final boolean PATCH_ENABLED = true;
     
+    private static boolean loadRailoFromClassPath = false;
 	private static CFMLEngineFactory factory;
     private static File railoServerRoot;
     private static CFMLEngineWrapper engineListener;
@@ -171,6 +172,12 @@ public class CFMLEngineFactory {
             }
         }
         catch(IOException ioe){}
+        // if this is true, the railo patch file should be renamed to a jar file and placed on the classpath in order for it to work.
+        String loadRailoFromClasspathProperty = config.getInitParameter("railo-load-from-classpath");
+        if ( !Util.isEmpty( loadRailoFromClasspathProperty ) ) {
+        	loadRailoFromClassPath = loadRailoFromClasspathProperty.toLowerCase().equals("true");
+        }
+        
     }
     
 
@@ -198,6 +205,19 @@ public class CFMLEngineFactory {
     }
 
     private void initEngine() throws ServletException {
+    	
+        if ( loadRailoFromClassPath ) {
+	        try {
+				engine = getEngine( mainClassLoader );
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        } else {
+        	_initPatchEngine();
+        }
+    } 
+    
+    private void _initPatchEngine() throws ServletException {
         
         int coreVersion=Version.getIntVersion();
         long coreCreated=Version.getCreateTime();
