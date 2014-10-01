@@ -2,11 +2,8 @@ package railo.commons.net.http.httpclient4;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +29,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.DnsResolver;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ByteArrayEntity;
@@ -41,7 +37,6 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -76,15 +71,15 @@ public class HTTPEngine4Impl {
 	
 	private static PoolingClientConnectionManager cm;
 	private static final int CONNECTION_TTL = 30;
-	
-	
+	private static ConnectionCleaner cc;
 	static {
 		SchemeRegistry sr = new PoolingClientConnectionManager( ).getSchemeRegistry();
 		cm = new PoolingClientConnectionManager( 
 					sr, CONNECTION_TTL, 
 					TimeUnit.SECONDS );
-		cm.setDefaultMaxPerRoute(500);
-		cm.setMaxTotal(500);
+		cm.setDefaultMaxPerRoute(400);
+		cm.setMaxTotal(1000);
+		cc = new ConnectionCleaner( cm, CONNECTION_TTL );
 	}
 	
 	/**
@@ -276,7 +271,14 @@ public class HTTPEngine4Impl {
     	//cm().closeExpiredConnections();
     	//cm().closeIdleConnections(30, TimeUnit.SECONDS);
     	
+    	_startConnectionCleanerIfNeeded();
     	return new DefaultHttpClient( cm, params );
+	}
+
+	private synchronized static void _startConnectionCleanerIfNeeded() {
+		if ( !cc.isAlive() ) {
+			cc.start();
+		}
 	}
 
 	private static void setUserAgent(HttpMessage hm, String useragent) {
@@ -408,6 +410,31 @@ public class HTTPEngine4Impl {
 
 	public static Entity getResourceEntity(Resource res, String contentType) {
 		return new ResourceHttpEntity(res,contentType);
+	}
+	
+	private static class ConnectionCleaner extends Thread {
+		
+		PoolingClientConnectionManager cm;
+		int timeout;
+		ConnectionCleaner ( PoolingClientConnectionManager cm,  int timeout ) {
+			this.cm = cm;
+			this.timeout = timeout;
+			setDaemon(true);
+		}
+		
+		public synchronized void run () {
+			
+			while(true) {
+				cm.closeExpiredConnections();
+				cm.closeIdleConnections( timeout, TimeUnit.SECONDS);
+				try {
+					Thread.sleep( 5000 );
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 }
