@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +72,11 @@ public class HTTPEngine4Impl {
 	
 	private static PoolingClientConnectionManager cm;
 	private static final int CONNECTION_TTL = 30;
+	private static Map<String, DefaultHttpClient> clients;
+	public static final boolean CONNECTION_POOLING_ENABLED = true;
 	private static ConnectionCleaner cc;
 	static {
+		clients = new HashMap<String, DefaultHttpClient>();
 		SchemeRegistry sr = new PoolingClientConnectionManager( ).getSchemeRegistry();
 		cm = new PoolingClientConnectionManager( 
 					sr, CONNECTION_TTL, 
@@ -231,14 +235,12 @@ public class HTTPEngine4Impl {
             ProxyData proxy, railo.commons.net.http.Header[] headers, Map<String,String> formfields) throws IOException {
     	
     	// TODO HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
-		BasicHttpParams params = new BasicHttpParams();
-    	DefaultHttpClient client = createClient(params,maxRedirect);
+    	DefaultHttpClient client = createClient( maxRedirect, timeout );
     	HttpHost hh=new HttpHost(url.getHost(),url.getPort());
     	setHeader(request,headers);
     	if(CollectionUtil.isEmpty(formfields))setContentType(request,charset);
     	setFormFields(request,formfields,charset);
     	setUserAgent(request,useragent);
-    	setTimeout(params,timeout);
     	HttpContext context=setCredentials(client,hh, username, password,false);  
     	setProxy(client,request,proxy);
         if(context==null)context = new BasicHttpContext();
@@ -263,16 +265,26 @@ public class HTTPEngine4Impl {
     	}
 	}
 
-	public static DefaultHttpClient createClient(BasicHttpParams params, int maxRedirect) {
-    	params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
+	public static DefaultHttpClient createClient( int maxRedirect, long timeout ) {
+		String key = Integer.toString( maxRedirect ) + ":" + Long.toString( timeout );
+		if( !clients.containsKey( key ))
+			clients.put( key, _createClient( maxRedirect, timeout ) );
+		return clients.get( key );
+    	
+	}
+
+	private static DefaultHttpClient _createClient( int maxRedirect, long timeout ) {
+		BasicHttpParams params = new BasicHttpParams();
+		if( timeout > 0L ) setTimeout(params, timeout);
+		params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
     	if(maxRedirect>0)params.setParameter(ClientPNames.MAX_REDIRECTS, new Integer(maxRedirect));
     	params.setParameter(ClientPNames.REJECT_RELATIVE_REDIRECT, Boolean.FALSE);
     	
-    	//cm().closeExpiredConnections();
-    	//cm().closeIdleConnections(30, TimeUnit.SECONDS);
-    	
-    	_startConnectionCleanerIfNeeded();
-    	return new DefaultHttpClient( cm, params );
+    	if ( CONNECTION_POOLING_ENABLED ) {
+        	_startConnectionCleanerIfNeeded();
+        	return new DefaultHttpClient( cm, params );
+    	} 
+        return new DefaultHttpClient( params );	
 	}
 
 	private synchronized static void _startConnectionCleanerIfNeeded() {

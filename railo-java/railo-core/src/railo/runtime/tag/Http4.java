@@ -603,8 +603,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	
 	
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
-		BasicHttpParams params = new BasicHttpParams();
-    	DefaultHttpClient client = HTTPEngine4Impl.createClient(params,redirect?HTTPEngine.MAX_REDIRECT:0);
+    	DefaultHttpClient client = HTTPEngine4Impl.createClient( redirect?HTTPEngine.MAX_REDIRECT:0, (int)this.timeout );
     	
     	
     	ConfigWeb cw = pageContext.getConfig();
@@ -901,9 +900,6 @@ public final class Http4 extends BodyTagImpl implements Http {
     		// set User Agent
     			if(!hasHeaderIgnoreCase(req,"User-Agent"))
     				req.setHeader("User-Agent",this.useragent);
-    		
-    	// set timeout
-    		if(this.timeout>0L)HTTPEngine4Impl.setTimeout(params, (int)this.timeout);
     		
     	// set Username and Password
     		if(this.username!=null) {
