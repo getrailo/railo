@@ -2,8 +2,7 @@ package railo.runtime.coder;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.codec.binary.Base64;
-
+import railo.commons.digest.Base64Encoder;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
 
@@ -41,12 +40,7 @@ public final class Base64Coder {
      * @throws CoderException 
      */
     public static String encode(byte[] barr)  {
-		barr=Base64.encodeBase64(barr);
-		StringBuilder sb=new StringBuilder();
-	    for(int i=0;i<barr.length;i++) {
-	    	sb.append((char)barr[i]);
-	    }
-	    return sb.toString();
+    	return Base64Encoder.encode(barr);
     } 
     
     /**
@@ -57,16 +51,10 @@ public final class Base64Coder {
      */
     public static byte[] decode(String encoded) throws CoderException {
         try {
-	    	char[] chars = encoded.toCharArray();
-			byte[] bytes=new byte[chars.length];
-			
-			for(int i=0;i<chars.length;i++) {
-				bytes[i]=(byte)chars[i];
-			}
-			return Base64.decodeBase64(bytes);
+        	return Base64Encoder.decode(encoded);
         }
         catch(Throwable t) {
         	throw new CoderException("can't decode input ["+encoded+"]");
         }
-    } 
+    }
 }
