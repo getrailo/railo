@@ -103,9 +103,14 @@ public class SQLUtil {
 		
 		// Java >= 1.6
 		if(SystemUtil.JAVA_VERSION>=SystemUtil.JAVA_VERSION_1_6) {
-			Blob blob = conn.createBlob();
-			blob.setBytes(1, Caster.toBinary(value));
-			return blob;
+			try {
+				Blob blob = conn.createBlob();
+				blob.setBytes(1, Caster.toBinary(value));
+				return blob;
+			}
+			catch(Throwable t){
+				return BlobImpl.toBlob(value);
+			}
 		}
 		
 		// Java < 1.6
