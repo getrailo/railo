@@ -723,8 +723,8 @@ public final class Directory extends TagImpl  {
 		try {
 			// has already a filter
 			if(filter!=null) {
-				if(recurse) filter=new OrResourceFilter(new ResourceFilter[]{
-						filter,DirectoryResourceFilter.FILTER
+				if(!recurse) filter=new AndResourceFilter(new ResourceFilter[]{
+						filter,new NotResourceFilter(DirectoryResourceFilter.FILTER)
 				});
 			}
 			else {
