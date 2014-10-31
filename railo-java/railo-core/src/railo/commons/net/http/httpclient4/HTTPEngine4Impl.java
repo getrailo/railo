@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -29,11 +31,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -64,6 +68,23 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.util.CollectionUtil;
 
 public class HTTPEngine4Impl {
+	
+	
+	private static PoolingClientConnectionManager cm;
+	private static final int CONNECTION_TTL = 30;
+	private static Map<String, DefaultHttpClient> clients;
+	public static final boolean CONNECTION_POOLING_ENABLED = true;
+	private static ConnectionCleaner cc;
+	static {
+		clients = new HashMap<String, DefaultHttpClient>();
+		SchemeRegistry sr = new PoolingClientConnectionManager( ).getSchemeRegistry();
+		cm = new PoolingClientConnectionManager( 
+					sr, CONNECTION_TTL, 
+					TimeUnit.SECONDS );
+		cm.setDefaultMaxPerRoute(400);
+		cm.setMaxTotal(1000);
+		cc = new ConnectionCleaner( cm, CONNECTION_TTL );
+	}
 	
 	/**
 	 * does a http get request
@@ -214,18 +235,17 @@ public class HTTPEngine4Impl {
             ProxyData proxy, railo.commons.net.http.Header[] headers, Map<String,String> formfields) throws IOException {
     	
     	// TODO HttpConnectionManager manager=new SimpleHttpConnectionManager();//MultiThreadedHttpConnectionManager();
-		BasicHttpParams params = new BasicHttpParams();
-    	DefaultHttpClient client = createClient(params,maxRedirect);
+    	DefaultHttpClient client = createClient( maxRedirect, timeout );
     	HttpHost hh=new HttpHost(url.getHost(),url.getPort());
     	setHeader(request,headers);
     	if(CollectionUtil.isEmpty(formfields))setContentType(request,charset);
     	setFormFields(request,formfields,charset);
     	setUserAgent(request,useragent);
-    	setTimeout(params,timeout);
     	HttpContext context=setCredentials(client,hh, username, password,false);  
     	setProxy(client,request,proxy);
         if(context==null)context = new BasicHttpContext();
-        return new HTTPResponse4Impl(url,context,request,client.execute(request,context));
+        HTTPResponse result = new HTTPResponse4Impl(url,context,request,client.execute(request,context));
+        return result;
     }
 	
 	private static void setFormFields(HttpUriRequest request, Map<String, String> formfields, String charset) throws IOException {
@@ -245,11 +265,32 @@ public class HTTPEngine4Impl {
     	}
 	}
 
-	public static DefaultHttpClient createClient(BasicHttpParams params, int maxRedirect) {
-    	params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
+	public static DefaultHttpClient createClient( int maxRedirect, long timeout ) {
+		String key = Integer.toString( maxRedirect ) + ":" + Long.toString( timeout );
+		if( !clients.containsKey( key ))
+			clients.put( key, _createClient( maxRedirect, timeout ) );
+		return clients.get( key );
+    	
+	}
+
+	private static DefaultHttpClient _createClient( int maxRedirect, long timeout ) {
+		BasicHttpParams params = new BasicHttpParams();
+		if( timeout > 0L ) setTimeout(params, timeout);
+		params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
     	if(maxRedirect>0)params.setParameter(ClientPNames.MAX_REDIRECTS, new Integer(maxRedirect));
     	params.setParameter(ClientPNames.REJECT_RELATIVE_REDIRECT, Boolean.FALSE);
-    	return new DefaultHttpClient(params);
+    	
+    	if ( CONNECTION_POOLING_ENABLED ) {
+        	_startConnectionCleanerIfNeeded();
+        	return new DefaultHttpClient( cm, params );
+    	} 
+        return new DefaultHttpClient( params );	
+	}
+
+	private synchronized static void _startConnectionCleanerIfNeeded() {
+		if ( !cc.isAlive() ) {
+			cc.start();
+		}
 	}
 
 	private static void setUserAgent(HttpMessage hm, String useragent) {
@@ -382,6 +423,30 @@ public class HTTPEngine4Impl {
 	public static Entity getResourceEntity(Resource res, String contentType) {
 		return new ResourceHttpEntity(res,contentType);
 	}
-
+	
+	private static class ConnectionCleaner extends Thread {
+		
+		PoolingClientConnectionManager cm;
+		int timeout;
+		ConnectionCleaner ( PoolingClientConnectionManager cm,  int timeout ) {
+			this.cm = cm;
+			this.timeout = timeout;
+			setDaemon(true);
+		}
+		
+		public synchronized void run () {
+			
+			while(true) {
+				cm.closeExpiredConnections();
+				cm.closeIdleConnections( timeout, TimeUnit.SECONDS);
+				try {
+					Thread.sleep( 5000 );
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 }

@@ -2,6 +2,8 @@ package railo.commons.net.http.httpclient4;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -23,13 +25,30 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	HttpResponse rsp;
 	HttpUriRequest req;
 	private URL url;
-	private HttpContext context; 
+	private HttpContext context;
+	private PipedInputStream is = null;
 
 	public HTTPResponse4Impl(URL url,HttpContext context, HttpUriRequest req,HttpResponse rsp) {
 		this.url=url;
 		this.context=context;
 		this.req=req;
 		this.rsp=rsp;
+		if( HTTPEngine4Impl.CONNECTION_POOLING_ENABLED ) {
+			// create thread to push content to a surrogate input stream, so that this class can appropriately close the underlying content inputstream and
+			// release connections back to the connection pool
+			HttpEntity e = rsp.getEntity();
+			if(e != null) {
+				is = new PipedInputStream();
+				PipedOutputStream os = null;
+				try {
+					os = new PipedOutputStream( is );
+					new Thread( new HTTPContentPiper( e.getContent(), os ) ).start();
+				}
+				catch (IOException e1) {
+					// is will be null
+				}
+			}
+		} 
 	}
 	
 	@Override
@@ -40,11 +59,10 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 
 	@Override
 	public String getContentAsString(String charset) throws IOException {
-		HttpEntity entity = rsp.getEntity();
 		InputStream is=null;
 		if(StringUtil.isEmpty(charset,true))charset=getCharset();
 		try{
-			return IOUtil.toString(is=entity.getContent(), charset);
+			return IOUtil.toString(is=getContentAsStream(), charset);
 		}
 		finally {
 			IOUtil.closeEL(is);
@@ -55,7 +73,11 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	public InputStream getContentAsStream() throws IOException {
 		HttpEntity e = rsp.getEntity();
 		if(e==null) return  null;
+		if( HTTPEngine4Impl.CONNECTION_POOLING_ENABLED ) {		
+			return is;
+		} 
 		return e.getContent();
+		
 	}
 	
 	@Override
@@ -64,7 +86,7 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 		InputStream is=null;
 		if(entity==null) return new byte[0];
 		try{
-			return IOUtil.toBytes(is=entity.getContent());
+			return IOUtil.toBytes(is=getContentAsStream());
 		}
 		finally {
 			IOUtil.closeEL(is);
@@ -156,5 +178,32 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 			trg[i]=new HeaderWrap(src[i]);
 		}
 		return trg;
+	}
+
+	/**
+	 * consumes an http inputstream and closes it
+	 */
+	private class HTTPContentPiper implements Runnable {
+		
+		private InputStream is;
+		private PipedOutputStream os;
+		
+		public HTTPContentPiper( InputStream is, PipedOutputStream os ) {
+			this.os = os;
+			this.is = is;
+		}
+		@Override
+		public void run() {
+			try {
+				IOUtil.copy( is, os,false,false );
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			IOUtil.closeEL( is );
+			IOUtil.closeEL( os );
+		}
+		
 	}
 }
