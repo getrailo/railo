@@ -1,5 +1,7 @@
 package railo.runtime.coder;
 
+import org.apache.commons.codec.binary.Hex;
+
 import railo.commons.io.CharsetUtil;
 
 
@@ -14,19 +16,7 @@ public final class HexCoder {
 	 * @return encoed String
 	 */
 	public static String encode(byte[] bytes) {
-		String retorno = "";
-		if (bytes==null || bytes.length==0) {
-			return retorno;
-		}
-		for (int i=0; i<bytes.length; i++) {
-			byte valor = bytes[i];
-			int d1 = valor & 0xF;
-			d1 += (d1 < 10) ? 48 : 55;
-			int d2 = (valor & 0xF0) >> 4;
-			d2 += (d2 < 10) ? 48 : 55;
-			retorno = retorno + (char)d2 + (char)d1;
-		}
-		return retorno;
+		return Hex.encodeHexString(bytes).toUpperCase();
 	}
 
 	/**
