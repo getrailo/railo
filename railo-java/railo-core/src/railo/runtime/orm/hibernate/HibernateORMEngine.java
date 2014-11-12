@@ -70,6 +70,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 	@Override
 	public ORMSession createSession(PageContext pc) throws PageException {
+		/*
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
 		
@@ -79,10 +80,10 @@ public class HibernateORMEngine implements ORMEngine {
 		
 				
 		DatasourceConnection dc = CommonUtil.getDatasourceConnection(pc,ds);
-			
+		*/
 		try{
 			SessionFactoryData data = getSessionFactoryData(pc, INIT_NOTHING);
-			return new HibernateORMSession(data,dc);
+			return new HibernateORMSession(data);
 		}
 		catch(PageException pe){
 			//manager.releaseConnection(pc, dc);// connection is closed when session ends

@@ -43,12 +43,10 @@ import railo.runtime.type.scope.Argument;
 public class HibernateORMSession implements ORMSession{
 
 	private Session _session;
-	private DatasourceConnection dc;
 	private SessionFactoryData data;
 
-	public HibernateORMSession(SessionFactoryData data, DatasourceConnection dc){
+	public HibernateORMSession(SessionFactoryData data){
 		this.data=data;
-		this.dc=dc;
 		resetSession(data.getFactory());
 	}
 	
@@ -70,7 +68,7 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 	void resetSession(SessionFactory factory) {
-		_session = factory.openSession(dc.getConnection());
+		_session = factory.openSession();
 		_session.setFlushMode(FlushMode.MANUAL);
 	}
 
@@ -408,8 +406,8 @@ public class HibernateORMSession implements ORMSession{
 	@Override
 	public void close(PageContext pc) throws PageException {
 		session().close();
-		CommonUtil.releaseDatasourceConnection(pc, dc);
-		dc=null;
+		//CommonUtil.releaseDatasourceConnection(pc, dc);
+		//dc=null;
 	}
 	
 	@Override
@@ -667,10 +665,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	@Override
 	public DataSource getDataSource(){
-		if(dc==null) {
-			return data.getDataSource();
-		}
-		return dc.getDatasource();
+		return data.getDataSource();
 	}
 
 	@Override
