@@ -9494,6 +9494,13 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<description>Password that corresponds to user name.</description>
 		</attribute>
 		<attribute>
+			<type>boolean</type>
+			<name>secure</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>enables SSL for pop requests</description>
+		</attribute>
+		<attribute>
 			<type>string</type>
 			<name>action</name>
 			<values>getHeaderOnly,getAll,delete</values>

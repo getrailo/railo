@@ -2,6 +2,8 @@ package railo.runtime.net.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.Enumeration;
@@ -22,8 +24,11 @@ import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.URLName;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+
+import com.sun.mail.pop3.POP3SSLStore;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
@@ -107,14 +112,18 @@ public abstract class MailClient {
 	private int maxrows = 0;
 	private boolean uniqueFilenames = false;
 	private Resource attachmentDirectory = null;
+	private boolean secure = false;
 
+	public static MailClient getInstance(int type,String server, int port, String username, String password, boolean secure){
+		if(TYPE_POP3==type)
+			return new PopClient(server,port,username,password, secure);
+		if(TYPE_IMAP==type)
+			return new ImapClient(server,port,username,password, secure);
+		return null;
+	}
 	
 	public static MailClient getInstance(int type,String server, int port, String username, String password){
-		if(TYPE_POP3==type)
-			return new PopClient(server,port,username,password);
-		if(TYPE_IMAP==type)
-			return new ImapClient(server,port,username,password);
-		return null;
+		return getInstance(type,server,port,username,password,false);
 	}
 	
 	/**
@@ -124,7 +133,7 @@ public abstract class MailClient {
 	 * @param username
 	 * @param password
 	 */
-	public MailClient(String server, int port, String username, String password) {
+	public MailClient(String server, int port, String username, String password, boolean secure) {
 		timeout = 60000;
 		startrow = 0;
 		maxrows = -1;
@@ -133,6 +142,7 @@ public abstract class MailClient {
 		this.port = port;
 		this.username = username;
 		this.password = password;
+		this.secure = secure;
 	}
 
 
@@ -186,10 +196,21 @@ public abstract class MailClient {
 		//properties.put("mail.mime.charset", "UTF-8");
 	        
 		
-		if(TYPE_IMAP==getType())properties.put("mail.imap.partialfetch", "false" );
-		
+		if(TYPE_IMAP==getType()) properties.put("mail.imap.partialfetch", "false" );
+		else {
+			if(secure) properties.put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); // will failover 
+		}
+
 		_fldtry = username != null ? Session.getInstance(properties, new _Authenticator(username, password)) : Session.getInstance(properties);
-		_fldelse = _fldtry.getStore(type);
+		
+		
+		
+		if(TYPE_POP3==getType() && secure) {
+			URLName url = new URLName("pop3", server, port, "",username, password);
+			_fldelse = new POP3SSLStore(_fldtry, url);
+		} else {
+			_fldelse = _fldtry.getStore(type);
+		}
 		if(!StringUtil.isEmpty(username))_fldelse.connect(server,username,password);
 		else _fldelse.connect();
 	}

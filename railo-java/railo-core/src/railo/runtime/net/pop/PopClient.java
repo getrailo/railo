@@ -10,8 +10,8 @@ import com.sun.mail.pop3.POP3Folder;
 
 public final class PopClient extends MailClient {
 
-	public PopClient(String server, int port, String username, String password) {
-		super(server, port, username, password);
+	public PopClient(String server, int port, String username, String password, boolean secure) {
+		super(server, port, username, password, secure);
 	}
 
 	protected String getId(Folder folder,Message message) throws MessagingException {
