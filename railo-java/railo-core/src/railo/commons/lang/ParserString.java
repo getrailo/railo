@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.commons.lang;
 
 import railo.commons.io.SystemUtil;
@@ -87,14 +103,14 @@ public final class ParserString {
 
 	/**
 	 * Stellt den internen Zeiger auf die naechste Position. 
-	 * Überlappungen ausserhalb des Index des Textes werden ignoriert.
+	 * ï¿½berlappungen ausserhalb des Index des Textes werden ignoriert.
 	*/
 	public void next(){
 		pos++;
 	}
 	/**
 	 * Stellt den internen Zeiger auf die vorhergehnde Position. 
-	 * Überlappungen ausserhalb des Index des Textes werden ignoriert.
+	 * ï¿½berlappungen ausserhalb des Index des Textes werden ignoriert.
 	 */
 	public void previous(){
 		pos--;
@@ -432,7 +448,7 @@ public final class ParserString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -481,7 +497,7 @@ public final class ParserString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -513,7 +529,7 @@ public final class ParserString {
 	/**
 	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der ï¿½bereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
 	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
@@ -757,7 +773,7 @@ public final class ParserString {
 	/**
 	 * Gibt zurueck, ausgehend von der aktuellen Position, 
 	 * wann das naechste Zeichen folgt das gleich ist wie die Eingabe, 
-	 * falls keines folgt wird –1 zurueck gegeben. 
+	 * falls keines folgt wird ï¿½1 zurueck gegeben. 
 	 * Gross- und Kleinschreibung der Zeichen werden igoriert.
 	 * @param c gesuchtes Zeichen
 	 * @return Zeichen das gesucht werden soll.
