@@ -1,4 +1,19 @@
-<cffunction name="trace" returntype="void" caller="true" 
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cffunction name="trace" returntype="void" caller="true" 
 	hint="Displays and logs debugging data about the state of an application at the time this function executes. 
 Tracks runtime logic flow, variable values, and execution time. Displays output at the end of the request or in the debugging section at the end of the request."><!---
 	---><cfargument name="caller" type="struct" required="yes" hint="The Caller Scope" status="hidden"><!---

@@ -1,4 +1,19 @@
-<cfcomponent extends="Driver" output="false" implements="IDriver">
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cfcomponent extends="Driver" output="false" implements="IDriver">
 	<cfset this.className="com.microsoft.jdbc.sqlserver.SQLServerDriver">
 	<cfset this.dsn="jdbc:sqlserver://{host}:{port}">
 		
@@ -13,11 +28,11 @@
 
     <ul><li>
 
-      Direct—When the driver uses the Direct method, the database server sends the complete result set in a single response to the driver when responding to a query.
+      Directï¿½When the driver uses the Direct method, the database server sends the complete result set in a single response to the driver when responding to a query.
 
     <li>
 
-      Cursor—When the driver uses the Cursor method, a server-side cursor is requested. The rows are retrieved from the server in blocks when returning forward-only result sets.</ul>","select")
+      Cursorï¿½When the driver uses the Cursor method, a server-side cursor is requested. The rows are retrieved from the server in blocks when returning forward-only result sets.</ul>","select")
 	)>
 	
 	

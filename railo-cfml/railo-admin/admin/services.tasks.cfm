@@ -1,4 +1,19 @@
-<cfset stText.remote.settings.title="Task Settings">
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cfset stText.remote.settings.title="Task Settings">
 <cfset stText.remote.title="Tasks">
 <cfset stText.remote.settings.maxThreads="Maximum concurrent threads">
 <cfset stText.remote.settings.maxThreadsDesc="Maximum number of parallel threads used to execute tasks at the same time, fewer threads will take longer to execute all open threads, more threads will add more load to the system.">

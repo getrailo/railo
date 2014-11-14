@@ -1,4 +1,19 @@
-<cfsavecontent variable='content'>iVBORw0KGgoAAAANSUhEUgAAAAQAAAAfCAIAAABPgvtxAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAINJREFUeNrEkDsKBCEMhqOoWAiewML738bGzhtoI+ID0Q0zU0wxs8U2+xchjz8JfOCcCyGMMfbe1FrLOffet9ZIrRUAUkqlFLoPaa1zzgwznBBCMFK46b24dh6Kd9svB/7y9IvtVO9dCMHWWggVcUopWYxxzokthM6Qv1LKGIO2jwADAIhxYhIjefe6AAAAAElFTkSuQmCC</cfsavecontent>
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cfsavecontent variable='content'>iVBORw0KGgoAAAANSUhEUgAAAAQAAAAfCAIAAABPgvtxAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAINJREFUeNrEkDsKBCEMhqOoWAiewML738bGzhtoI+ID0Q0zU0wxs8U2+xchjz8JfOCcCyGMMfbe1FrLOffet9ZIrRUAUkqlFLoPaa1zzgwznBBCMFK46b24dh6Kd9svB/7y9IvtVO9dCMHWWggVcUopWYxxzokthM6Qv1LKGIO2jwADAIhxYhIjefe6AAAAAElFTkSuQmCC</cfsavecontent>
 
 	<cfsetting showdebugoutput='#false#'>
 	<cfif getBaseTemplatePath() == getCurrentTemplatePath()>	

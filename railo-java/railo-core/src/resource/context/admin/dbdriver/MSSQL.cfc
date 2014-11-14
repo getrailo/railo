@@ -1,4 +1,19 @@
-<cfcomponent extends="types.Driver" output="false" implements="types.IDatasource">
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cfcomponent extends="types.Driver" output="false" implements="types.IDatasource">
 	<cfset this.className="com.microsoft.jdbc.sqlserver.SQLServerDriver">
 	<cfset this.dsn="jdbc:sqlserver://{host}:{port}">
 		
@@ -10,8 +25,8 @@
 	<cfset fields=array()>
 	<cfset fields=array(
 		field("Select Method","SelectMethod","direct,cursor",true,"A hint to the driver that determines whether the driver requests a database cursor for Select statements. Performance and behavior of the driver are affected by this property, which is defined as a hint because the driver may not always be able to satisfy the requested method.<ul>
-	<li>Direct—When the driver uses the Direct method, the database server sends the complete result set in a single response to the driver when responding to a query.
-	<li>Cursor—When the driver uses the Cursor method, a server-side cursor is requested. The rows are retrieved from the server in blocks when returning forward-only result sets.</ul>","select")
+	<li>Directï¿½When the driver uses the Direct method, the database server sends the complete result set in a single response to the driver when responding to a query.
+	<li>Cursorï¿½When the driver uses the Cursor method, a server-side cursor is requested. The rows are retrieved from the server in blocks when returning forward-only result sets.</ul>","select")
 	
 	,field("Send String Parameters as Unicode","sendStringParametersAsUnicode","true,false",true,"Set to ""false"" to specify that prepared parameters for character data are sent as ASCII instead of Unicode. 
 	This parameter can improve performance for character data index lookup on non-Unicode, SQL Server 2000, or SQL Server 2005 tables. For example, ASCII row keys can be compared directly without the overhead of conversion from Unicode.","radio")

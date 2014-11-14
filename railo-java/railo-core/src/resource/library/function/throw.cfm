@@ -1,4 +1,19 @@
-<cffunction name="throw" output="no" returntype="void" 
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cffunction name="throw" output="no" returntype="void" 
 	hint="Throws a developer-specified exception, which can be caught with a cfcatch tag"><cfargument 
     name="message" type="string" required="no" hint="Message that describes exception event."><cfargument 
     name="type" type="string" required="no" default="application" hint="- A custom type

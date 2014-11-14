@@ -1,4 +1,19 @@
-<cffunction name="threadJoin" output="no" returntype="void" 
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cffunction name="threadJoin" output="no" returntype="void" 
 	hint="Makes the current thread wait until the thread or threads specified in the name attribute complete processing, 
 or until the period specified in the timeout argument passes, before continuing processing. If you don't specify a timeout and thread you are joining
             to doesn't finish, the current thread also cannot finish processing."><cfargument 

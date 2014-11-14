@@ -1,4 +1,19 @@
-
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ --->
 <cfset stText.Components.name="Name">
 <cfset stText.Components.nameMissing="Missing the name for the new Mapping, this name is used when you deploy a Railo Archive (.ra,.ras) based on this Mapping.">
 <cfset stText.Components.nameDesc="The name is used as identifier when you automaticly import a Railo Archive build based on this Mapping.">

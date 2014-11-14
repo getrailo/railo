@@ -1,4 +1,19 @@
-<cfset stText.ext.minRailoVersion="Railo Version">
+<!--- 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ ---><cfset stText.ext.minRailoVersion="Railo Version">
 <cfset stText.ext.minRailoVersionDesc="Minimal Railo Version needed for this Extension.">
 <cfset stText.ext.toSmallVersion="You need at least the Railo {version} to install this Extension">
 <cfset detail=getDetailByUid(url.uid)>
