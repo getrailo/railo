@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.transformer.cfml.evaluator;
 
 import java.util.Vector;
@@ -10,7 +26,7 @@ import railo.transformer.util.CFMLString;
 
 /**
  *
- * Wenn der CFML Transformer waehrend des Übersetzungsprozess auf einen Tag stoesst, 
+ * Wenn der CFML Transformer waehrend des ï¿½bersetzungsprozess auf einen Tag stoesst, 
  * prueft er mithilfe der passenden TagLib, 
  * ob dieses Tag eine Evaluator definiert hat. 
  * Wenn ein Evaluator definiert ist, kann der CFML Transformer diesen aber nicht sofort aufrufen, 
@@ -19,7 +35,7 @@ import railo.transformer.util.CFMLString;
  * Hier kommt der EvaluatorPool zum Einsatz, 
  * der CFMLTransfomer uebergibt den Evaluator den er von der TagLib erhalten hat, 
  * an den EvaluatorPool weiter. 
- * Sobald der CFMLTransfomer den Übersetzungsprozess abgeschlossen hat, 
+ * Sobald der CFMLTransfomer den ï¿½bersetzungsprozess abgeschlossen hat, 
  * ruft er dann den EvaluatorPool auf und dieser ruft dann alle Evaluatoren auf die im uebergeben wurden. 
 
  */
@@ -32,14 +48,14 @@ public final class EvaluatorPool {
 	 * @param libTag  Die Definition des Tag aus der TLD.
 	 * @param cfxdTag Das konkrete Tag innerhalb der kompletten CFXD.
 	 * @param flibs Saemtliche Function Library Deskriptoren des aktuellen Tag Libray Deskriptors.
-	 * @param cfml CFMLString des aktuellen Übersetzungsprozess.
+	 * @param cfml CFMLString des aktuellen ï¿½bersetzungsprozess.
 	 */
 	public void add(TagLibTag libTag,Tag tag, FunctionLib[] flibs, CFMLString cfml) {
 		v.add(new EvaluatorData(libTag,tag,flibs,cfml));
 	}
 
 	/**
-	 * Die Methode run wird aufgerufen sobald, der CFML Transformer den Übersetzungsprozess angeschlossen hat.
+	 * Die Methode run wird aufgerufen sobald, der CFML Transformer den ï¿½bersetzungsprozess angeschlossen hat.
 	 * Die metode run rauft darauf alle Evaluatoren auf die intern gespeicher wurden und loescht den internen Speicher.
 	 * @throws TemplateException
 	 */
@@ -84,7 +100,7 @@ public final class EvaluatorPool {
 		* @param libTag  Die Definition des Tag aus der TLD.
 	 	* @param cfxdTag Das konkrete Tag innerhalb der kompletten CFXD.
 	 	* @param flibs Saemtliche Function Library Deskriptoren des aktuellen Tag Libray Deskriptors.
-	 	* @param cfml CFMLString des aktuellen Übersetzungsprozess.
+	 	* @param cfml CFMLString des aktuellen ï¿½bersetzungsprozess.
 	 	*/
 		public EvaluatorData(TagLibTag libTag,Tag tag, FunctionLib[] flibs, CFMLString cfml) {
 			this.libTag=libTag;
@@ -96,7 +112,7 @@ public final class EvaluatorPool {
 		
 		/**
 		 * Gibt den aktuellen CFMLString zurueck.
-		 * @return CFMLString des aktuellen Übersetzungsprozess.
+		 * @return CFMLString des aktuellen ï¿½bersetzungsprozess.
 		 */
 		public CFMLString getCfml() {
 			return cfml;

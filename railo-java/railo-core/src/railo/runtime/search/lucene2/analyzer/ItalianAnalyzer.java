@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.runtime.search.lucene2.analyzer;
 
 import java.io.Reader;
@@ -19,37 +35,37 @@ public final class ItalianAnalyzer extends Analyzer {
                     "al", "all", "alla", "alle", "allo", "anche", "avemmo",
                     "avendo", "avesse", "avessero", "avessi", "avessimo",
                     "aveste", "avesti", "avete", "aveva", "avevamo", "avevano",
-                    "avevate", "avevi", "avevo", "avrˆ", "avrai", "avranno",
+                    "avevate", "avevi", "avevo", "avrï¿½", "avrai", "avranno",
                     "avrebbe", "avrebbero", "avrei", "avremmo", "avremo",
-                    "avreste", "avresti", "avrete", "avr˜", "avuta", "avute",
+                    "avreste", "avresti", "avrete", "avrï¿½", "avuta", "avute",
                     "avuti", "avuto", "c", "che", "chi", "ci", "coi", "come",
                     "con", "contro", "cui", "da", "dagl", "dagli", "dai",
                     "dal", "dall", "dalle", "dallo", "degl", "degli", "dei",
                     "del", "dell", "della", "delle", "dello", "di", "dov",
-                    "dove", "e", "", "ebbe", "ebbero", "ebbi", "ed", "erano",
-                    "eravamo", "eravate", "eri", "ero", "essendo", "fa", "fˆ",
+                    "dove", "e", "ï¿½", "ebbe", "ebbero", "ebbi", "ed", "erano",
+                    "eravamo", "eravate", "eri", "ero", "essendo", "fa", "fï¿½",
                     "facciamo", "facciano", "faccio", "facemmo", "facendo",
                     "facesse", "facessero", "facessi", "facessimo", "faceste",
                     "facesti", "faceva", "facevamo", "facevano", "facevate",
-                    "facevi", "facevo", "fai", "fanno", "farˆ", "farai",
+                    "facevi", "facevo", "fai", "fanno", "farï¿½", "farai",
                     "faranno", "farebbe", "farebbero", "farei", "faremmo",
-                    "faremo", "fareste", "faresti", "farete", "far˜", "fece",
+                    "faremo", "fareste", "faresti", "farete", "farï¿½", "fece",
                     "fecero", "fossero", "fossimo", "foste", "fosti", "fu",
                     "fui", "fummo", "furono", "gli", "ha", "hai", "hanno",
-                    "ho", "i", "il", "in", "io", "l", "la", "lˆ", "le", "lei",
-                    "li", "l“", "lo", "loro", "lui", "ma", "mi", "mia", "mie",
+                    "ho", "i", "il", "in", "io", "l", "la", "lï¿½", "le", "lei",
+                    "li", "lï¿½", "lo", "loro", "lui", "ma", "mi", "mia", "mie",
                     "miei", "mio", "ne", "negl", "negli", "nei", "nel", "nell",
                     "nella", "nelle", "nello", "noi", "non", "nostra",
-                    "nostre", "nostri", "nostro", "o", "per", "perch", "pi",
+                    "nostre", "nostri", "nostro", "o", "per", "perchï¿½", "piï¿½",
                     "quale", "quanta", "quante", "quanti", "quanto", "quella",
                     "quelle", "quelli", "quello", "questa", "queste", "questi",
-                    "questo", "sarˆ", "sarai", "saranno", "sarebbe",
+                    "questo", "sarï¿½", "sarai", "saranno", "sarebbe",
                     "sarebbero", "sarei", "saremmo", "saremo", "sareste",
-                    "saresti", "sarete", "sar˜", "se", "sei", "si", "s“",
+                    "saresti", "sarete", "sarï¿½", "se", "sei", "si", "sï¿½",
                     "sia", "siamo", "siano", "siate", "siete", "sono", "sta",
-                    "stai", "stando", "stanno", "starˆ", "starai", "staranno",
+                    "stai", "stando", "stanno", "starï¿½", "starai", "staranno",
                     "starebbe", "starebbero", "starei", "staremmo", "staremo",
-                    "stareste", "staresti", "starete", "star˜", "stava",
+                    "stareste", "staresti", "starete", "starï¿½", "stava",
                     "stavamo", "stavano", "stavate", "stavi", "stavo",
                     "stemmo", "stesse", "stessero", "stessi", "stessimo",
                     "steste", "stesti", "stette", "stettero", "stetti", "stia",

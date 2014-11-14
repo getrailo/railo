@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.transformer.library.tag;
 
 import java.io.IOException;
@@ -113,7 +129,7 @@ public class TagLib implements Cloneable {
 	
 	/**
 	 * Gibt einen Tag (TagLibTag)zurueck, dessen Name mit dem uebergebenen Wert uebereinstimmt,
-	 * falls keine Übereinstimmung gefunden wird, wird null zurueck gegeben.
+	 * falls keine ï¿½bereinstimmung gefunden wird, wird null zurueck gegeben.
 	 * @param name Name des Tag das zurueck gegeben werden soll.
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
@@ -137,7 +153,7 @@ public class TagLib implements Cloneable {
 	 * Gibt einen Tag (TagLibTag)zurueck, welches definiert hat, dass es einen Appendix besitzt.
 	 * D.h. dass der Name des Tag mit weiteren Buchstaben erweitert sein kann, 
 	 * also muss nur der erste Teil des Namen vom Tag mit dem uebergebenen Namen uebereinstimmen.
-	 * Wenn keine Übereinstimmung gefunden wird, wird null zurueck gegeben.
+	 * Wenn keine ï¿½bereinstimmung gefunden wird, wird null zurueck gegeben.
 	 * @param name Name des Tag inkl. Appendix das zurueck gegeben werden soll.
 	 * @return TagLibTag Tag das auf den Namen passt.
 	 */
@@ -170,7 +186,7 @@ public class TagLib implements Cloneable {
 	}
 
 	/**
-	 * LŠdt den innerhalb der TagLib definierten ExprTransfomer und gibt diesen zurŸck.
+	 * Lï¿½dt den innerhalb der TagLib definierten ExprTransfomer und gibt diesen zurï¿½ck.
 	 * Load Expression Transfomer defined in the tag library and return it.
 	 * @return ExprTransformer
 	 * @throws TagLibException

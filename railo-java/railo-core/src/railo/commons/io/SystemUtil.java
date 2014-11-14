@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.commons.io;
 
 import java.io.File;
@@ -85,6 +101,11 @@ public final class SystemUtil {
 	public static final int JAVA_VERSION_1_9 = 9;
 	
 
+	public static final char SYMBOL_EURO = "\u20ac".charAt(0);
+	public static final char SYMBOL_POUND = "\u00a3".charAt(0);
+	public static final char SYMBOL_MICRO = "\u03bc".charAt(0);
+	public static final char SYMBOL_A_RING = "\u00e5".charAt(0);
+	
 	public static final int OUT = 0;
 	public static final int ERR = 1;
 	

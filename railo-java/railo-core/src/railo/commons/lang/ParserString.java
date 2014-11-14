@@ -1,5 +1,7 @@
 package railo.commons.lang;
 
+import railo.commons.io.SystemUtil;
+
 
 
 /**
@@ -279,12 +281,12 @@ public final class ParserString {
 	}
 	
     /**
-     * Gibt zurueck ob das aktuelle Zeichen ein Special Buchstabe ist (_,€,$,£).
+     * Gibt zurueck ob das aktuelle Zeichen ein Special Buchstabe ist.
      * @return Gibt zurueck ob das aktuelle Zeichen ein Buchstabe ist.
      */
     public boolean isCurrentSpecial() {
         if(!isValidIndex()) return false;
-        return lcText[pos]=='_' || lcText[pos]=='$' || lcText[pos]=='€' || lcText[pos]=='£';
+        return lcText[pos]=='_' || lcText[pos]=='$' || lcText[pos]==SystemUtil.SYMBOL_EURO || lcText[pos]==SystemUtil.SYMBOL_POUND;
     }
 	
 	/**

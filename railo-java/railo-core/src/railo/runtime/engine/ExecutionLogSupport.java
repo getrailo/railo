@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.runtime.engine;
 
 import java.util.Collections;
@@ -32,7 +48,7 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 			if(_unit!=null) {
 				_unit=_unit.trim();
 				if(_unit.equalsIgnoreCase("micro"))		unit=UNIT_MICRO;
-				else if(_unit.equalsIgnoreCase("µs"))	unit=UNIT_MICRO;
+				else if(_unit.equalsIgnoreCase("ï¿½s"))	unit=UNIT_MICRO;
 				else if(_unit.equalsIgnoreCase("milli"))unit=UNIT_MILLI;
 				else if(_unit.equalsIgnoreCase("ms"))	unit=UNIT_MILLI;
 			}
@@ -51,7 +67,7 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 			l = Caster.toLongValue(sub.trim(),Long.MIN_VALUE);
 			if(l!=Long.MIN_VALUE) return l;
 		}
-		else if(str.endsWith("µs")) {
+		else if(str.endsWith("ï¿½s")) {
 			String sub=str.substring(0,str.length()-2);
 			double d = Caster.toDoubleValue(sub.trim(),Double.NaN);
 			if(!Double.isNaN(d)) return (long)(d*1000);
@@ -73,7 +89,7 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 	/*public static void main(String[] args) {
 		print.e(toNanos("123456"));
 		print.e(toNanos("123456ns"));
-		print.e(toNanos("123.456µs"));
+		print.e(toNanos("123.456ï¿½s"));
 		print.e(toNanos("0.123456 ms"));
 		print.e(toNanos("123456 ns"));
 	}*/
@@ -103,12 +119,12 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 
 
 	protected String timeLongToString(long current) {
-		if(unit==UNIT_MICRO) return (current/1000L)+" µs";
+		if(unit==UNIT_MICRO) return (current/1000L)+" ï¿½s";
 		if(unit==UNIT_MILLI) return (current/1000000L)+" ms";
 		return current+" ns";
 	}
 	protected static String unitShortToString(short unit) {
-		if(unit==UNIT_MICRO) return "µs";
+		if(unit==UNIT_MICRO) return "ï¿½s";
 		if(unit==UNIT_MILLI) return "ms";
 		return "ns";
 	}

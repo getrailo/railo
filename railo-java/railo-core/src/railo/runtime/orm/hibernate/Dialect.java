@@ -1,3 +1,19 @@
+/**
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either 
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ **/
 package railo.runtime.orm.hibernate;
 
 import java.util.Iterator;
@@ -15,7 +31,7 @@ public class Dialect {
 	static {
 		// if this list change, also update list in web-cfmtaglibrary_1 for "application-ormsettings-dialect" 
 		dialects.setEL("Cache71", org.hibernate.dialect.Cache71Dialect.class.getName());
-		dialects.setEL("CachŽ 2007.1", org.hibernate.dialect.Cache71Dialect.class.getName());
+		dialects.setEL("Cachï¿½ 2007.1", org.hibernate.dialect.Cache71Dialect.class.getName());
 		dialects.setEL("Cache 2007.1", org.hibernate.dialect.Cache71Dialect.class.getName());
 		
 		dialects.setEL("DataDirectOracle9", org.hibernate.dialect.DataDirectOracle9Dialect.class.getName());
