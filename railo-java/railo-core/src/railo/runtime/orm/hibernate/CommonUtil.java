@@ -22,6 +22,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.hibernate.JDBCException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -29,6 +30,7 @@ import org.xml.sax.SAXException;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.types.RefBoolean;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.Util;
 import railo.runtime.Component;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
@@ -296,13 +298,26 @@ public class CommonUtil {
 	}
 	
 	public static PageException toPageException(Throwable t) {
-		if (!(t instanceof org.hibernate.HibernateException))
-			return caster().toPageException(t);
-		org.hibernate.HibernateException he = (org.hibernate.HibernateException)t;
-		Throwable cause = he.getCause();
-		if(cause == null) 
-			return caster().toPageException(t);	
-		return caster().toPageException( cause );
+		PageException pe = caster().toPageException(t);;
+		if (t instanceof org.hibernate.HibernateException) {
+			org.hibernate.HibernateException he = (org.hibernate.HibernateException)t;
+			Throwable cause = he.getCause();
+			if(cause != null) {
+				pe = caster().toPageException( cause );
+				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("hibernate exception"), t );
+			}
+		}
+		if ( t instanceof JDBCException ) {
+			JDBCException je = (JDBCException)t;
+			ExceptionUtil.setAdditional(pe, CommonUtil.createKey("sql"), je.getSQL());
+		}
+		if( t instanceof ConstraintViolationException) {
+			ConstraintViolationException cve = (ConstraintViolationException)t;
+			if(!Util.isEmpty(cve.getConstraintName())) {
+				ExceptionUtil.setAdditional(pe, CommonUtil.createKey("constraint name"), cve.getConstraintName());
+			}
+		}
+		return pe;
 	}
 	public static Serializable toSerializable(Object obj) throws PageException {
 		return caster().toSerializable(obj);
