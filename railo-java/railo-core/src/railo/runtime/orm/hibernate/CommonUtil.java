@@ -296,18 +296,13 @@ public class CommonUtil {
 	}
 	
 	public static PageException toPageException(Throwable t) {
-		if (!(t instanceof JDBCException))
+		if (!(t instanceof org.hibernate.HibernateException))
 			return caster().toPageException(t);
-		
-		
-		JDBCException j = (JDBCException)t;
-		String message = j.getMessage(); 
-		Throwable cause = j.getCause();
-		if(cause != null) {
-			message += " [" + cause.getMessage() + "]";
-		}
-		return CFMLEngineFactory.getInstance().getExceptionUtil().createDatabaseException(message, new SQLImpl(j.getSQL()));
-		
+		org.hibernate.HibernateException he = (org.hibernate.HibernateException)t;
+		Throwable cause = he.getCause();
+		if(cause == null) 
+			return caster().toPageException(t);	
+		return caster().toPageException( cause );
 	}
 	public static Serializable toSerializable(Object obj) throws PageException {
 		return caster().toSerializable(obj);
