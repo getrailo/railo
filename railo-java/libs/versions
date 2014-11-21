@@ -49,7 +49,7 @@
 	<jar version="1.16.1" path="jacob.jar" comment=""/>
 	<jar version="1.0.8" path="javaparser.jar" comment=""/>
 	<jar version="3.9.0.GA" path="javassist.jar" comment=""/>
-	<jar version="3.0.0.v201112011016" path="javax.servlet.jar" comment=""/>
+	<jar version="1.4.1-01" path="javax.servlet.jar" comment=""/>
 	<jar version="1.0.10" path="jcommon.jar" comment=""/>
 	<jar version="1.4.2_04" path="jencrypt.jar" comment=""/>
 	<jar version="1.4.2_09-b05" path="jffmpeg.jar" comment=""/>
