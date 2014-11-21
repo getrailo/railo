@@ -1072,9 +1072,10 @@ public final class ConfigWebFactory extends ConfigFactory {
 		if (!f.exists())
 			createFileFromResourceEL("/resource/context/Application.cfm", f);
 
+		/*/
 		f = contextDir.getRealResource("form.cfm");
 		if (!f.exists() || doNew)
-			createFileFromResourceEL("/resource/context/form.cfm", f);
+			createFileFromResourceEL("/resource/context/form.cfm", f);		//*/
 
 		f = contextDir.getRealResource("graph.cfm");
 		if (!f.exists() || doNew)

@@ -453,7 +453,7 @@ public final class Form extends BodyTagImpl {
             //hasListener=true;
         }
         
-        if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form.cfm";
+        if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/res/js/form.cfm";
         attributes.setEL("method",method);
         
         pageContext.forceWrite("<script language = \"JavaScript\" type=\"text/javascript\" src=\""+scriptSrc+"\"></script>");
