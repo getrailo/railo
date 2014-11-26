@@ -66,11 +66,7 @@ public final class Base64Coder {
      * @throws CoderException 
      */
     public static byte[] decode(String encoded) throws CoderException {
-        try {
-        	return Base64Encoder.decode(encoded);
-        }
-        catch(Throwable t) {
-        	throw new CoderException("can't decode input ["+encoded+"]");
-        }
+    	return Base64Encoder.decode(encoded);
     }
+    
 }
