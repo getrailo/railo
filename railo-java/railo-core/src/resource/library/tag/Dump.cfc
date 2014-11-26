@@ -299,8 +299,8 @@ You can use your custom style by creating a corresponding file in the railo/dump
 
 						var nodeHtml = HTMLEditFormat(node);
 
-						if (arguments.meta.type == "numeric" && isNumeric(nodeHtml))
-							nodeHtml = LSNumberFormat(nodeHtml, ',');
+						//if (arguments.meta.type == "numeric" && isNumeric(nodeHtml))
+						//	nodeHtml = LSNumberFormat(nodeHtml, ',');
 /*
 // If you want to suppress the type of an element, just uncomment these lines and set the variable in the corresponding skin method below
 if (variables.bSuppressType) {
