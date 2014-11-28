@@ -121,7 +121,7 @@ Create Datasource --->
 	</cfif>
 
 	<div class="pageintro">#stText.setting.cacheDesc#</div>
-	
+				
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<table class="maintbl">
 			<tbody>
@@ -180,6 +180,7 @@ Create Datasource --->
 				</tr>
 				
 				<!--- PagePool --->
+				<cfif request.admintype EQ "web">
 				<tr>
 					<th scope="row">#stText.setting.templateCache#</th>
 					<td class="fieldPadded">
@@ -193,8 +194,10 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				</cfif>
 				
 				<!--- Query Cache --->
+				<cfif request.admintype EQ "web">
 				<tr>
 					<th scope="row">#stText.setting.queryCache#</th>
 					<td class="fieldPadded">
@@ -208,8 +211,10 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				</cfif>
 				
 				<!--- Component Path Cache --->
+				<cfif request.admintype EQ "web">
 				<tr>
 					<th scope="row">#stText.setting.componentCache#</th>
 					<td class="fieldPadded">
@@ -223,8 +228,10 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
+				</cfif>
 				
 				<!--- Customtag Path Cache --->
+				<cfif request.admintype EQ "web">
 				<tr>
 					<th scope="row">#stText.setting.ctCache#</th>
 					<td class="fieldPadded">
@@ -238,7 +245,7 @@ Create Datasource --->
 						<cfset renderCodingTip( codeSample, stText.settings.codetip )>
 					</td>
 				</tr>
-				
+				</cfif>
 				
 				<cfif hasAccess>
 					<cfmodule template="remoteclients.cfm" colspan="2">
