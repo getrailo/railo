@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.collection.LinkedHashMapMaxSize;
 import railo.commons.collection.MapFactory;
 import railo.commons.digest.Hash;
@@ -90,7 +91,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private int delay=1;
 	private boolean captcha=false;
 	private boolean rememberMe=true;
-	private static ConfigServerImpl instance;
+	//private static ConfigServerImpl instance;
 
 	private String[] authKeys;
 	private String idPro;
@@ -109,10 +110,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     protected ConfigServerImpl(CFMLEngineImpl engine,Map<String,CFMLFactory> initContextes, Map<String,CFMLFactory> contextes, Resource configDir, Resource configFile) {
     	super(null,configDir, configFile);
     	this.engine=engine;
-        this.initContextes=initContextes;
+    	engine.setConfigServerImpl(this);
+    	
+    	this.initContextes=initContextes;
         //this.contextes=contextes;
         this.rootDir=configDir;
-        instance=this;
+        //instance=this;
     }
 	
     /**
@@ -315,10 +318,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	/**
 	 * @return the instance
-	 */
 	public static ConfigServerImpl getInstance() {
 		return instance;
-	}
+	}*/
 
 	public void setLabels(Map<String, String> labels) {
 		this.labels=labels;
@@ -342,7 +344,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	}
 	
 	public RequestMonitor getRequestMonitor(String name) throws ApplicationException {
-		for(int i=0;i<requestMonitors.length;i++){
+		if(requestMonitors!=null)for(int i=0;i<requestMonitors.length;i++){
 			if(requestMonitors[i].getName().equalsIgnoreCase(name))
 				return requestMonitors[i];
 		}
@@ -357,7 +359,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	}
 
 	public IntervallMonitor getIntervallMonitor(String name) throws ApplicationException {
-		for(int i=0;i<intervallMonitors.length;i++){
+		if(intervallMonitors!=null)for(int i=0;i<intervallMonitors.length;i++){
 			if(intervallMonitors[i].getName().equalsIgnoreCase(name))
 				return intervallMonitors[i];
 		}
@@ -370,6 +372,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	
 
 	public void setActionMonitorCollector(ActionMonitorCollector actionMonitorCollector) {
+		print.e(hashCode()+":::"+actionMonitorCollector);
 		this.actionMonitorCollector=actionMonitorCollector;
 	}
 	
@@ -378,7 +381,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	}
 	
 	public Object getActionMonitor(String name) { // FUTURE return ActionMonitor
-		return actionMonitorCollector.getActionMonitor(name);
+		return actionMonitorCollector==null?null:actionMonitorCollector.getActionMonitor(name);
 	}
 
 	@Override

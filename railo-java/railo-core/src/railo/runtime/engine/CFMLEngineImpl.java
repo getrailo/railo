@@ -106,7 +106,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	
 	private static Map<String,CFMLFactory> initContextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
     private static Map<String,CFMLFactory> contextes=MapFactory.<String,CFMLFactory>getConcurrentMap();
-    private static ConfigServerImpl configServer=null;
+    private ConfigServerImpl configServer=null;
     private static CFMLEngineImpl engine=null;
     //private ServletConfig config;
     private CFMLEngineFactory factory;
@@ -180,14 +180,16 @@ public final class CFMLEngineImpl implements CFMLEngine {
     // FUTURE add to public interface
     public ConfigServer getConfigServer(String password) throws PageException {
     	getConfigServerImpl().checkAccess(password);
-    	return getConfigServerImpl();
+    	return configServer;
     }
 
     // FUTURE add to public interface
     public ConfigServer getConfigServer(String key, long timeNonce) throws PageException {
-    	configServer.checkAccess(key,timeNonce);
+    	getConfigServerImpl().checkAccess(key,timeNonce);
     	return configServer;
     }
+    
+    
 
     private ConfigServerImpl getConfigServerImpl() {
     	if(configServer==null) {
@@ -205,6 +207,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
             }
         }
         return configServer;
+    }
+    
+    public void setConfigServerImpl(ConfigServerImpl cs) {
+    	this.configServer=cs;
     }
     
     private  CFMLFactoryImpl loadJSPFactory(ConfigServerImpl configServer, ServletConfig sg, int countExistingContextes) throws ServletException {
@@ -658,5 +664,4 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	public long uptime() {
 		return uptime;
 	}
-
 }
