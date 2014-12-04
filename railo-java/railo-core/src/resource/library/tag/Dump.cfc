@@ -2,17 +2,17 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public 
+ *
+ * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  **/
 component {
 
@@ -343,11 +343,11 @@ if (variables.bSuppressType) {
 
 								if (simpleType == "query" && bColor) { // Allow JS collapse columns
 
-									arrayAppend(variables.aOutput, '" title="Collapse column" onClick="dump_hideColumn(this, #col-1#)"');
+									arrayAppend(variables.aOutput, '" title="Collapse column" onClick="dump_hideColumn(this, #col-1#)">');
 								}
 								else if (arguments.meta.type == "string" && !isEmpty(nodeHtml)) {
 
-									arrayAppend(variables.aOutput, '" style="cursor: pointer;" title="Click to select #LSNumberFormat(len(nodeHtml), ',')# characters" onClick="selectText(this);">');
+									arrayAppend(variables.aOutput, '" style="cursor: pointer;" title="Click to select #nodeHtml# characters" onClick="selectText(this);">');
 								}
 								else {
 
