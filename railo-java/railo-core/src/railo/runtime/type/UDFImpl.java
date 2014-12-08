@@ -37,6 +37,7 @@ import railo.runtime.cache.tag.CacheHandlerFactory;
 import railo.runtime.cache.tag.CacheItem;
 import railo.runtime.cache.tag.udf.UDFCacheItem;
 import railo.runtime.component.MemberSupport;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
@@ -121,9 +122,10 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	
 	private void defineArguments(PageContext pc,FunctionArgument[] funcArgs, Object[] args,Argument newArgs) throws PageException {
 		// define argument scope
+		boolean fns = ((ConfigImpl)pc.getConfig()).getFullNullSupport();
 		for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
-			if(args.length>i) {
+			if(args.length>i && (args[i]!=null || fns)) {
 				newArgs.setEL(funcArgs[i].getName(),castToAndClone(pc,funcArgs[i], args[i],i+1));
 			}
 			// argument not defined
@@ -146,37 +148,39 @@ public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externali
 	}
 
 	
-    private void defineArguments(PageContext pageContext, FunctionArgument[] funcArgs, Struct values, Argument newArgs) throws PageException {
+    private void defineArguments(PageContext pc, FunctionArgument[] funcArgs, Struct values, Argument newArgs) throws PageException {
+    	StructImpl _values=(StructImpl) values;
     	// argumentCollection
     	UDFUtil.argumentCollection(values,funcArgs);
-    	//print.out(values.size());
     	Object value;
     	Collection.Key name;
 		
     	for(int i=0;i<funcArgs.length;i++) {
 			// argument defined
 			name=funcArgs[i].getName();
-			value=values.removeEL(name); 
-			if(value!=null) {
-				newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
+			value=_values.remove(name,NullSupportHelper.NULL()); 
+			if(value!=NullSupportHelper.NULL() ) {
+				newArgs.set(name,castToAndClone(pc,funcArgs[i], value,i+1));
 				continue;
 			}
-			value=values.removeEL(ArgumentIntKey.init(i+1)); 
-			if(value!=null) {
-				newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
+			value=_values.remove(ArgumentIntKey.init(i+1),NullSupportHelper.NULL()); 
+			if(value!=NullSupportHelper.NULL()) {
+				newArgs.set(name,castToAndClone(pc,funcArgs[i], value,i+1));
 				continue;
 			}
 			
 			
 			// default argument or exception
-			Object defaultValue=getDefaultValue(pageContext,i,NullSupportHelper.NULL());//funcArgs[i].getDefaultValue();
+			Object defaultValue=getDefaultValue(pc,i,NullSupportHelper.NULL());//funcArgs[i].getDefaultValue();
 			if(defaultValue==NullSupportHelper.NULL()) { 
 				if(funcArgs[i].isRequired()) {
 					throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 				}
-				newArgs.set(name,Argument.NULL);
+				//boolean fns = ((ConfigImpl)pc.getConfig()).getFullNullSupport();
+				if(!((ConfigImpl)pc.getConfig()).getFullNullSupport())
+					newArgs.set(name,Argument.NULL);
 			}
-			else newArgs.set(name,castTo(pageContext,funcArgs[i],defaultValue,i+1));	
+			else newArgs.set(name,castTo(pc,funcArgs[i],defaultValue,i+1));	
 		}
 		
 		

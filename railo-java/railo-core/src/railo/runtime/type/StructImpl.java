@@ -170,7 +170,14 @@ public class StructImpl extends StructSupport {
 	
 	@Override
 	public Object removeEL(Collection.Key key) {
-		return map.remove(key);
+		return map.r(key,null);
+	}
+
+	public Object remove(Collection.Key key, Object defaultValue) {
+		if(NullSupportHelper.full())return map.r(key,defaultValue);
+		Object obj= map.remove(key);
+		if(obj==null) return defaultValue;
+		return obj;
 	}
 	
 	@Override
