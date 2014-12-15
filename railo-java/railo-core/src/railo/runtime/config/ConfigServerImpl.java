@@ -372,7 +372,6 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	
 
 	public void setActionMonitorCollector(ActionMonitorCollector actionMonitorCollector) {
-		print.e(hashCode()+":::"+actionMonitorCollector);
 		this.actionMonitorCollector=actionMonitorCollector;
 	}
 	

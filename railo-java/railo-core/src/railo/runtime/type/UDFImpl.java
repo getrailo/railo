@@ -64,7 +64,6 @@ import railo.runtime.writer.BodyContentUtil;
  */
 public class UDFImpl extends MemberSupport implements UDFPlus,Sizeable,Externalizable {
 	
-	//private static final RamCache DEFAULT_CACHE=new RamCache();
 	private static final long serialVersionUID = -7288148349256615519L; // do not change
 	
 	protected ComponentImpl ownerComponent;
