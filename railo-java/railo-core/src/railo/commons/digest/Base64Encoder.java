@@ -16,24 +16,34 @@
  **/
 package railo.commons.digest;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.runtime.coder.CoderException;
 
 public class Base64Encoder {
 
-	private static final char[] ALPHABET = {
+	private static final char[] ALPHABET = new char[] {
 			'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 			'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-			'0','1','2','3','4','5','6','7','8','9','+','/' };
-    private static int[]  toInt= new int[128];
-    static {
-        for(int i=0; i< toInt.length; i++){
-            toInt[i]= -1;
-        }
-        for(int i=0; i< ALPHABET.length; i++){
-            toInt[ALPHABET[i]]= i;
-        }
-    }
+			'0','1','2','3','4','5','6','7','8','9','+','/'
+	};
+	private static final char PAD = '=';
+
+	
+	private static final Map<Character,Integer> REVERSE = new HashMap<Character,Integer>();
+	static {
+		for (int i=0; i<64; i++) {
+			REVERSE.put(ALPHABET[i], i);
+		}
+		REVERSE.put('-', 62);
+		REVERSE.put('_', 63);
+		REVERSE.put(PAD, 0);
+	}
+    
 
 	public static String encodeFromString(String data) {
 		return encode(data.getBytes(CharsetUtil.UTF8));
@@ -47,32 +57,60 @@ public class Base64Encoder {
      * @param data the byte array (not null)
      * @return the translated Base64 string (not null)
      */
-    public static String encode(byte[] data){
-        int size = data.length;
-        char[] ar = new char[((size + 2) / 3) * 4];
-        int a = 0;
-        int i=0;
-        while(i < size){
-            byte b0 = data[i++];
-            byte b1 = (i < size) ? data[i++] : 0;
-            byte b2 = (i < size) ? data[i++] : 0;
+	public static String encode(byte[] data) {
+		StringBuilder builder = new StringBuilder();
+		for (int position=0; position < data.length; position+=3) {
+			builder.append(encodeGroup(data, position));
+		}
+		return builder.toString();
+	}
+	
+	
 
-            int mask = 0x3F;
-            ar[a++] = ALPHABET[(b0 >> 2) & mask];
-            ar[a++] = ALPHABET[((b0 << 4) | ((b1 & 0xFF) >> 4)) & mask];
-            ar[a++] = ALPHABET[((b1 << 2) | ((b2 & 0xFF) >> 6)) & mask];
-            ar[a++] = ALPHABET[b2 & mask];
-        }
-        switch(size % 3){
-            case 1: ar[--a]  = '=';
-            case 2: ar[--a]  = '=';
-        }
-        return new String(ar);
-    }
+	
+	
+	
+	
+	////  Helper methods
+	
+	
+	/**
+	 * Encode three bytes of data into four characters.
+	 */
+	private static char[] encodeGroup(byte[] data, int position) {
+		final char[] c = new char[] { '=','=','=','=' };
+		int b1=0, b2=0, b3=0;
+		int length = data.length - position;
+		
+		if (length == 0)
+			return c;
+		
+		if (length >= 1) {
+			b1 = (data[position])&0xFF;
+		}
+		if (length >= 2) {
+			b2 = (data[position+1])&0xFF;
+		}
+		if (length >= 3) {
+			b3 = (data[position+2])&0xFF;
+		}
+		
+		c[0] = ALPHABET[b1>>2];
+		c[1] = ALPHABET[(b1 & 3)<<4 | (b2>>4)];
+		if (length == 1)
+			return c;
+		c[2] = ALPHABET[(b2 & 15)<<2 | (b3>>6)];
+		if (length == 2)
+			return c;
+		c[3] = ALPHABET[b3 & 0x3f];
+		return c;
+	}
 
 	public static String decodeAsString(String data) throws CoderException {
 		return new String(decode(data),CharsetUtil.UTF8);
 	}
+	
+	
 	
 	
 	/**
@@ -82,58 +120,75 @@ public class Base64Encoder {
      * @return the byte array (not null)
      * @throws CoderException 
      */
-    public static byte[] decode(String str) throws CoderException {
-    	final String s=str.trim();
-    	
-    	final int len=s.length();
-    	
-    // valid length
-    	if(len % 4 != 0 || len < 4)
-    		throw new CoderException("can't decode the input string"+printString(s)+", because the input string has an invalid length");
+	public static byte[] decode(String data) throws CoderException {
+		byte[] array = new byte[data.length()*3/4];
+		char[] block = new char[4];
+		int length = 0;
+		data=data.trim();
+		final int len=data.length();
+		if(len % 4 != 0 || len < 4)
+    		throw new CoderException("can't ["+data.length()+"] decode the input string"+printString(data)+", because the input string has an invalid length");
 		
-    	int delta = s.endsWith( "==" ) ? 2 : s.endsWith( "=" ) ? 1 : 0;
-        byte[] buffer = new byte[s.length()*3/4 - delta];
-        int mask = 0xFF;
-        int index = 0;
-        for(int i=0; i< s.length(); i+=4){
-        	int c0 = toInt[s.charAt( i )];
-            int c1 = toInt[s.charAt( i + 1)];
-            int c2 = toInt[s.charAt( i + 2)];
-            int c3 = toInt[s.charAt( i + 3 )];
-            
-            // invalid char can be a "=" in the end
-            if(c0==-1) {
-    			throw new CoderException("can't decode the input string"+printString(s)+", because the input is not a valid Base64 String, the String has an invalid character ["+s.charAt(i+0)+"] at position ["+(i+1)+"]");
-    		}
-            else if(c1==-1) {
-    			// 3 fillbytes in the end
-    			if(i+4==s.length() && s.charAt(i+1)=='=' && s.charAt(i+2)=='=' && s.charAt(i+3)=='=') continue;
-        		throw new CoderException("can't decode the input string"+printString(s)+", because the input is not a valid Base64 String, the String has an invalid character ["+s.charAt(i+1)+"] at position ["+(i+2)+"]");
-    		}
-            else if(c2==-1) {
-    			// 2 fillbytes in the end
-    			if(i+4==s.length() && s.charAt(i+2)=='=' && s.charAt(i+3)=='=') continue;
-        		throw new CoderException("can't decode the input string"+printString(s)+", because the input is not a valid Base64 String, the String has an invalid character ["+s.charAt(i+2)+"] at position ["+(i+3)+"]");
-    		}
-            else if(c3==-1) {
-    			// 1 fillbytes in the end
-    			if(i+4==s.length() && s.charAt(i+3)=='=') continue;
-        		throw new CoderException("can't decode the input string"+printString(s)+", because the input is not a valid Base64 String, the String has an invalid character ["+s.charAt(i+3)+"] at position ["+(i+4)+"]");
-    		}
+		
+		for (int position=0; position < len; ) {
+			int p;
+			for (p=0; p<4 && position < data.length(); position++) {
+				char c = data.charAt(position);
+				if (!Character.isWhitespace(c)) {
+					block[p] = c;
+					p++;
+				}
+			}
+			
+			if (p==0)
+				break;
+			
+			
+			int l = decodeGroup(block, array, length);
+			length += l;
+			if (l < 3)
+				break;
+		}
+		return Arrays.copyOf(array, length);
+	}
 
-            buffer[index++]= (byte)(((c0 << 2) | (c1 >> 4)) & mask);
-            if(index >= buffer.length){
-                return buffer;
-            }
-            buffer[index++]= (byte)(((c1 << 4) | (c2 >> 2)) & mask);
-            if(index >= buffer.length){
-                return buffer;
-            }
-            buffer[index++]= (byte)(((c2 << 6) | c3) & mask);
-        }
-        return buffer;
-    }
-
+    /**
+	 * Decode four chars from data into 0-3 bytes of data starting at position in array.
+	 * @return	the number of bytes decoded.
+	 */
+	private static int decodeGroup(char[] data, byte[] array, int position) throws CoderException {
+		int b1, b2, b3, b4;
+		
+		try {
+			b1 = REVERSE.get(data[0]);
+			b2 = REVERSE.get(data[1]);
+			b3 = REVERSE.get(data[2]);
+			b4 = REVERSE.get(data[3]);
+			
+		} catch (NullPointerException e) {
+			// If auto-boxing fails
+			throw new CoderException("Illegal characters in the sequence to be "+
+					"decoded: "+Arrays.toString(data));
+		}
+		
+		array[position]   = (byte)((b1 << 2) | (b2 >> 4)); 
+		array[position+1] = (byte)((b2 << 4) | (b3 >> 2)); 
+		array[position+2] = (byte)((b3 << 6) | (b4)); 
+		
+		// Check the amount of data decoded
+		if (data[0] == PAD)
+			return 0;
+		if (data[1] == PAD) {
+			throw new CoderException("Illegal character padding in sequence to be "+
+					"decoded: "+Arrays.toString(data));
+		}
+		if (data[2] == PAD)
+			return 1;
+		if (data[3] == PAD)
+			return 2;
+		
+		return 3;
+	}
 	private static String printString(String s) {
 		if(s.length()>50) return " ["+s.substring(0,50)+" ... truncated]";
 		return  " ["+s+"]";
