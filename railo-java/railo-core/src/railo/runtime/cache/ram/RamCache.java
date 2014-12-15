@@ -24,8 +24,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.CacheEntry;
+import railo.commons.io.log.LogAndSource;
 import railo.runtime.cache.CacheSupport;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
@@ -34,7 +36,7 @@ import railo.runtime.type.Struct;
 
 public class RamCache extends CacheSupport {
 
-	private static final int DEFAULT_CONTROL_INTERVAL = 60;
+	public static final int DEFAULT_CONTROL_INTERVAL = 60;
 	private Map<String, RamCacheEntry> entries= new ConcurrentHashMap<String, RamCacheEntry>();
 	private long missCount;
 	private int hitCount;
@@ -42,20 +44,32 @@ public class RamCache extends CacheSupport {
 	private long idleTime;
 	private long until;
 	private int controlInterval=DEFAULT_CONTROL_INTERVAL*1000;
+	private LogAndSource log;
 	
+	public RamCache(){
+		new Controler(this).start();
+	}
 
 	public static void init(Config config,String[] cacheNames,Struct[] arguments)  {//print.ds();
 		
 	}
 	
 	public void init(Config config,String cacheName, Struct arguments) throws IOException {
-		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
-		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
-		
+		// until
+		long until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
+		long idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		Object ci = arguments.get("controlIntervall",null);
 		if(ci==null)ci = arguments.get("controlInterval",null);
-		controlInterval=Caster.toIntValue(ci,DEFAULT_CONTROL_INTERVAL)*1000;
-		new Controler(this).start();
+		int controlInterval=Caster.toIntValue(ci,DEFAULT_CONTROL_INTERVAL)*1000;
+		init(config, until,idleTime,controlInterval);
+	}
+
+	public RamCache init(Config config, long until, long idleTime, int intervalInSeconds) {
+		this.until=until;
+		this.idleTime=idleTime;
+		this.controlInterval=intervalInSeconds*1000;
+		log = config.getApplicationLogger();
+		return this;
 	}
 	
 	@Override
@@ -143,23 +157,28 @@ public class RamCache extends CacheSupport {
 		
 		public void run(){
 			while(true){
+				SystemUtil.sleep(ramCache.controlInterval);
 				try{
 					_run();
 				}
 				catch(Throwable t){
 					t.printStackTrace();
 				}
-				SystemUtil.sleep(ramCache.controlInterval);
 			}
 		}
 
 		private void _run() {
+			int before = ramCache.entries.size();
 			RamCacheEntry[] values = ramCache.entries.values().toArray(new RamCacheEntry[ramCache.entries.size()]);
 			for(int i=0;i<values.length;i++){
 				if(!CacheSupport.valid(values[i])){
 					ramCache.entries.remove(values[i].getKey());
 				}
 			}
+			int after=ramCache.entries.size();
+			int diff=before-after;
+			if(diff<0)diff=0; // can happen when in meantime new elements was added
+			ramCache.log.info("ram-cache", "removed "+diff+" element(s) from ram cache, the cache still has stored "+after+" element(s)");
 		}
 	}
 

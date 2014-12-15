@@ -32,6 +32,7 @@ import railo.commons.io.res.Resources;
 import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -53,9 +54,9 @@ public final class CacheResourceProvider implements ResourceProviderPro {
 	private ResourceLockImpl lock=new ResourceLockImpl(lockTimeout,caseSensitive);
 	private Map arguments;
 
-	private final Cache DEFAULT_CACHE=new RamCache();
-
 	private Set<Integer> inits=new HashSet<Integer>();
+
+	private Cache defaultCache;
 
 	//private Config config;
 
@@ -136,21 +137,7 @@ public final class CacheResourceProvider implements ResourceProviderPro {
 		// TODO remove none CacheResourceCore elements
 		return arr;
 	}
-	/*CacheResourceCore[] getChildren(String path) {
-		List list = getCache().values(new ChildrenFilter(path));
-		CacheResourceCore[] arr = new CacheResourceCore[list.size()];
-		Iterator it = list.iterator();
-		int index=0;
-		while(it.hasNext()){
-			arr[index++]=(CacheResourceCore) it.next();
-		}
-		// TODO remove none CacheResourceCore elements
-		return arr;
-	}*/
-
-
-
-
+	
 	/**
 	 * create a new core 
 	 * @param path
@@ -221,7 +208,12 @@ public final class CacheResourceProvider implements ResourceProviderPro {
 	
 
 	private Cache getCache() {
-		Cache c = Util.getDefault(ThreadLocalPageContext.get(),ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
+		PageContext pc = ThreadLocalPageContext.get();
+		Cache c = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_RESOURCE,null);
+		if(c==null) {
+			if(defaultCache==null)defaultCache=new RamCache().init(pc.getConfig(), 0, 0, RamCache.DEFAULT_CONTROL_INTERVAL);
+			c=defaultCache;
+		}
 		if(!inits.contains(c.hashCode())){
 			String k = toKey("null","");
 			if(!c.contains(k)) {

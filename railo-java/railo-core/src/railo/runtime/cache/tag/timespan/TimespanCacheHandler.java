@@ -38,13 +38,12 @@ import railo.runtime.type.dt.TimeSpan;
 
 public class TimespanCacheHandler implements CacheHandler {
 
-	//private final RamCache DEFAULT_CACHE=new RamCache();
 	private int defaultCacheType;
 	private Cache defaultCache;
 	
 	public TimespanCacheHandler(int defaultCacheType, Cache defaultCache){
 		this.defaultCacheType=defaultCacheType; // 
-		this.defaultCache=defaultCache; // new RamCache();
+		this.defaultCache=defaultCache;
 	}
 
 	@Override
@@ -72,7 +71,6 @@ public class TimespanCacheHandler implements CacheHandler {
 		
 		// ignore timespan smaller or equal to 0
 		if(timeSpan<=0) return;
-		
 		getCache(pc).put(id, value, Long.valueOf(timeSpan), Long.valueOf(timeSpan));
 	}
 	
@@ -139,7 +137,7 @@ public class TimespanCacheHandler implements CacheHandler {
 	private Cache getCache(PageContext pc) {
 		Cache c = Util.getDefault(pc,defaultCacheType,null);
 		if(c==null) {
-			if(defaultCache==null)defaultCache=new RamCache();
+			if(defaultCache==null)defaultCache=new RamCache().init(pc.getConfig(), 0, 0, RamCache.DEFAULT_CONTROL_INTERVAL);
 			return defaultCache;
 		}
 		return c;
