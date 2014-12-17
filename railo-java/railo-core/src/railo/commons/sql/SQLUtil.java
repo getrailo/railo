@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ParserString;
 import railo.commons.lang.StringUtil;
+import railo.runtime.db.driver.ConnectionProxy;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.sql.BlobImpl;
@@ -166,6 +167,7 @@ public class SQLUtil {
 	}
 	
 	public static boolean isOracle(Connection conn) {
+		if(conn instanceof ConnectionProxy) conn=((ConnectionProxy)conn).getConnection();
 		return StringUtil.indexOfIgnoreCase(conn.getClass().getName(), "oracle")!=-1;
 	}
 

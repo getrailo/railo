@@ -50,7 +50,9 @@ public class ConnectionProxy implements Connection {
 	}
 
 	
-
+	public Connection getConnection() {
+		return conn;
+	}
 
 	@Override
 	public Statement createStatement() throws SQLException {
