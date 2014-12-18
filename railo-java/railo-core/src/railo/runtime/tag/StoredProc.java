@@ -291,7 +291,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		
 		
 		if(SQLUtil.isOracle(conn)){
-			String name=this.procedure;
+			String name=this.procedure.toUpperCase();
 			int index=name.lastIndexOf('.');
 			
 			String pack=null,scheme=null;
