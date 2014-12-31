@@ -65,7 +65,7 @@ public class MultiPartResponseUtils {
 			String[] subHeaderSections = ListUtil.listToStringArray(section,'=');
 			String headerName = subHeaderSections[0].trim();
 			if (headerName.toLowerCase().equals("boundary")) {
-				return subHeaderSections[1];
+				return subHeaderSections[1].replaceAll("^\"|\"$", "");
 			}
 		
 		}
