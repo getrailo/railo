@@ -46,8 +46,8 @@ public final class EvaluateComponent {
 		Component comp=null;
 		try {
 			comp = pc.loadComponent(name);
-			if(!ComponentUtil.md5(comp).equals(md5)){	
-				SystemOut.printDate(pc.getConfig().getErrWriter(),"component ["+name+"] in this enviroment has not the same interface as the component to load, it is possible that one off the components has Functions added dynamicly.");
+			if(!ComponentUtil.md5(comp).equals(md5)){
+				SystemOut.printDate(pc.getConfig().getErrWriter(),"Failed to evaluate component ["+name+"], the component's interface does not match the data passed. The component's definition has changed, or one of the public members was added dynamically.");
 				//throw new ExpressionException("component ["+name+"] in this enviroment has not the same interface as the component to load");
 			}
 		}
